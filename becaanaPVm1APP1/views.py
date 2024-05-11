@@ -1717,8 +1717,12 @@ def consultaPropioInventario(request,id_vendedor):
     if request.user.is_authenticated:
         ##print(id_vendedor)
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
+        costoStock=0
+        for elemento in articulosVendedor:
+            costoStock=costoStock+elemento.qty*elemento.precioVentaVendedor
         context={
             'lista':articulosVendedor,
+            'costoStock':costoStock,
         }
         return render(request,'vendedorConsultaPropioInventario.html',context)
     else:
@@ -1729,8 +1733,13 @@ def consultaPropioInventarioExterno(request,id_vendedor):
     if request.user.is_authenticated:
         ##print(id_vendedor)
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
+        costoStock=0
+        for elemento in articulosVendedor:
+            costoStock=costoStock+elemento.qty*elemento.precioVentaVendedorExterno
         context={
             'lista':articulosVendedor,
+            'costoStock':costoStock,
+
         }
         return render(request,'vendedorExternoConsultaPropioInventario.html',context)
     else:

@@ -12,6 +12,7 @@
 
 <!-- Page Heading -->
 {% block heading %}Sellers{% endblock heading %}
+{% load mathfilters %}
 
 <!-- Page content  -->
 {% block content %}
@@ -29,6 +30,7 @@
         <div class="titlepage text_align_center">
           <br />
           <h2>Stock Actual de Vendedor</h2>
+          <h6>Valor total del stock: ${{costoStock|floatformat:"2"}}</h6>
         </div>
         <div class="row">
           <div class="col-sm">
@@ -39,7 +41,7 @@
                   <th scope="col">Producto</th>
                   <th scope="col">Stock Actual</th>
                   <th scope="col">Precio de Venta</th>
-                  <!-- <th scope="col">Precio Original para BECAANA</th> -->
+                  <th scope="col">Valor Total</th>
                   <!-- <th scope="col">Opciones</th> -->
   
                 </tr>
@@ -52,8 +54,8 @@
                   <td>{{elemento.seller_id}}</td>
                   <td>{{elemento.product_id}}</td>
                   <td>{{elemento.qty}}</td>
-                  <td>{{elemento.precioVentaVendedor}}</td>
-                  <!-- <td>{{elemento.precioOriginal}}</td> -->
+                  <td>${{elemento.precioVentaVendedor|floatformat:2}}</td>
+                  <td>${{elemento.precioVentaVendedor|mul:elemento.qty|floatformat:"2"}}</td>
                   <!-- <td><a href="{% url 'updateStock' elemento.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a></td> -->
                 </tr>
                 {% endfor %}
