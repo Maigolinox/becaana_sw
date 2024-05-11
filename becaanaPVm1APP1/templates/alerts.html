@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% load humanize %} {% block content %}{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body> <br><br><br><br><br><br><br>
+    <div class="container">
+        <div class="row">
+            <h1 style="text-align: center; margin: 20px;">Tablero de Alertas</h1>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row" style="margin: 20px;">
+            <hr>
+            <h3>Alertas de Vendedores</h3>
+            <div class="col-md-3">
+                <img src="{% static 'images/suppliers.png' %}" alt="Alertas Vendedores" style="margin: 20px;">
+            </div>
+            <div class="col-md-9">
+                <ol>
+                    {% for elemento in listaAlertasVendedores %}
+                    <li><h4 style="color: brown;"><strong> •     {{ elemento }}.</strong></h4></li>
+                    {% endfor %}
+                </ol>  
+            </div>
+        </div>
+        <div class="row" style="margin: 20px;">
+            <hr>
+            <h3>Alertas de Puntos de Venta</h3>
+            <div class="col-md-3">
+                <img src="{% static 'images/PV.png' %}" alt="Alertas Vendedores" style="margin: 20px;">
+            </div>
+            <div class="col-md-9">
+                <!-- Content for the second column -->
+                <ol>
+                    {% for elemento in listaAlertasPuntoVenta %}
+                    <li><h4 style="color: brown;"><strong> •     {{ elemento }}.</strong></h4></li>
+                    {% endfor %}
+                </ol>                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+{% endblock %}

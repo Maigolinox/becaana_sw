@@ -1,0 +1,122 @@
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 28, 2024 - 17:44:23
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 28, 2024 - 19:43:29
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+March 28, 2024 - 19:52:24
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+March 28, 2024 - 19:53:18
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+Performing system checks...
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 28, 2024 - 20:38:50
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 28, 2024 - 21:08:20
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 00:41:55
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 00:47:53
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 01:10:17
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 01:11:06
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 01:11:32
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 04:00:26
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 04:02:43
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 06:39:35
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 29, 2024 - 06:48:31
+Django version 5.0.1, using settings 'becaanaPVm1.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+

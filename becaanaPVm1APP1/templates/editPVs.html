@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %} {% load account %}
+
+
+{% block content %} 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BECAANA Dulces</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <br><br><br><br><br>
+            </div>
+        </div>
+    </div>
+    <br><br>
+            <div class="col-sm" style="text-align: center;">
+                <div class="titlepage text_align_center">
+                    <br>
+                    <h2> EDITPVS.</h2>
+                </div>
+                
+            </div>
+
+            <div class="row">
+                <div class="col-2">
+        
+                </div>
+                <div class="col-8">
+                    <table class="table">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">ID del Punto de Venta</th>
+                            <th scope="col">Nombre del Punto de Venta</th>
+                            <th scope="col">Dirección del Punto de Venta</th>
+                            <th scope="col">Teléfono del Punto de Venta</th>
+                            <th scope="col">Opciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {% for elemento in puntosVenta %}
+                            <tr>
+                                <td>{{elemento.id}}</td>
+                                <td>{{elemento.nombrePV}}</td>
+                                <td>{{elemento.direccionPV}}</td>
+                                <td>{{elemento.telefonoPV}}</td>
+                                <td>
+                                    <a href="{% url 'deletePV' elemento.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Punto de Venta"></a>
+                                    <a href="{% url 'editPV' elemento.id %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Punto de Venta"></a>
+                                </td>
+                                
+        
+                                <!-- <td style="max-width: 600px; overflow: scroll;">{{elemento.seq|truncatewords:"100"}}</td> -->
+                            </tr>
+                            {% endfor %}
+            
+                        </tbody>
+                      </table>
+                </div>
+                <div class="col-2">
+        
+                </div>
+            </div>
+            
+    
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% load humanize %} {% block content %}{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body class="container-fluid">
+    <br /><br /><br /><br /><br /><br />
+    <div class="container">
+      <h1 style="text-align: center;"> ¿Seguro que quieres salir de tu cuenta?</h1>
+      <div class="container">
+        <p style="text-align: center;">¿Estás seguro de querer salir de tu cuenta?</p>
+        <form method="post" action="{% url 'account_logout' %}" align="center">
+          {% csrf_token %}
+          <button type="submit" style="-webkit-border-radius: 28;
+          -moz-border-radius: 28;
+          border-radius: 28px;
+          font-family: Arial;
+          color: #ffffff;
+          font-size: 20px;
+          background: #fca822;
+          padding: 10px 20px 10px 20px;
+          text-decoration: none;">{% trans "Si, salir" %}</button>
+          <a href="{% url 'account_login' %}">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+{% endblock %}

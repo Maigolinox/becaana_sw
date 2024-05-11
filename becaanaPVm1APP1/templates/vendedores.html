@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account %}
+
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendedores BECAANA</title>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm" style="text-align: right;">
+                <br><br>
+            </div>
+            <div class="col-sm"></div>
+            <div class="col-sm" style="text-align: right;"></div>
+            <div class="col-sm">
+                <br><br>Bienvenido, {% user_display user %}.
+            </div>
+        </div>
+        <div class="row">
+        <br><br>
+        <div class="col-sm" style="text-align: center;">
+            <div class="titlepage text_align_center">
+                <br>
+                <h2> Tablero principal</h2>
+            </div>    
+        </div>
+        </div>
+        <div class="row row d-flex justify-content-center" style="margin-top: 10px;">
+
+          <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'PV' %}" style="display: block;"><img src="{% static 'images/PV.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+            <span>
+              <a href="{% url 'PV' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                <strong>Operaciones con Puntos de Venta</strong>
+              </a>
+            </span>
+          </div>
+          
+          <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; ">
+            <a href="{% url 'products' %}" style="display: block;">
+              <img src="{% static 'images/candy.png' %}" alt="Agregar nuevo dulce." width="200px" height="200px" style="margin-top: 10px;">
+            </a>
+            <span>
+              <a href="{% url 'products' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br><strong>Operaciones con Productos</strong></a>
+            </span>
+          </div> 
+          
+          <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'stock' %}" style="display: block;"><img src="{% static 'images/stock.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+            <span>
+              <a href="{% url 'stock' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                <strong>Operaciones con Stock</strong>
+              </a>
+            </span>
+          </div>
+
+          <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'sellersDashboard' %}" style="display: block;"><img src="{% static 'images/suppliers.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+            <span>
+              <a href="{% url 'sellersDashboard' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                <strong>Operaciones con Vendedores</strong>
+              </a>
+            </span>
+          </div>
+      
+        
+        <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'dashVentas' %}" style="display: block;"><img src="{% static 'images/ventas.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+          <span>
+            <a href="{% url 'dashVentas' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+              <strong>Ventas (Registrar, consultar, ticket)</strong>
+            </a>
+          </span>
+        </div>
+        
+        
+        <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+          <a href="{% url 'financeDashboard' %}" style="display: block;"><img src="{% static 'images/finance.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+          <span>
+            <a href="{% url 'financeDashboard' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+              <strong>Finanzas (Balance)</strong>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

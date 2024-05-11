@@ -1,0 +1,799 @@
+{% extends "base.html" %} {% load humanize %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS de DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+</head>
+<body> <br><br><br><br><br><br><br>
+    <div class="container">
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Finanzas de la empresa</h1>
+        <div class="row" style="text-align: center;">
+            <div class="col-sm border" >
+                # de Ventas de hoy: <br><strong><br> {{total_number_sales}} </strong>
+            </div>
+            <div class="col-sm border">
+                Ventas de hoy en $: <br><strong><br> ${{total_sales_combined|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                # Ventas hoy de Puntos de Venta: <br><strong> {{transaction|intcomma}} </strong> 
+            </div>
+            <div class="col-sm border">
+                Ventas de hoy Puntos de Venta en $: <br><strong> ${{total_sales|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                # Ventas hoy de Vendedores: <br><strong> {{transaction_seller}} </strong>
+            </div>
+            <div class="col-sm border">
+                Ventas de hoy Vendedores: <br><strong> <br>${{total_sales_seller|floatformat:"-2"}} </strong>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-sm border" style="text-align: center;">
+                # de Ventas historico de P.V.: <br><strong> {{historic_number_pv}} </strong>
+            </div>
+            <div class="col-sm border">
+                Ventas historico de P.V. en $: <br><strong> ${{historic_total_sales_money_pv|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                # de Ventas historico de Vendedores: <br><strong> {{historic_number_sellers|floatformat:"-2"}} </strong> 
+            </div>
+            <div class="col-sm border">
+                Ventas hisotrico de Vendedores en $: <br><strong> ${{historic_total_sales_money_sellers|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                # Ventas historico totales: <br><strong> {{total_historic_transactions}} </strong>
+            </div>
+            <div class="col-sm border">
+                Ventas historico totales en $: <br><strong> ${{total_historic_money|floatformat:"-2"}} </strong>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-sm border">
+                Producto más vendido Vendedores: <br><strong> <br><br>{{producto_mas_vendido_seller.product_id__nombreArticulo}} </strong>
+            </div>
+            <div class="col-sm border">
+                Producto más vendido Puntos de Venta: <br> <strong><br><br> {{producto_mas_vendido_pv.product_id__nombreArticulo}} </strong>
+            </div>
+            <div class="col-sm border">
+                Vendedor con más ventas (Nombre completo): <br><strong> {{vendedor_mas_ventas.first_name}} {{vendedor_mas_ventas.last_name}} <br> Usuario: {{vendedor_mas_ventas.username}} </strong>
+            </div>
+            <div class="col-sm border">
+                Punto de Venta con más ventas (Nombre completo): <br><strong> {{punto_venta_mas_ventas.first_name}} {{punto_venta_mas_ventas.last_name}} <br>Usuario: {{punto_venta_mas_ventas.username}}</strong>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-sm border">
+                Total de ventas semanales Vendedores: <br><strong> $ {{totalVendedoresSemanal.totalVentasVendedoresSemanal|floatformat:"-2"}}</strong>
+            </div>
+            <div class="col-sm border">
+                Total de ventas semanales Puntos de Venta: <br> <strong>$ {{totalPuntosVentaSemanal.totalVentasPuntosVentaSemanal|floatformat:"-2"}}</strong>
+            </div>
+            <div class="col-sm border">
+                Total de ventas Semanal Global: <br><strong>$ {{totalGlobalSemanal|floatformat:"-2"}} </strong>
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-sm border">
+                Total Ganancias Semanales Vendedores: <br><strong>$ {{ganancia_vendedores|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                Total Ganancias Semanales Puntos de Venta: <br><strong>$ {{ganancias_puntos_venta|floatformat:"-2"}} </strong>
+            </div>
+            <div class="col-sm border">
+                Total Ganancias Semanales Global: <br><strong>$ {{ganancia_global_semanal|floatformat:"-2"}} </strong>
+            </div>
+        </div>
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Finanzas semanales Vendedores</h1>
+        <div class="row">
+            <div class="col-sm border">
+                <h4 style="text-align: center;">Ventas diarias de las ultimas dos semanas vendedores {{start_of_two_weeks_ago}} al {{today}}.</h4>
+                <table id="tabla_ventas_quincenales" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col"> Nombre Completo</th>
+                            <th scope="col"> Num. de operación </th>
+                            <th scope="col"> Fecha </th>
+                            <th scope="col"> Total</th>
+                            <th scope="col"> Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for elemento in ventas_ultimas_dos_semanas %}
+                        <tr>
+                            <td>{{ elemento.first_name }} {{ elemento.last_name }},({{ elemento.username }})</td>
+                            <td>{{ elemento.code }}</td>
+                            <td>{{ elemento.date_added|date:"d/m/Y H:i" }}</td>
+                            <td>${{ elemento.grand_total|floatformat:"-2" }}</td>
+                            <td>${{ elemento.ganancia|floatformat:"-2" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm border">
+                <h4 style="text-align: center;">Resumen de Ventas Semanales de Vendedores {{start_of_week}} al {{today}}</h4>
+                <table id="tabla_ventas_semanales" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col"> Nombre Completo (Usuario)</th>
+                            <th scope="col"> Total Vendido</th>
+                            <th scope="col"> Ganancia Total</th>
+                            <th scope="col"> Salario Aprox.</th>
+                            <th scope="col"> # Ventas</th>
+                            <th scope="col"> # Productos Vendidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for elemento in ventas_ultima_semana %}
+                        <tr>
+                            <td> {{ elemento.first_name }} {{ elemento.last_name }} ({{ elemento.username }})</td>
+                            <td> ${{ elemento.total_ventas|floatformat:"-2" }} </td>
+                            <td> ${{ elemento.ganancia|floatformat:"-2" }} </td>
+                            <td> ${{ elemento.salario|floatformat:"-2" }} </td>
+                            <td> {{ elemento.conteo }} </td>
+                            <td> {{ elemento.cantidadArticulos }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Finanzas semanales Puntos de Venta</h1>
+        <div class="row">
+            <div class="col-sm border">
+                <h4 style="text-align: center;">Ventas diarias de las ultimas dos semanas Puntos de Venta {{start_of_two_weeks_ago}} al {{today}}.</h4>
+                <table id="tabla_ventas_dos_semanas_puntos_venta" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col"> Nombre Completo (Usuario)</th>
+                            <th scope="col"> Número de operación</th>
+                            <th scope="col"> Fecha</th>
+                            <th scope="col"> Total</th>
+                            <th scope="col"> Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for elemento in ventas_ultimas_dos_semanas_puntosVenta %}
+                        <tr>
+                            <td>{{ elemento.first_name }} {{ elemento.last_name }},({{ elemento.username }})</td>
+                            <td>{{ elemento.code }}</td>
+                            <td>{{ elemento.date_added|date:"d/m/Y H:i" }}</td>
+                            <td>${{ elemento.grand_total|floatformat:"-2" }}</td>
+                            <td>${{ elemento.ganancia|floatformat:"-2" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm border">
+                <h4 style="text-align: center;">Resumen de Ventas Semanales de Puntos de Venta {{start_of_week}} al {{today}}</h4>
+                <table id="tabla_ventas_semanales_puntos_venta" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col"> Nombre Completo (Usuario)</th>
+                            <th scope="col"> Total Vendido</th>
+                            <th scope="col"> Ganancia Total</th>
+                            <th scope="col"> # Ventas</th>
+                            <th scope="col"> # Productos Vendidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for elemento in ventas_ultima_semana_puntosVenta %}
+                        <tr>
+                            <td> {{ elemento.first_name }} {{ elemento.last_name }} ({{ elemento.username }})</td>
+                            <td> ${{ elemento.total_ventas|floatformat:"-2" }} </td>
+                            <td> ${{ elemento.ganancia|floatformat:"-2" }} </td>
+                            <td> {{ elemento.conteo }} </td>
+                            <td> {{ elemento.cantidadArticulos }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row"><span><hr style="margin-top: 50px;margin-bottom: 50px;"></span></div>
+
+        <div class="row">
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Comportamiento $MXN de las ventas General</h4>
+                <canvas id="historicoVentasChartDineroGeneral"></canvas>
+            </div>
+            <div class="col-3 border" style="height: 400px;">
+                <h4 style="text-align: center;">Comportamiento $MXN de las ventas Puntos de venta</h4>
+                <canvas id="historicoVentasChartDinero"></canvas>
+            </div>
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Comportamiento $MXN de las ventas Vendedores</h4>
+                <canvas id="historicoVentasChartDineroVendedores"></canvas>
+            </div>
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Gasto Total Vendedores Gasolina</h4>
+                <canvas id="gastoGralChart"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_costos_vendedores}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_gasolina_vendedores}}"
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('gastoGralChart').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Total de Ventas Historico',
+                                    data: values,
+                                    backgroundColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Gasto en Salarios de Vendedores</h4>
+                <canvas id="gastoVendedoresTotal"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_costos_vendedores}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_salarios_vendedores}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('gastoVendedoresTotal').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Otros Gastos en Vendedores</h4>
+                <canvas id="otrosGastosVendedores" ></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_costos_vendedores}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_otros_vendedores}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('otrosGastosVendedores').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Total de Gastos de los Vendedores</h4>
+                <canvas id="totalGastosPuntosVendedores"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_costos_vendedores}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_vendedores}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('totalGastosPuntosVendedores').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-3 border">
+                <h4 style="text-align: center;">Gastos en Salarios de Puntos de Venta</h4>
+                <canvas id="totalGastosSalariosPuntosVenta" width="400" height="400"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_puntos_venta}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_salarios_puntos_venta}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('totalGastosSalariosPuntosVenta').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var labels = "{{lista_fechas}}";
+                    var string_without_brackets = labels.substring(1, labels.length - 1);
+                    var dateStrings = string_without_brackets.split(',').map(function(item) {
+                        return item.trim();
+                    });
+                    var dates = dateStrings.map(function(dateString) {
+                        return dateString.replace(/&#x27;/g, "'");
+                    });
+                    var dateObjects = dates.map(function(dateString) {
+                        return new Date(dateString);
+                    });
+                    labels=dates;
+                    
+                    var values = "{{lista_datos}}"
+                    var valuesDecoded = values.replace(/&#x27;/g, "'");
+                    values = valuesDecoded.slice(1, -1).split(',');
+        
+                    var ctx = document.getElementById('historicoVentasChartDineroGeneral').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Total de Ventas Historico',
+                                data: values,
+                                backgroundColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)','rgba(120,22,24)'],
+                                borderColor: ['rgba(0, 0, 0, 1)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                });
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var labels = "{{lista_fechas_vendedores}}";
+                    var string_without_brackets = labels.substring(1, labels.length - 1);
+                    var dateStrings = string_without_brackets.split(',').map(function(item) {
+                        return item.trim();
+                    });
+                    var dates = dateStrings.map(function(dateString) {
+                        return dateString.replace(/&#x27;/g, "'");
+                    });
+                    var dateObjects = dates.map(function(dateString) {
+                        return new Date(dateString);
+                    });
+                    labels=dates;
+                    
+                    var values = "{{lista_datos_ventas_vendedores}}"
+                    var valuesDecoded = values.replace(/&#x27;/g, "'");
+                    values = valuesDecoded.slice(1, -1).split(',');
+        
+                    var ctx = document.getElementById('historicoVentasChartDineroVendedores').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Total de Ventas Historico',
+                                data: values,
+                                backgroundColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                });
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    
+                    var labels = "{{lista_fechas_ventas_puntos_venta}}";
+                    var string_without_brackets = labels.substring(1, labels.length - 1);
+                    var dateStrings = string_without_brackets.split(',').map(function(item) {
+                        return item.trim();
+                    });
+                    var dates = dateStrings.map(function(dateString) {
+                        return dateString.replace(/&#x27;/g, "'");
+                    });
+                    var dateObjects = dates.map(function(dateString) {
+                        return new Date(dateString);
+                    });
+                    labels=dates;
+                    
+                    var values = "{{lista_datos_ventas_puntos_venta}}"
+                    var valuesDecoded = values.replace(/&#x27;/g, "'");
+                    values = valuesDecoded.slice(1, -1).split(',');
+        
+                    var ctx = document.getElementById('historicoVentasChartDinero').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Total de Ventas Historico',
+                                data: values,
+                                backgroundColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                });
+            </script>
+        </div>
+        <div class="row">
+            <div class="col-4 border">
+                <h4 style="text-align: center;">Gastos en Adquisición de mercancía Puntos Venta</h4>
+                <canvas id="totalGastosProductosPuntosVenta" width="400" height="400"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_puntos_venta}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_productos_puntos_venta}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('totalGastosProductosPuntosVenta').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-4 border">
+                <h4 style="text-align: center;">Otros Gastos de los Puntos de Venta</h4>
+                <canvas id="totalGastosOtrosPuntosVenta" width="400" height="400"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_puntos_venta}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_otros_puntos_venta}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('totalGastosOtrosPuntosVenta').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-4 border">
+                <h4 style="text-align: center;">Total de Gastos de los Puntos de Venta</h4>
+                <canvas id="totalGastosPuntosVenta" width="400" height="400"></canvas>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        
+                        var labels = "{{lista_fechas_puntos_venta}}";
+                        var string_without_brackets = labels.substring(1, labels.length - 1);
+                        var dateStrings = string_without_brackets.split(',').map(function(item) {
+                            return item.trim();
+                        });
+                        var dates = dateStrings.map(function(dateString) {
+                            return dateString.replace(/&#x27;/g, "'");
+                        });
+                        var dateObjects = dates.map(function(dateString) {
+                            return new Date(dateString);
+                        });
+                        labels=dates;
+                        
+                        var values = "{{lista_total_puntos_venta}}"
+                        console.log(values)
+                        var valuesDecoded = values.replace(/&#x27;/g, "'");
+                        values = valuesDecoded.slice(1, -1).split(',');
+            
+                        var ctx = document.getElementById('totalGastosPuntosVenta').getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Cantidad Gastada',
+                                    data: values,
+                                    backgroundColor: ['rgba(255, 125, 123, 0.9)','rgba(200, 100, 23, 0.9)','rgba(200, 133, 241, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderColor: ['rgba(75, 192, 192, 0.9)','rgba(10, 192, 255, 0.9)','rgba(10, 16, 255, 0.9)','rgba(255, 126, 25, 0.9)'],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+        
+            
+            
+    </div>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tabla_ventas_semanales').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tabla_ventas_quincenales').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tabla_ventas_dos_semanas_puntos_venta').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tabla_ventas_semanales_puntos_venta').dataTable();
+            });
+        })(jQuery);
+    </script>
+
+</body>
+</html>
+
+
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BECAANA Dulces</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm"><br /><br /><br /><br /><br /></div>
+      </div>
+    </div>
+    <br /><br />
+    <div class="col-sm" style="text-align: center">
+      <div class="row">
+        <div class="col-sm">
+          
+        </div>
+        <div class="col-sm d-flex flex-row-reverse"><a href="{% url 'PV' %}">
+          <button class="btn">Regresar a Menú de Puntos de Venta <img src="{% static 'images/PV.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse;" alt="Regresar a Menú de Puntos de Venta"></button>
+        </a></div>
+        <div class="col-sm d-flex">
+          <a href="{% url 'dashboard' %}">
+            <button class="btn">Regresar a Menú Principal <img src="{% static 'images/menuPrincipal.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse; " alt="Regresar a Menú Principal"></button>
+          </a>
+          
+        </div>
+      </div>
+      <div class="titlepage text_align_center">
+        <br />
+        <h2>Rellena los siguientes campos con la información requerida.</h2>
+      </div>
+    </div>
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <form method="post" action="#" class="main_form">
+                    {% csrf_token %}
+                    <form id="request" class="main_form">
+                        <div class="row">
+                           <div class="col-md-12">
+                            <label for="nombrePV"> Escribe el nombre del Punto de Venta: </label><input class="contactus" placeholder="Nombre del Punto de Venta" type="type" name="nombrePV">
+                           </div>
+                           <div class="col-md-12">
+                            <label for="direccionPV"> Escribe la dirección del Punto de Venta: </label><input class="contactus" placeholder="Dirección del Punto de Venta" type="char" name="direccionPV">
+                           </div>
+                           <div class="col-md-12">
+                            <label for="telefonoPV"> Escribe el teléfono del Punto de Venta: </label><input class="contactus" placeholder="Teléfono del Punto de Venta" type="number" name="telefonoPV">
+                           </div>
+                           <div class="col-sm">
+
+                           </div>
+                           <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                            
+                            <button class="send_btn text-center" >Guardar</button>
+                            </div>
+                            <div class="col-sm">
+
+                            </div>
+
+                        </div>
+                        
+                     </form>
+                </form>   
+                <div class="row">
+                    <div class="col-sm" style="text-align: center;"><div class="col-sm"> <br>
+                        {% if mensaje|length > 0 %} {{mensaje}}. {% else %}{% endif %}
+                       </div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% load static %} {% load humanize %} {% block content %} 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Dashboard Costos</title>
+</head>
+<body>
+    <br><br><br><br><br><br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div class="titlepage text_align_center"> <h2>Panel de administración de Costos.</h2> </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row row d-flex justify-content-center" style="margin-top: 10px;">
+                <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                    <a href="{% url 'costosVendedores' %}" style="display: block;"><img src="{% static 'images/suppliers.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                    <span><a href="{% url 'costosVendedores' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br> <strong>Registrar costos de Vendedores</strong> </a></span>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                    <a href="{% url 'costosPuntosVenta' %}" style="display: block;"><img src="{% static 'images/PV.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                    <span><a href="{% url 'costosPuntosVenta' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br> <strong>Registrar costos de Puntos de venta</strong> </a></span>
+                </div>
+                <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                    <a href="{% url 'dashboard' %}" style="display: block;"><img src="{% static 'images/menuPrincipal.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                    <span><a href="{% url 'dashboard' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br> <strong>Regresar a Menú principal</strong> </a></span>
+                </div>
+            </div>
+            
+
+    </div>
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,457 @@
+{% extends "base.html" %} {% load static %} {% load account %} 
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BECAANA Dulces</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <span> <br /><br /><br /><br /><br /> </span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm titlepage text_align_center">
+            <br>
+            <h2> Reporte de Inventario </h2><br>
+            <a href="#" style="  background: #f0390f;
+                background-image: -webkit-linear-gradient(top, #f0390f, #f0390f);
+                background-image: -moz-linear-gradient(top, #f0390f, #f0390f);
+                background-image: -ms-linear-gradient(top, #f0390f, #f0390f);
+                background-image: -o-linear-gradient(top, #f0390f, #f0390f);
+                background-image: linear-gradient(to bottom, #f0390f, #f0390f);
+                -webkit-border-radius: 28;
+                -moz-border-radius: 28;
+                border-radius: 28px;
+                font-family: Arial;
+                color: #ffffff;
+                font-size: 20px;
+                padding: 10px 20px 10px 20px;
+                text-decoration: none; float: right;" onclick="window.print()" class="align-right">Imprimir reporte 🖨️</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+            <hr><h3>Inventario de la matriz <a > <img id="clickDownMatrixInv" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px"></a></h3><hr>
+
+            <div id="inventMatrixTable" style="display: none;">
+                <table id="inventarioMatriz" class="table table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nombre del Producto</th>
+                            <th>Cantidad Disponible</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inventario in inventarioStockMaestro %}
+                        <tr>
+                            <td>{{ inventario.nombreArticulo }}</td>
+                            <td>{{ inventario.cantidad }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <hr><h3>Cargas de Hoy de los vendedores<a> <img id="clickDownTodaySellers" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px"></a></h3><hr>
+
+        <div id="cargasHoyVendedoresDIV" style="display: none;">
+            <table id="cargasGeneral" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventario in cargas_vendedores_list_today %}
+                    <tr>
+                        <td>{{ inventario.usuario }}</td>
+                        <td>{{ inventario.usuario.first_name }} {{ inventario.usuario.last_name }}</td>
+                        <td>{{ inventario.nombre_producto }}</td>
+                        <td>{{ inventario.cantidad }}</td>
+                        <td>{{ inventario.fecha }}</td>
+                        <td>
+                            <a href="{% url 'deleteRegisterSellers' inventario.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a>
+                        </td> 
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="row">
+        <hr><h3>Cargas de Hoy de los puntos de venta<a> <img id="clickDownTodayPV" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px"></a></h3><hr>
+
+        <div id="cargasHoyPVDIV" style="display: none;">
+            <table id="cargasGeneral" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventario in cargas_pv_list_today %}
+                    <tr>
+                        <td>{{ inventario.usuario }}</td>
+                        <td>{{ inventario.usuario.first_name }} {{ inventario.usuario.last_name }}</td>
+                        <td>{{ inventario.nombre_producto }}</td>
+                        <td>{{ inventario.cantidad }}</td>
+                        <td>{{ inventario.fecha }}</td>
+                        <td>
+                            <a href="{% url 'deleteRegisterPV' inventario.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a>
+                        </td> 
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+
+
+
+      <div class="row">
+        <hr><h3>Inventario general de todos los usuarios <a href="#"> <img id="clickDownGeneralInv" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px">
+        </a></h3><hr>
+        <div id="inventarioGeneralUsuarios" style="display: none;">
+            <table id="inventarioGeneral" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventario in todos_inventarios %}
+                    <tr>
+                        <td>{{ inventario.seller_id }}</td>
+                        <td>{{ inventario.seller_id.first_name }} {{ inventario.seller_id.last_name }}</td>
+                        <td>{{ inventario.nombreArticulo }}</td>
+                        <td>{{ inventario.qty }}</td>
+                        <!-- Agrega más columnas según sea necesario -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <h3>Historial de cargas general <a href="#"> <img id="clickDownGeneralHist" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px">
+        </a></h3> <hr>
+        <div id="historialCargasGeneral" style="display: none;">
+            <strong>Vendedores</strong>
+            <table id="cargasGeneralVendedores" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventario in cargas_vendedores_list %}
+                    <tr>
+                        <td>{{ inventario.usuario }}</td>
+                        <td>{{ inventario.usuario.first_name }} {{ inventario.usuario.last_name }}</td>
+                        <td>{{ inventario.nombre_producto }}</td>
+                        <td>{{ inventario.cantidad }}</td>
+                        <td>{{ inventario.fecha }}</td>
+                        <td>
+                            <a href="{% url 'deleteRegisterSellers' inventario.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a>
+                        </td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <strong>Puntos de Venta</strong>
+            <hr>
+            <table id="cargasGeneralPV" class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                        <th>Fecha</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inventario in cargas_pv_list %}
+                    <tr>
+                        <td>{{ inventario.usuario }}</td>
+                        <td>{{ inventario.usuario.first_name }} {{ inventario.usuario.last_name }}</td>
+                        <td>{{ inventario.nombre_producto }}</td>
+                        <td>{{ inventario.cantidad }}</td>
+                        <td>{{ inventario.fecha }}</td>
+                        <td>
+                            <a href="{% url 'deleteRegisterSellers' inventario.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a>
+                        </td>
+                        <!-- Agrega más columnas según sea necesario -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <hr>
+        
+        </div>
+      </div>
+      <div>
+        <hr />
+        <h3>Inventario por Vendedor <a href="#"> <img id="clickDownInventarioPorVendedor" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px">
+        </a></h3>
+        <hr />
+        <div id="inventarioPorVendedorDIV" style="display: none;">
+            {% for usuario_id, inventario_usuario in inventario_por_usuario_vendedor.items %}
+        {% if inventario_usuario %}
+        <h2>Nombre Completo del vendedor: {{ inventario_usuario.0.seller_id.first_name }} {{ inventario_usuario.0.seller_id.last_name }}</h2>
+        <h6>Usuario del vendedor: {{ inventario_usuario.0.seller_id.username }}</h6>
+        {% endif %}
+        <table id="tabla_vendedor_{{ usuario_id }}" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in inventario_usuario %}
+            <tr>
+                <td>{{ item.product_id.nombreArticulo }}</td>
+                <td>{{ item.qty }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+        </div>
+        
+    
+        <hr />
+        <h3>Inventario por Punto de Venta <a> <img id="clickDownInvetarioPorPuntoVenta" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px">
+        </a></h3>
+        <hr />
+        <div id="inventarioPorPuntoVentaDiv" style="display: none;">
+            {% for usuario_id, inventario_usuario in inventario_por_usuario_punto_venta.items %}
+        <h2>Nombre Completo del punto de venta: {{ inventario_usuario.0.seller_id.first_name }} {{ inventario_usuario.0.seller_id.last_name }}</h2>
+        <h6>Usuario del Punto de Venta: {{ inventario_usuario.0.seller_id.username }}</h6>
+        <table id="tabla_punto_venta_{{ usuario_id }}" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in inventario_usuario %}
+            <tr>
+                <td>{{ item.product_id.nombreArticulo }}</td>
+                <td>{{ item.qty }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+            
+        </div>
+        
+    
+        <hr />
+        <h3>Historial de Cargas de Inventario por Vendedor <a> <img id="clickDownHistorialCargasVendedor" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px"></a></h3>
+        <hr />
+        <div id="cargasInventarioHistorialVendedor" style="display: none;">
+            {% for usuario_id, cargas_usuario in cargas_vendedores.items %}
+        <h2>Nombre del Vendedor: {{cargas_usuario.0.usuario.first_name }} {{cargas_usuario.0.usuario.last_name }} </h2>
+        <h6>Usuario del Vendedor: {{cargas_usuario.0.usuario }}</h6>
+        <table id="historial_cargas_vendedor_{{ usuario_id }}" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for carga in cargas_usuario %}
+            <tr>
+                <td>{{ carga.nombre_producto }}</td>
+                <td>{{ carga.cantidad }}</td>
+                <td>{{ carga.fecha }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+        </div>
+        
+    
+        <hr />
+        <h3>Historial de Cargas de Inventario por Punto de Venta <a> <img id="clickDownHistorialCargasPuntoVenta" src="https://cdn-icons-png.flaticon.com/512/44/44591.png" alt="View" width="20px" height="20px"></a></h3>
+        <hr />
+        <div id="historialCargasPuntoVentaDIV" style="display: none;">
+            {% for usuario_id, cargas_usuario in cargas_puntos_venta.items %}
+        <h2>Nombre del Punto de Venta: {{cargas_usuario.0.usuario.first_name }} {{cargas_usuario.0.usuario.last_name }} </h2>
+        <h6>Usuario del Punto de Venta: {{cargas_usuario.0.usuario }}</h6>
+        <table id="historial_cargas_punto_venta_{{ usuario_id }}" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for carga in cargas_usuario %}
+            <tr>
+                <td>{{ carga.nombre_producto }}</td>
+                <td>{{ carga.cantidad }}</td>
+                <td>{{ carga.fecha }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+        </div>
+        
+        <div class="row" style="margin-top: 50px;">
+            <span><p></p></span>
+        </div>
+    </div>
+    
+    <!-- Agrega el script de inicialización global de DataTables al final del HTML -->
+    </div>
+    {% for usuario_id, cargas_usuario in cargas_vendedores.items %}
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#tabla_vendedor_{{ usuario_id }}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor %}
+    {% for usuario_id, inventario_usuario in inventario_por_usuario_punto_venta.items %}
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#tabla_punto_venta_{{ usuario_id }}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor %}
+    {% for usuario_id, cargas_usuario in cargas_vendedores.items %}
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#historial_cargas_vendedor_{{ usuario_id }}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor  %}
+    {% for usuario_id, cargas_usuario in cargas_puntos_venta.items %}
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#historial_cargas_punto_venta_{{ usuario_id }}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor  %}
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#inventarioGeneral').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#cargasGeneral').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#cargasGeneralVendedores').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#cargasGeneralPV').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($){
+            $(document).ready(function(){
+                $('#inventarioMatriz').dataTable();
+            });
+        })(jQuery);
+    </script>
+
+    <script>
+        $("#clickDownMatrixInv").click(function() { 
+            $("#inventMatrixTable").toggle();
+        });
+        $("#clickDownTodaySellers").click(function() { 
+            $("#cargasHoyVendedoresDIV").toggle();
+        });
+        $("#clickDownGeneralInv").click(function() { 
+            $("#inventarioGeneralUsuarios").toggle();
+        });
+        $("#clickDownGeneralHist").click(function() { 
+            $("#historialCargasGeneral").toggle();
+        });
+        $("#clickDownInventarioPorVendedor").click(function() { 
+            $("#inventarioPorVendedorDIV").toggle();
+        });
+        $("#clickDownInvetarioPorPuntoVenta").click(function() { 
+            $("#inventarioPorPuntoVentaDiv").toggle();
+        });
+        $("#clickDownHistorialCargasVendedor").click(function() { 
+            $("#cargasInventarioHistorialVendedor").toggle();
+        });
+        $("#clickDownHistorialCargasPuntoVenta").click(function() { 
+            $("#historialCargasPuntoVentaDIV").toggle();
+        });
+        $("#clickDownTodayPV").click(function() { 
+            $("#cargasHoyPVDIV").toggle();
+        });
+    </script>
+
+
+  </body>
+</html>
+
+{% endblock %}

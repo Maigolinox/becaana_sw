@@ -1,0 +1,49 @@
+
+{% extends "base.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% block head_title %}
+<br><br><br><br><br><br>
+    {% trans "Sign In" %} <br>
+{% endblock head_title %}
+{% block content %}
+
+    {% element h1 %}
+    </b>
+        {% trans "Sign In" %}. Mi vista <br>
+    {% endelement %}
+    <!-- <p style="text-align: center;"><br><br>
+        {% blocktrans %}Sino has creado una cuenta entonces, 
+    <a href="{{ signup_url }}">registrate</a> primero.{% endblocktrans %}
+    </p> --> <p><span></span></p>
+        
+    <div class="container" style="text-align: center;">
+        <div class="row justify-content-center" style="text-align: center;">
+            <div class="col-sm">
+                {% url 'account_login' as login_url %} <br><br><br><br><br>
+    {% element form form=form method="post" action=login_url tags="entrance,login" %}
+        {% slot body %}
+            {% csrf_token %}
+            {% element fields form=form unlabeled=True %}
+            {% endelement %}
+            {% if redirect_field_value %}
+                <input type="hidden"
+                       name="{{ redirect_field_name }}"
+                       value="{{ redirect_field_value }}" />
+            {% endif %}
+        {% endslot %}
+        {% slot actions %}
+            {% element button type="submit" tags="prominent,login" %}
+            
+                <span style="text-align: center;">{% trans "Sign In" %}</span>
+            {% endelement %}
+        {% endslot %}
+    {% endelement %}
+    {% if SOCIALACCOUNT_ENABLED %}
+        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
+    {% endif %}
+            </div>
+        </div>
+    </div>
+    
+{% endblock content %}

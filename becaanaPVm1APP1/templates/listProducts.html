@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %} {% load account %}
+
+
+{% block content %} 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BECAANA Dulces</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <br><br><br><br><br>
+            </div>
+        </div>
+    </div>
+    <br><br>
+            <div class="col-sm" style="text-align: center;">
+                <div class="titlepage text_align_center">
+                    <br>
+                    <h2> Ver lista de Productos.</h2>
+                    <div class="row">
+                        <div class="col-sm"></div>
+                        <div class="col-sm d-flex flex-row-reverse"><a href="{% url 'products' %}">
+                          <button class="btn">Regresar a Menú de Puntos de Venta <img src="{% static 'images/candy.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse;" alt="Regresar a Menú de Puntos de Venta"></button>
+                        </a></div>
+                        <div class="col-sm">
+                          <a href="{% url 'dashboard' %}">
+                            <button class="btn">Regresar a Menú Principal <img src="{% static 'images/menuPrincipal.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse; " alt="Regresar a Menú Principal"></button>
+                          </a>
+                          
+                        </div>
+                      </div>
+                </div>    
+
+
+                {% for elemento in articulos %}
+
+                <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                    <a href="#" style="display: block;"><img src="{{elemento.urlArticulo}}" alt="Product" width="200px" height="200px" style="margin-top: 10px;"></a>
+                  <span>
+                    <a href="#" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                      <strong>{{elemento.nombreArticulo}}</strong>
+                    </a>
+                  </span>
+                </div>
+                
+                {% endfor %}
+
+
+
+            </div>
+            
+            
+    
+</body>
+</html>
+
+{% endblock %}

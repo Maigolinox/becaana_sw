@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones con Stock</title>
+</head>
+<body>
+    <br><br><br><br><br><br><br>
+    <div class="col-sm" style="text-align: center;">
+        <div class="titlepage text_align_center">
+            <br>
+            <h2> Selecciona la operación que quieras hacer</h2>
+        </div>    
+        
+    </div>
+    <div class="container">
+        <div class="row row d-flex justify-content-center" style="margin-top: 10px;">
+            <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; ">
+                <a href="{% url 'puntosVenta' %}" style="display: block;"><img src="{% static 'images/registerProduct.png' %}" alt="Agregar nuevo dulce." width="200px" height="200px" style="margin-top: 10px;"></a>
+                <span>
+                    <a href="{% url 'puntosVenta' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                    <strong>Registro, lista y edición de Stock de Puntos de Venta</strong>
+                </a>
+            </span>
+        </div>
+        
+        <!-- <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'addStock' %}" style="display: block;"><img src="{% static 'images/stock.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+          <span>
+            <a href="addStock" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+              <strong>Editar stock de los productos</strong>
+            </a>
+          </span>
+        </div> -->
+        
+        <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+            <a href="{% url 'sellers' %}" style="display: block;"><img src="{% static 'images/listStock.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+          <span>
+            <a href="{% url 'sellers' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+              <strong>Registro, lista y edición de stock de Vendedores</strong>
+            </a>
+          </span>
+        </div>
+        <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+          <a href="{% url 'reporteInventario' %}" style="display: block;"><img src="{% static 'images/reprot.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+        <span>
+          <a href="{% url 'reporteInventario' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+            <strong>Reporte de Inventario</strong>
+          </a>
+        </span>
+      </div>
+      <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+        <a href="{% url 'addStockMatrix' %}" style="display: block;"><img src="{% static 'images/PV.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+      <span>
+        <a href="{% url 'addStockMatrix' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+          <strong>Editar Stock de Matriz</strong>
+        </a>
+      </span>
+    </div>        
+        <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+          <a href="{% url 'dashboard' %}" style="display: block;"><img src="{% static 'images/menuPrincipal.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+          <span><a href="{% url 'dashboard' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br> <strong>Regresar a Menú principal</strong> </a></span>
+      </div>
+    </div>
+    
+</body>
+</html>
+
+{% endblock%}

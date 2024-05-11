@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BECAANA Editar Costo de Vendedor</title>
+</head>
+<body>
+    <div class="container">
+        <br><br><br><br><br><br><br><br>
+        <div class="row">
+            <div class="col-sm">
+                <form method="post" action="#" class="main_form">
+                    {% csrf_token %}
+                    {{form}}
+                    
+                    <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                        <button class="send_btn text-center" style="margin-bottom: 20px;">Guardar</button><br>
+                    </div>
+                    <div class="col-sm">
+                      <p></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}

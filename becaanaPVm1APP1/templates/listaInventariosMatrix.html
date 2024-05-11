@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mathfilters %}
+<!-- Page title  -->
+{% block title %}Sellers{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<!-- Datatables -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+<!-- Page Heading -->
+{% block heading %}Sellers{% endblock heading %}
+
+<!-- Page content  -->
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inventarios Vendedores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+    
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    
+        <!-- Add DataTables JavaScript -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" 
+      href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" 
+      src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+    
+</head>
+<body>
+    <br><br><br><br><br><br><br><br><br>
+    <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <form method="post" action="#" class="main_form">
+              {% csrf_token %}
+              
+              {{form}}
+              <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                  <button class="send_btn text-center" style="margin-bottom: 20px;">Guardar</button><br>
+              </div>
+              <div class="col-sm">
+                <p></p>
+              </div>
+          </form>
+          </div>
+        </div>
+        <div class="titlepage text_align_center">
+          <br />
+          <h2>Stock Actual de Usuarios Matrices</h2>
+          <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|floatformat:"2"}} MXN </h5>
+          <h5>Dinero al vender al público: $ {{total_public_price|floatformat:"2"}} MXN </h5>
+          <h5>Ganancia Total: $ {{ gananciaTotal |floatformat:"2"}}</h5>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <table id="stockTable" class="table table-striped">
+              <thead>
+                <tr>
+                  <!-- <th scope="col">Nombre del Vendedor</th> -->
+                  <th scope="col">Producto</th>
+                  <th scope="col">Stock Actual</th>
+                  <th scope="col">Costo</th>
+                  <th scope="col">Precio Venta al Público</th>
+                  <th scope="col">Precio Venta Vendedor Reparto</th>
+                  <th scope="col">Precio Venta Vendedor Externo</th>
+                  <th scope="col">Umbral Stock Minimo</th>
+                  <th scope="col">Umbral Stock Maximo</th>
+                  <th scope="col">Ganancia Unitaria</th>
+                  <th scope="col">Ganancia Total</th>
+                  <th scope="col">Opciones</th>
+  
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for elemento in lista %}
+
+                <tr>
+                  <td>{{elemento.nombreArticulo}}</td>
+                  <td>{{elemento.cantidad}}</td>
+                  <td>${{elemento.costo|floatformat:"2"}}</td>
+                  <td>${{elemento.precioVentaPublico|floatformat:"2"}}</td>
+                  <td>${{elemento.precioVentaVendedorReparto|floatformat:"2"}}</td>
+                  <td>${{elemento.precioVentaVendedorExterno|floatformat:"2"}}</td>
+                  <td>{{elemento.cantidadMinima|floatformat:"2"}}</td>
+                  <td>{{elemento.cantidadMaxima|floatformat:"2"}}</td>
+                  <td>${{elemento.precioVentaPublico|sub:elemento.costo|floatformat:"2"}}</td>
+                  <td>${{elemento.precioVentaPublico|sub:elemento.costo|mul:elemento.cantidad|floatformat:"2"}}</td>
+                  <td><a href="{% url 'editSingleProduct' elemento.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteProduct' elemento.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+  
+             <br>
+            
+  
+          </div>
+        </div>
+      </div>
+      <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#stockTable').dataTable();
+            });
+        })(jQuery);
+    </script>
+    
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %} {% load account %}
+
+
+{% block content %} 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Inventario</title>
+</head>
+<body>
+    <div class="container">
+        <br><br><br><br><br>
+        <div class="row">
+            <h1>Cargar mi Inventario</h1>
+        </div>
+        <div class="row">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Guardar Inventario</button>
+            </form>
+        </div>
+
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

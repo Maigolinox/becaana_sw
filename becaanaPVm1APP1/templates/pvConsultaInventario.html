@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+<!-- Page title  -->
+{% block title %}Sellers{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<!-- Datatables -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+<!-- Page Heading -->
+{% block heading %}Sellers{% endblock heading %}
+
+<!-- Page content  -->
+{% block content %}
+{% load mathfilters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inventarios Vendedores</title>
+</head>
+<body>
+    <br><br><br><br><br><br><br><br><br>
+    <div class="container">
+        <div class="titlepage text_align_center">
+          <br />
+          <h2>Stock Actual de Punto de Venta</h2>
+          <h4>Valor actual del producto que tienes en stock: ${{total|floatformat:2}} MXN</h4>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Nombre del Vendedor</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Stock Actual</th>
+                  <th scope="col">Precio de Venta al Público</th>
+                  <th scope="col">Valor Total</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for elemento in lista %}
+
+                <tr>
+                  <td>{{elemento.seller_id}}</td>
+                  <td>{{elemento.product_id}}</td>
+                  <td>{{elemento.qty}}</td>
+                  <td>${{elemento.precioVentaVendedor|floatformat:"2"}}</td>
+                  <td> ${{ elemento.precioVentaVendedor|mul:elemento.qty|floatformat:"2"}} </td>
+                  <!-- <td>{{elemento.costo}}</td> -->
+                </tr>
+                {% endfor %}
+              </tbody>
+  
+             <br>
+            
+  
+          </div>
+        </div>
+      </div>
+  
+    
+</body>
+</html>
+
+{% endblock %}

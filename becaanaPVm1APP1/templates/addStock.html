@@ -1,0 +1,128 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BECAANA Dulces</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+    <!-- Add DataTables JavaScript -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" 
+  href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" 
+  src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm"><br /><br /><br /><br /><br /></div>
+      </div>
+    </div>
+    <br /><br />
+    <div class="col-sm" style="text-align: center">
+      <div class="titlepage text_align_center">
+        <br />
+        <h2>Rellena los siguientes campos con la información requerida</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm">
+        
+      </div>
+      <div class="col-sm d-flex flex-row-reverse"><a href="{% url 'stock' %}">
+        <button class="btn">Regresar a Menú de Stock <img src="{% static 'images/registerProduct.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse; " alt="Regresar a Menú Principal"></button>
+      </a></div>
+      <div class="col-sm">
+        <a href="{% url 'dashboard' %}">
+          <button class="btn">Regresar a Menú Principal <img src="{% static 'images/menuPrincipal.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse; " alt="Regresar a Menú Principal"></button>
+        </a>
+        
+      </div>
+    </div>
+
+
+    <div class="container" >
+      <div class="row">
+        <div class="col-sm">
+          <form method="post" action="#" class="main_form">
+            {% csrf_token %}
+            
+            {{form}}
+            <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                <button class="send_btn text-center" style="margin-bottom: 20px;">Guardar</button><br>
+            </div>
+            <div class="col-sm">
+              <p></p>
+            </div>
+        </form>
+        </div>
+      </div>
+      <div class="titlepage text_align_center">
+        <br />
+        <h2>Stock Actual</h2>
+
+        <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|floatformat:"2"}} MXN </h5>
+        <h5>Dinero al vender al público: $ {{total_public_price|floatformat:"2"}} MXN </h5>
+        <h5>Ganancia Total: $ {{ gananciaTotal |floatformat:"2"}}</h5>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <table id="stockTable"  class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Nombre de la Sucursal</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Stock Actual</th>
+                <th scope="col">Costo Unitario</th>
+                <th scope="col">Precio Venta</th>
+                <th scope="col">Ganancia Unitaria</th>
+                <th scope="col">Ganancia Total</th>
+                <th scope="col">Opciones</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              {% for elemento in lista %}
+              <tr>
+                <td>{{elemento.sucursal}}</td>
+                <td>{{elemento.producto}}</td>
+                <td>{{elemento.stock}}</td>
+                <td>${{elemento.producto.costo|floatformat:"2"}}</td>
+                <td>${{elemento.producto.precioVentaPublico|floatformat:"2"}}</td>
+                <td>${{elemento.gananciaUnitaria|floatformat:"2"}}</td>
+                <td>${{elemento.ganancia|floatformat:"2"}}</td>
+                <td><a href="{% url 'updateStock' elemento.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'eliminarStockPV' elemento.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Editar Producto"></a></td>
+                
+              </tr>
+              {% endfor %}
+            </tbody>
+
+           <br>
+          
+
+        </div>
+      </div>
+    </div>
+    
+  
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#stockTable').dataTable();
+        });
+    })(jQuery);
+</script>
+  </body>
+  
+  
+</html>
+
+{% endblock %}

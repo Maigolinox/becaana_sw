@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BECAANA Editar Stock</title>
+</head>
+<body>
+    <div class="container">
+        <br><br><br><br><br><br><br><br>
+        <div class="row">
+            <div class="col-sm">
+                <form method="post" class="main_form">
+                    {% csrf_token %}
+                    <label for="sucursal">Nombre de la Sucursal: </label>
+                    <input type="text" class="contactus" name="sucursal" id="sucursal" readonly value="{{currentStock.sucursal}}" disabled>
+                    <label for="product">Nombre del producto: </label>
+                    <input type="text" class="contactus" name="product" id="product" value="{{currentStock.producto}}" readonly disabled>
+                    <label for="stock">Cantidad: </label>
+                    <input type="number" class="contactus" name="stock" id="product" value="{{currentStock.stock|stringformat:".2f"}}" step="0.5" >
+                    
+                    
+                    <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                            
+                        <button class="send_btn text-center" >Guardar</button>
+                        </div>
+                        <div class="col-sm">
+
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+{% endblock %}

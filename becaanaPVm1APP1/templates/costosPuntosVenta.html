@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+<!-- Page title  -->
+{% block title %}Sellers{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<!-- Datatables -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+<!-- Page Heading -->
+{% block heading %}Sellers{% endblock heading %}
+
+<!-- Page content  -->
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inventarios Vendedores</title>
+</head>
+<body>
+    <br><br><br><br><br><br><br><br><br>
+    <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <form method="post" action="#" class="main_form">
+              {% csrf_token %}
+              
+              {{form}}
+              <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                  <button class="send_btn text-center" style="margin-bottom: 20px;">Guardar</button><br>
+              </div>
+              <div class="col-sm">
+                <p></p>
+              </div>
+          </form>
+          </div>
+        </div>
+        <div class="titlepage text_align_center">
+          <br />
+          <h2>Costos para la empresa</h2>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Nombre del Punto de Venta</th>
+                  <th scope="col">Gasto en salarios</th>
+                  <th scope="col">Gasto en adquisición de mercancías</th>
+                  <th scope="col">Otros gastos</th>
+                  <th scope="col">Opciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for elemento in lista %}
+
+                <tr>
+                  <td>{{elemento.fecha}}</td>
+                  <td>{{elemento.puntoVenta}}</td>
+                  <td>{{elemento.salarios}}</td>
+                  <td>{{elemento.productos}}</td>
+                  <td>{{elemento.otros}}</td>
+                  <td><a href="{% url 'updatePuntoVenta' elemento.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deletePuntoVenta' elemento.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Editar Producto"></a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+  
+             <br>
+            
+  
+          </div>
+        </div>
+      </div>
+  
+    
+</body>
+</html>
+
+{% endblock %}

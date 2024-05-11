@@ -1,0 +1,89 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BECAANA Dulces</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm"><br /><br /><br /> <br></div>
+      </div>
+    </div>
+    <br /><br />
+    <div class="col-sm" style="text-align: center">
+      <div class="titlepage text_align_center">
+        <br />
+        <h2>Rellena los siguientes campos con la información requerida.</h2>
+        
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+              <form method="post" action="#" class="main_form">
+                {% csrf_token %}
+                <form id="request" class="main_form" method="post" >
+                    <div class="row">
+                       <div class="col-md-12">
+                        <label for="nombreArticulo"> Escribe el nombre del Producto: </label><input class="contactus" placeholder="Nombre del Producto" type="text" name="nombreArticulo" value="{{currentInfoProduct.nombreArticulo}}">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="unidad"> Selecciona el tipo de presentación: </label><input class="contactus" placeholder="Presentación del producto" type="text" name="unidad" value="{{currentInfoProduct.unidad}}">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="descripcionArticulo"> Descripción del producto: </label><input class="contactus" placeholder="Descripción del producto" type="text" name="descripcionArticulo"value="{{currentInfoProduct.descripcionArticulo}}">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="costo"> ¿Cuánto te cuesta? </label><input class="contactus" placeholder="Costo para BECAANA" type="number" id="costo" name="costo" value="{{currentInfoProduct.costo|stringformat:".2f"}}" step="0.01">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="precioVentaPublico"> ¿Cuál es el precio de venta al público? </label><input class="contactus" placeholder="Precio al público" type="number" id="precioVentaPublico" name="precioVentaPublico" value="{{currentInfoProduct.precioVentaPublico|stringformat:".2f" }}" step="0.5" >
+                       </div>
+                       <div class="col-md-12">
+                        <label for="precioVentaVendedorReparto"> ¿Cuál es el precio de venta al vendedor de reparto? </label><input class="contactus" placeholder="Precio de vendedor de reparto" type="number" id="precioVentaVendedorReparto" name="precioVentaVendedorReparto" value="{{currentInfoProduct.precioVentaVendedorReparto|stringformat:".2f" }}" step="0.01" >
+                       </div>
+                       <div class="col-md-12">
+                        <label for="precioVentaVendedorReparto"> ¿Cuál es el precio de venta al vendedor externo? </label><input class="contactus" placeholder="Precio de vendedor de reparto" type="number" id="precioVentaVendedorExterno" name="precioVentaVendedorExterno" value="{{currentInfoProduct.precioVentaVendedorExterno|stringformat:".2f" }}" step="0.01" >
+                       </div>
+                       <div class="col-md-12">
+                        <label for="cantidadMinima"> ¿Cuál es la cantidad mínima que quieres tener en stock? </label><input class="contactus" placeholder="Cantidad mínima en stock" type="number" name="cantidadMinima" id="cantidadMinima" value="{{currentInfoProduct.cantidadMinima|stringformat:".2f"}}" step="0.5">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="cantidadMaxima"> ¿Cuál es la cantidad máxima que quieres tener en stock? </label><input class="contactus" placeholder="Cantidad máxima en stock" type="number" id="cantidadMaxima" name="cantidadMaxima" value="{{currentInfoProduct.cantidadMaxima|stringformat:".2f"}}" step="0.5">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="cantidadStockMaestro"> ¿Cuál es la cantidad que tiene el stock maestro? </label><input class="contactus" placeholder="Cantidad máxima en stock" type="number" id="cantidadMaxima" name="cantidadStockMaestro" value="{{currentInfoProduct.cantidad|stringformat:".2f"}}" step="0.5">
+                       </div>
+                       <div class="col-md-12">
+                        <label for="urlArticulo"> URL de la imagen del producto: </label><input class="contactus" placeholder="URL de la imagen del producto" type="char" id="urlArticulo" name="urlArticulo" value="{{currentInfoProduct.urlArticulo}}">
+                       </div>
+                       <div class="col-sm"></div>
+                       <div class="col-sm d-flex justify-content-center" style="align-items: center;">
+                        
+                        <button class="send_btn text-center" style="margin-bottom: 20px;">Guardar</button><br>
+                        </div>
+                        <div class="col-sm">
+                          <p></p>
+                        </div>
+                    </div>
+                    <div class="row"><p></p></div>
+                    
+                 </form>
+            </form> 
+            <div class="row">
+              <div class="col-sm" style="text-align: center;"><div class="col-sm"> <br>
+                  {% if mensaje|length > 0 %} {{mensaje}}. {% else %}{% endif %}
+                 </div></div>
+          </div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
+
+{% endblock %}

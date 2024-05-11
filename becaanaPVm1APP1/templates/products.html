@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %} {% load account %}
+
+
+{% block content %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BECAANA Dulces</title>
+</head>
+<body>
+    <div class="container">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <br><br><br><br><br>
+                </div>
+            </div>
+        </div>
+        <!-- OPCIONES DE PRODUCTOS -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm" style="text-align: right;">
+                    <br><br>
+                </div>
+                <div class="col-sm"></div>
+                <div class="col-sm" style="text-align: right;"></div>
+                <div class="col-sm">
+                    <br><br>Usuario: {% user_display user %}.
+                </div>
+            </div>
+            <div class="row">
+            <br><br>
+            <div class="col-sm" style="text-align: center;">
+                <div class="titlepage text_align_center">
+                    <br>
+                    <h2> Elige una opción</h2>
+                </div>    
+            </div>
+            </div>
+            <div class="row row d-flex justify-content-center" style="margin-top: 10px;">
+    
+                <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px; ">
+                    <a href="{% url 'addProduct' %}" style="display: block;"><img src="{% static 'images/candy.png' %}" alt="Agregar nuevo dulce." width="200px" height="200px" style="margin-top: 10px;"></a>
+                    <span>
+                        <a href="{% url 'addProduct' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                        <strong>Agregar Producto</strong>
+                    </a>
+                </span>
+            </div>
+            
+            <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                <a href="{% url 'editProducts' %}" style="display: block;"><img src="{% static 'images/editProduct.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+              <span>
+                <a href="#" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                  <strong>Editar información de los productos</strong>
+                </a>
+              </span>
+            </div>
+            
+            <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                <a href="{% url 'listProducts' %}" style="display: block;"><img src="{% static 'images/stock.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+              <span>
+                <a href="#" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                  <strong>Lista de productos</strong>
+                </a>
+              </span>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                <a href="{% url 'dashboard' %}" style="display: block;"><img src="{% static 'images/menuPrincipal.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                <span><a href="{% url 'dashboard' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br> <strong>Regresar a Menú principal</strong> </a></span>
+            </div>
+            
+
+
+
+    </div>
+    
+</body>
+</html>
+
+{% endblock %}

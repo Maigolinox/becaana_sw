@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+<!-- Page title  -->
+{% block title %}Sellers{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<!-- Datatables -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+<!-- Page Heading -->
+{% block heading %}Sellers{% endblock heading %}
+
+<!-- Page content  -->
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inventarios Vendedores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+    
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    
+        <!-- Add DataTables JavaScript -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" 
+      href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" 
+      src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+    
+</head>
+<body>
+  <br><br><br><br><br><br><br><br><br>
+  <div class="titlepage text_align_center">
+  <h2>Historial de cargas de inventario</h2>
+</div>
+<div class="row d-flex align-items-center">
+  <div class="col-sm"><span></span></div>
+  <div class="col-sm align-items-center" align="center">
+    <a class="btn" style="align-items: center; background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+  background-image: -o-linear-gradient(top, #3498db, #2980b9);
+  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;" onclick="window.print();return false;">Imprimir historial</a>
+  </div>
+  <div class="col-sm"><span></span></div>
+</div>
+</div>
+<div class="container">
+  <div class="row">
+    <table id="tabla_inventario"class="table table-striped">
+      <thead>
+          <tr>
+              <th>Usuario</th>
+              <th>Nombre Producto</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for item in registro %}
+          <tr>
+              <td>{{ item.usuario }}</td>
+              <td>{{ item.nombre_producto }}</td>
+              <td>{{ item.cantidad }}</td>
+              <td>{{ item.fecha }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  </div>
+</div>
+
+<script>
+(function($) {
+            $(document).ready(function() {
+                $('#tabla_inventario').DataTable();
+            });
+        })(jQuery);
+</script>
+
+</body>
+</html>
+
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% load static %} {% load account %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BECAANA Dulces</title>
+  </head>
+
+
+
+  
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm"><br /><br /><br /> <br></div>
+      </div>
+    </div>
+    <br /><br />
+    <div class="col-sm" style="text-align: center">
+      <div class="titlepage text_align_center">
+        <br />
+        <h2>Editar tipos de usuarios</h2>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <!-- <table>
+            <thead>
+              <tr>
+                <th>Nombre de Usuario</th>
+                <th>¿Es super usuario?</th>
+                <th>¿Es Punto de Venta?</th>
+                <th>¿Es Vendedor?</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for elemento in listaPermisos %}
+              <tr>
+                <td>{{ elemento.username }}</td>
+                <td>{{ elemento.is_superuser }}</td>
+                <td>{{ elemento.is_staff }}</td>
+                <td>{{ elemento.is_active }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table> -->
+          <form method="POST" action="">
+            {% csrf_token %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre de Usuario</th>
+                  <th>¿Es Administrador?</th>
+                  <th>¿Es Punto de Venta?</th>
+                  <th>¿La cuenta está activa y es vendedor?</th>
+                  <th>¿Es vendedor externo?</th>
+                  <th>¿Es vendedor de matriz?</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in listaPermisos %}
+                <tr>
+                  <td>{{ user.username }}</td>
+                  <td>
+                    <input type="checkbox" name="permissions_superuser_{{ user.user_id }}" {% if user.is_superuser %} checked {% endif %}>
+                  </td>
+                  <td>
+                    <input type="checkbox" name="permissions_staff_{{ user.user_id }}" {% if user.is_staff %} checked {% endif %}>
+                  </td>
+                  <td>
+                    <input type="checkbox" name="permissions_active_{{ user.user_id }}" {% if user.is_active %} checked {% endif %}>
+                  </td>
+                  <td>
+                    
+                    <input type="checkbox" name="permissions_external_{{ user.user_id }}" {% if user.is_externalSeller %} checked {% endif %}>
+                  </td>
+                  <td>
+                    
+                    <input type="checkbox" name="permissions_matrix_{{ user.user_id }}" {% if user.is_matrixSeller %} checked {% endif %}>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="col-sm-12 text-center"> <!-- Use 'col-sm-12' to make it full-width on small screens and 'text-center' to center the content -->
+              <button type="submit" class="btn btn-primary">Guardar cambios</button> <!-- Add 'btn' and 'btn-primary' classes for button styling -->
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>  
+  </body>
+
+</html>
+
+{% endblock %}
