@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from django.http import HttpResponseRedirect,HttpResponse
+from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
 from django.urls import reverse
 from .models import puntoVenta,articulosModel,stockPuntoVenta,Sales,salesItems,Seller,sellerInventory,sellerSalesItems,sellerSales,costosEmpresaVendedoresModel,costosEmpresaPuntosVentaModel,pvInventory,salesItemsPV,RegistroInventarioVendedores,RegistroInventarioPuntoVenta, usersPermission
 from .forms import InventarioForm,inventarioVendedorForm,InventoryFormPV,costosPuntosVentaForm,costosVendedoresForm,inventarioPuntoVentaForm,inventarioCargaVendedorForm,inventarioCargaPVForm,InventoryFormSeller,InventoryMatrix
@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
 import itertools
+
+from django.views.decorators.csrf import csrf_exempt
+
 
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -28,27 +31,50 @@ from itertools import chain
 
 
 
+def storeData(request):
+    productos = articulosModel.objects.all()
+    if request.method == 'POST':
+        print(list(request.POST.items()))
+        for producto in productos:
+            print("producto: ",producto)
+            cantidad = int(request.POST.get('cantidad_' + str(producto.id), 0))
+            print("cantidad: ",cantidad)
+            prod=articulosModel.objects.all().filter(id=producto.id).get()
+            precioventaVendedorReparto=prod.precioVentaVendedorReparto
+            precioVentaVendedorExterno=prod.precioVentaVendedorExterno
+            costo=prod.costo
+            
+            
+            if cantidad > 0:
+                try:
+                    producto_seleccionado,created = sellerInventory.objects.get_or_create(seller_id_id=request.user.id,product_id_id=producto.id)
+                    if not created:
+                        producto_seleccionado.qty+=cantidad
+                    else:
+                        producto_seleccionado.qty=cantidad
 
+                    prod.cantidad=prod.cantidad-cantidad
+                    prod.save()
+                    producto_seleccionado.save()
+                    RegistroInventarioVendedores.objects.create(
+                        usuario_id=request.user.id,
+                        nombre_producto=prod.nombreArticulo,  
+                        cantidad=cantidad
+                        )
+                except sellerInventory.DoesNotExist:
+                    producto_seleccionado = sellerInventory(nombreArticulo=producto, qty=cantidad,precioVentaVendedorExterno=precioVentaVendedorExterno,seller_id_id=request.user.id,product_id_id=producto.id,precioOriginal=costo,precioVentaVendedor=precioventaVendedorReparto)
+                    prod.cantidad=prod.cantidad-cantidad
+                    prod.save()
+                    producto_seleccionado.save()
+                    RegistroInventarioVendedores.objects.create(
+                        usuario_id=request.user.id,
+                        nombre_producto=prod.nombreArticulo,  
+                        cantidad=cantidad
+                        )
+        return redirect('cargarInventarioVendedores')
+    return render(request, 'listaInventarioVendedor.html', {'productos': productos})
 # Create your views here.
-
-'''
-VISTAS / FUNCIONALIDADES TERMINADAS:
-1. home, para el landing page principal
-2. dashboard, para el dashboard con todas las opciones
-3. products, para agregar productos al catalogo de productos
-4. addPV, para agregar un punto de venta
-5. PV, para menu de puntos de venta
-6. deletePV, para eliminar el punto de venta
-7. listPVs, para listar los puntos de venta
-8. editPV, para editar el punto de venta y su información individual
-9. editPVs, para vista de edicion de puntos de ventqa
-10. editSingleProduct, para editar un producto con su información
-11. deleteProduct, para eliminar productos
-12. editProducts, para vista que redirige a la edición de todos los productos
-13. listProducts, para ver los productos en mosaico
-14. updateStock, para actualizar el stock de cada producto en cada tienda
-15. stock, menu de stock
-'''
+    
 def addMatrixStock(request):
     if request.user.is_authenticated:
         lista = articulosModel.objects.all()
@@ -1623,7 +1649,7 @@ def posSeller(request):
         return render(request,'forbiden.html')
 
 
-def save_posSeller(request):
+def save_posSeller(request):##EJEMPLO
     resp = {'status':'failed','msg':''}
     data = request.POST
     ##print(data)
@@ -2360,6 +2386,7 @@ def pvConsultaInventario(request):
         return render(request,'forbiden.html')
 
 
+
 def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARIO VENDEDORES
     if request.user.is_authenticated:
         inventarioVendedor = get_object_or_404(Seller, pk=pk) if pk else None
@@ -2373,6 +2400,14 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
             item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
             item.ganancia = item.precio_publico_total - item.costo_total
             item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
+
+        products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
+        product_json = []
+        ##print(products)
+        for product in products:
+            ##print(product.product_id_id)
+            ##print(product)            
+            product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorExterno),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
 
         total_public_price = sum(item.precio_publico_total for item in lista)
         total_cost = sum(item.qty * item.product_id.costo for item in lista)
@@ -2415,7 +2450,7 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
                 return redirect('cargarInventarioVendedores')
         else:
             form = inventarioCargaVendedorForm(instance=inventarioVendedor)
-            return render(request, 'listaInventarioVendedor.html', {'form': form, 'inventario': inventarioVendedor, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro})
+            return render(request, 'listaInventarioVendedor.html', {'form': form, 'inventario': inventarioVendedor, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro,          'product_json' : json.dumps(product_json),'products':products    })
 
     else:
         return render(request, 'forbiden.html')
