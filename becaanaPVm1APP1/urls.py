@@ -80,6 +80,7 @@ urlpatterns=[
     path('deleteRegisterSellers/<int:id>',views.deleteRegisterSellers,name="deleteRegisterSellers"),
     path('deleteRegisterPV/<int:id>',views.deleteRegisterPV,name="deleteRegisterPV"),
     path('addStockMatrix/',views.addMatrixStock,name="addStockMatrix"),
+    path('storeData/',views.storeData,name="storeData")
 
 
 
