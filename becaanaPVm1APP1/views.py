@@ -30,6 +30,38 @@ from itertools import chain
 
 # Create your views here.
 
+def receiptChargeSellerExternal(request):
+    if request.user.is_authenticated:
+        # print(request.GET)
+        id = request.GET.get('id')
+        transaction = {'date_added':timezone.now()}
+
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        
+        total_value = 0
+        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        for elemento in ItemList:
+            # print(elemento.product_id)
+            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
+            # print(articulo.precioVentaVendedorReparto)
+            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorExterno)
+            elemento.nombreArticulo=articulo.nombreArticulo
+            
+        
+        context = {
+            "total":total_value,
+            # "total_discounts":total_discounts,
+            "transaction" : transaction,
+            "salesItems" : ItemList,
+            'nombreUsuario':nombreUsuario,
+        }
+
+        return render(request, 'receiptCharge.html',context)
+    else:
+        return render(request,'forbiden.html')
+
+
 def receiptChargeSeller(request):
     if request.user.is_authenticated:
         # print(request.GET)
@@ -2536,9 +2568,17 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
 
         for item in lista:
             item.costo_total = item.qty * item.product_id.costo
-            item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
+            item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorExterno
             item.ganancia = item.precio_publico_total - item.costo_total
-            item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
+            item.gananciaUnitaria = item.product_id.precioVentaVendedorExterno - item.product_id.costo
+
+        products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
+        product_json = []
+        ##print(products)
+        for product in products:
+            ##print(product.product_id_id)
+            ##print(product)            
+            product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorExterno),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
 
         total_public_price = sum(item.precio_publico_total for item in lista)
         total_cost = sum(item.qty * item.product_id.costo for item in lista)
@@ -2550,7 +2590,6 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
                 with transaction.atomic():
                     # Asigna la instancia de usuario actual al campo seller_id antes de guardar el formulario
                     form.instance.seller_id = request.user
-                    
 
                     try:
                         producto_inventario = sellerInventory.objects.get(
@@ -2582,7 +2621,7 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
                 return redirect('cargarInventarioVendedores')
         else:
             form = inventarioCargaVendedorForm(instance=inventarioVendedor)
-            return render(request, 'listaInventarioVendedor.html', {'form': form, 'inventario': inventarioVendedor, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro})
+            return render(request, 'listaInventarioVendedorExterno.html', {'form': form, 'inventario': inventarioVendedor, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro,          'product_json' : json.dumps(product_json),'products':products    })
 
     else:
         return render(request, 'forbiden.html')

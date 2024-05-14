@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% load static %}
+<!-- Page title  -->
+{% block title %}Sellers{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<!-- Datatables -->
+<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
+<link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+{% endblock stylesheets %}
+
+<!-- Page Heading -->
+{% block heading %}Sellers{% endblock heading %}
+
+<!-- Page content  -->
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Inventarios Vendedores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+    
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    
+        <!-- Add DataTables JavaScript -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" 
+      href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" 
+      src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+      
+    
+</head>
+<body>
+    <br><br><br><br><br><br>
+    <!-- sección de carga -->
+    <div class="container">
+      
+      <div class="row">
+          <div class="col-sm"></div>
+          
+          <div class="col-sm  d-flex flex-row-reverse">
+            <a href="{% url 'dashboard' %}">
+              <button class="btn">Regresar a Menú Principal <img src="{% static 'images/menuPrincipal.png' %}" style="width: 40px; margin-left: 3px; flex-direction: row-reverse; " alt="Regresar a Menú Principal"></button>
+            </a>
+          </div>
+        </div>
+      <div class="row" id="noPrint">
+          <br><br>
+          <div class="col-sm" style="text-align: center;" >
+              <div class="titlepage text_align_center">
+                  <br>
+                  <h2>Registrar carga de inventario vendedor externo</h2>
+              </div>    
+          </div>
+      </div>
+      <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+          <div class="mdc-card">
+              <form action="" id="pos-form">
+                  <fieldset>
+                      <legend>Agregar Productos</legend>
+                      <div class="row align-items-end">
+                          <div class="col-lg-5 col-md-5 col-sm-12">
+                              <div class="form-group mb-3">
+                                  <label for="product-id">Selecciona el producto</label>
+                                  <select id="product-id" class="form-select form-select-sm">
+                                      <option value="" disabled selected></option>
+                                      {% for product in products %}
+                                          <option value="{{ product.id }}"  >{{ product }}</option>
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                              
+                          </div>
+                          <div class="col-lg-3 col-md-5 col-md-12">
+                            <div class="form-group mb-3">
+                                <label for="product-qty">Cantidad</label>
+                                <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1" max="">
+                            </div>
+                        </div>
+                          
+                          <div class="col-lg-4 col-md-2 col-md-12">
+                              <div class="form-group mb-3">
+                                  <button class="btn btn-light btn-sm bg-gradient border rounded-0 text-start" type="button" id="add_item"><i class="mdi mdi-plus"></i> Agregar Producto</button>
+                              </div>
+                          </div>
+      
+                      </div>
+                  </fieldset>
+                  <fieldset>
+                      <div class="d-flex w-100" id="POS-field">
+                          <div class="col-8 bg-gradient bg-light border h-100">
+                              <table class="table table-bordered">
+                                  <colgroup>
+                                      <col width="5%">
+                                      <col width="5%">
+                                      <col width="40%">
+                                      <col width="25%">
+                                      <col width="25%">
+                                  </colgroup>
+                                  <thead>
+                                      <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
+                                          <th class="py-1 px-2 text-center  text-light"></th>
+                                          <th class="py-1 px-2 text-center  text-light">Cantidad</th>
+                                          <th class="py-1 px-2 text-center  text-light">Producto</th>
+                                          <th class="py-1 px-2 text-center  text-light">Precio Individual*</th>
+                                          <th class="py-1 px-2 text-center  text-light">Total</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                  </tbody>
+                              </table>
+                          </div>
+                          <div class="col-4 bg-gradient bg-dark bg-opacity-50 border h-100">
+                              <div class="col-12 py-4 px-2">
+                                  <dl>
+                                      <dt class="h4 fw-bold text-light">Total Global</dt>
+                                      <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                                          <input type="hidden" name="grand_total" value="0">
+                                          <input type="hidden" name="tendered_amount" value="0">
+                                          <input type="hidden" name="amount_change" value="0">
+                                          <input type="hidden" name="grand_total" value="0">
+                                          <input type="hidden" name="grand_total" value="0">
+                                          <span class="h3 fw-bold" id="grand_total">0.00</span>
+                                      </dd>
+                                  </dl>
+                              </div>
+                          </div>
+                      </div>
+                  </fieldset>
+                  <div class="row">
+                      <div class="col-md-12 text-end">
+                          <button class="btn btn-primary btn-sm rounded-0" type="button" id="check_out"><i class="mdi mdi-save"></i> Cargar</button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+      </div>
+      <noscript id="item-clone">
+          <tr>
+              <td class="px-2 py-1 text-center">
+                  <button class="btn btn-sm btn-outline-danger rounded-0 rem-item" type="button"><i class="mdi mdi-close"></i></button>
+              </td>
+              <td class="px-2 py-1">
+                  <input type="hidden" name="product_id[]">
+                  <input type="hidden" name="general_id[]">
+                  <input type="hidden" name="price[]">
+                  <input type="number" name="qty[]" min="0" class="form-control form-control-sm rounded-0 text-center">
+              </td>
+              <td class="px-2 py-1 product_name text-end"></td>
+              
+              <td class="px-2 py-1 product_price text-end"></td>
+              <td class="px-2 py-1 product_total text-end"></td>
+          </tr>
+      </noscript> 
+
+  </div>
+    <!-- fin de sección de carga -->
+    <div class="container">
+        <br>
+        <div class="titlepage text_align_center">
+          <h2>Stock Actual</h2>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <table id="stockTable" class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Nombre del Vendedor</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Stock Actual</th>
+                  <th scope="col">Precio Venta Reparto</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for elemento in lista %}
+
+                <tr>
+                  <td>{{elemento.seller_id}}</td>
+                  <td>{{elemento.product_id}}</td>
+                  <td>{{elemento.qty}}</td>
+                  <td>${{elemento.product_id.precioVentaVendedorReparto|floatformat:"2"}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+  
+            </table>
+  
+          </div>
+        </div>
+        <div class="row" id="areaToPrint">
+          <div class="col-sm">
+            <div class=" text_align_center">
+              <br />
+              <h2>Lo que cargaste hoy: {{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}}) </h2>
+              <a href="#" style="-webkit-border-radius: 10;
+              -moz-border-radius: 10;
+              border-radius: 10px;
+              font-family: Arial;
+              color: #ffffff;
+              font-size: 20px;
+              background: #d98934;
+              padding: 10px 20px 10px 20px;
+              text-decoration: none;" class="send_btn text-center"  onclick="window.print()">Imprimir</a><br>
+            </div>
+            <table id="cargaTable" class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Nombre del Vendedor</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Cantidad</th>
+                  <th scope="col">Fecha</th>
+  
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in registro %}
+
+                <tr>
+                  <td>{{ item.usuario }}</td>
+                  <td>{{ item.nombre_producto }}</td>
+                  <td>{{ item.cantidad }}</td>
+                  <td>{{ item.fecha }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+  
+             <br>
+            </table>
+
+          </div>
+        </div>
+      </div>
+      <style>
+        @media only print {
+            footer, header,button,a, #stockTable_wrapper , .sidebar , .titlepage, .cargaForm,.mdc-card {
+                display:none;
+            }
+        }
+    </style>
+      <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#stockTable').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+      (function($) {
+          $(document).ready(function() {
+              $('#cargaTable').dataTable();
+          });
+      })(jQuery);
+  </script>
+    
+</body>
+</html>
+
+{% endblock %}
+
+{% block ScriptBlock %}
+
+
+        <script>
+            var product_json = '{{ product_json }}'
+            console.log(product_json)
+            if (product_json == "" || product_json == "{}") {
+                product_json = {}
+            } else {
+                product_json = product_json.replaceAll('&quot;', '"')
+                product_json = $.parseJSON(product_json)
+            }
+            var prod_arr = {}
+            if (Object.keys(product_json).length > 0) {
+                Object.keys(product_json).map(k => {
+                    prod_arr[product_json[k].id] = product_json[k]
+                })
+            }
+            console.log(product_json)
+        
+            function calc() {
+                var sub_total = 0;
+                var grand_total = 0;
+                $('#POS-field table tbody tr').each(function() {
+                    price = $(this).find('[name="price[]"]').val()
+                    qty = $(this).find('[name="qty[]"]').val()
+                    qty = qty > 0 ? qty : 0
+                    discounted_price = price;
+                    
+                    total = parseFloat(discounted_price) * parseFloat(qty)
+                    $(this).find('.product_total').text(parseFloat(total))
+                    sub_total += parseFloat(total)
+                })
+                //sub_total= sub_total+tax_amount;
+                tax_amount=0;
+                $('#grand_total').text(parseFloat(sub_total+tax_amount).toFixed(2))
+                $('[name="grand_total"]').val(parseFloat(sub_total+tax_amount).toFixed(2))
+                $('#sub_total').text(parseFloat(sub_total))
+                $('[name="sub_total"]').val(parseFloat(sub_total))
+            }
+            $(function() {
+                $('#product-id').select2({
+                    placeholder: "Por favor elige un producto",
+                    width: '100%'
+                })
+                $('#add_item').click(function(event) {
+                event.preventDefault();
+                    
+                    var id = $('#product-id').val()
+                    console.log(id)
+                    var qty = $('#product-qty').val()
+                    var general_id=$('#general-id').val()//yo
+                    console.log(id, qty)
+                    if (id == '' || qty == '' || id == null || qty == null ) {
+                        alert("Cantidad, Producto y sucursal son datos necesarios")
+                        return false
+                    }
+                    console.log("data")
+                    console.log(prod_arr)
+                    if (!!prod_arr[id]) {
+                        if ($('#POS-field table tbody input[name="product_id[]"][value="' + id + '"]').length > 0) {
+                            alert('Artículo ya en la lista.')
+                            return false;
+                        }
+                        data = prod_arr[id]
+                        console.log(data)
+                        var tr = $($('noscript#item-clone').html()).clone()
+                        //tr.find('[name="sucursal_id[]"]').val(sucursal)
+                        tr.find('[name="qty[]"]').val(qty)
+                        tr.find('[name="product_id[]"]').val(id)
+                        tr.find('[name="general_id[]"]').val(general_id)
+                        tr.find('[name="price[]"]').val(data.price)
+                        tr.find('.product_name').text(data.name)
+                        tr.find('.product_price').text(parseFloat(data.price))
+                        tr.find('.product_total').text(parseFloat(data.price * qty))
+                        $('#POS-field table tbody').append(tr)
+                        $('#product-id').val('').trigger('change')
+                        $('#product-qty').val(1)
+                        calc()
+                        tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
+                            calc()
+                        })
+                        
+                        
+                        tr.find('.rem-item').click(function() {
+                            if (confirm("¿Estás seguro de quitar el producto" + data.name + " de la lista?") == true) {
+                                tr.remove()
+                                calc()
+                            }
+                        })
+                    } else {
+                        alert("Undefined Product");
+                    }
+                })
+                $('#check_out').click(function() {
+                    if ($('#POS-field table tbody tr').length <= 0) {
+                        alert("Por lo menos agrega un producto primero")
+                        return false;
+                    }
+                    uni_modal("Checkout", "{% url 'checkout-modal-carga-vendedores' %}?grand_total=" + $('[name="grand_total"]').val())
+                })
+                $('#pos-form').submit(function(e) {
+                    e.preventDefault();
+                    var _this = $(this)
+                    $('.err-msg').remove();
+                    var el = $('<div>')
+                    el.addClass("alert alert-danger err-msg")
+                    el.hide()
+                    if (_this[0].checkValidity() == false) {
+                        _this[0].reportValidity();
+                        return false;
+                    }
+                    start_loader();
+                    $.ajax({
+                        headers: {
+                            "X-CSRFToken": '{{csrf_token}}'
+                        },
+                        url: "{% url 'save-seller-inventory' %}",
+                        data: new FormData($(this)[0]),//JSON.stringify(new FormData($(this)[0])),//new FormData($(this)[0]),
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        method: 'POST',
+                        type: 'POST',
+                        dataType: 'json',
+                        error: err => {
+                            console.log(err)
+                            end_loader();
+                        },
+                        success: function(resp) {
+                            if (typeof resp == 'object' && resp.status == 'success') {
+                                el.removeClass("alert alert-danger err-msg")
+                                location.reload()
+                                uni_modal("Recibo", "{% url 'receipt-charge-seller-external' %}?id=" + resp.sale_id)
+                                $('#uni_modal').on('hide.bs.modal', function() {
+                                    location.reload()
+                                    
+                                })
+                            } else if (resp.status == 'failed' && !!resp.msg) {
+                                el.text(resp.msg)
+                            } else {
+                                el.text("An error occured", 'error');
+                                end_loader();
+                                console.err(resp)
+                            }
+                            _this.prepend(el)
+                            el.show('slow')
+                            $("html, body, .modal").scrollTop(0);
+                            end_loader()
+                        }
+                    })
+                })
+            })
+        </script>
+        {% endblock ScriptBlock %}

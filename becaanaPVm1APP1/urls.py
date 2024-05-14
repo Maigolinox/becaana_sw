@@ -71,6 +71,7 @@ urlpatterns=[
     path('receiptPV/', views.receiptPV, name="receipt-modal-pv"),
     path('receiptMatrix/', views.receiptMatrix, name="receipt-modal-matrix"),
     path('receiptChargeSeller/', views.receiptChargeSeller, name="receipt-charge-seller"),
+    path('receiptChargeSellerExternal/', views.receiptChargeSellerExternal, name="receipt-charge-seller-external"),
     path('pvConsultaInventario/', views.pvConsultaInventario, name="pvConsultaInventario"),
     path('deleteStockPV/<int:id>',views.deleteStockPV,name="deleteStockPV"),
     path('deleteStockSellers/<int:id>',views.deleteStockSellers,name="deleteStockSellers"),
