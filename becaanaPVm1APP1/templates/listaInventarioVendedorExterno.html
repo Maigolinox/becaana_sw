@@ -175,7 +175,7 @@
                   <th scope="col">Nombre del Vendedor</th>
                   <th scope="col">Producto</th>
                   <th scope="col">Stock Actual</th>
-                  <th scope="col">Precio Venta Reparto</th>
+                  <th scope="col">Precio Venta</th>
                 </tr>
               </thead>
 
@@ -186,7 +186,7 @@
                   <td>{{elemento.seller_id}}</td>
                   <td>{{elemento.product_id}}</td>
                   <td>{{elemento.qty}}</td>
-                  <td>${{elemento.product_id.precioVentaVendedorReparto|floatformat:"2"}}</td>
+                  <td>${{elemento.product_id.precioVentaVendedorExterno|floatformat:"2"}}</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -397,7 +397,7 @@
                         success: function(resp) {
                             if (typeof resp == 'object' && resp.status == 'success') {
                                 el.removeClass("alert alert-danger err-msg")
-                                location.reload()
+                                // location.reload()
                                 uni_modal("Recibo", "{% url 'receipt-charge-seller-external' %}?id=" + resp.sale_id)
                                 $('#uni_modal').on('hide.bs.modal', function() {
                                     location.reload()
