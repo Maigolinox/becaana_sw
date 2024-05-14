@@ -104,6 +104,7 @@ class inventarioCargaVendedorForm(forms.ModelForm):
         super(inventarioCargaVendedorForm, self).__init__(*args, **kwargs)  # Corregir el nombre de la clase aquí
         # Limita las opciones de productos a aquellos que ya tienen inventario en la sucursal
         self.fields['product_id'].queryset = articulosModel.objects.all()  # Elimina el filtro inicial
+        
         if user is not None:
             self.fields['seller_id'].initial = user.id  # Asigna el id del usuario al campo seller_id
             self.fields['seller_id'].widget = forms.HiddenInput()  # Oculta el campo seller_id en el formulario

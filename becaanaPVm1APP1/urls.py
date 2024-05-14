@@ -26,6 +26,7 @@ urlpatterns=[
     path('updateStockSeller/<int:id>',views.updateStockSeller,name="updateStockSeller"),
     path('registrarVentaMatrix/',views.registrarVentaMatrixView,name="registrarVentaMatrix"),#pos
     path('checkout-modal', views.checkout_modal, name="checkout-modal"),
+    path('checkout-modal-carga-vendedores', views.checkout_modal_carga_vendedores, name="checkout-modal-carga-vendedores"),
     path('save-pos/', views.save_pos, name="save-pos"),
     path('receipt/', views.receipt, name="receipt-modal"),
     path('sales/', views.salesList, name="sales-page"),
@@ -66,8 +67,10 @@ urlpatterns=[
     path('registrarVentaPuntosVenta/', views.registrarVentaPuntosVentaView, name="registrarVentaPuntosVenta"),
     path('save-posSellerPV/', views.save_posPV, name="save-pos-pv"),
     path('save-posMatrixPV/', views.save_posMatrix, name="save-pos-matrix"),
+    path('save-posSellerInventory/', views.save_SellerInventory, name="save-seller-inventory"),
     path('receiptPV/', views.receiptPV, name="receipt-modal-pv"),
     path('receiptMatrix/', views.receiptMatrix, name="receipt-modal-matrix"),
+    path('receiptChargeSeller/', views.receiptChargeSeller, name="receipt-charge-seller"),
     path('pvConsultaInventario/', views.pvConsultaInventario, name="pvConsultaInventario"),
     path('deleteStockPV/<int:id>',views.deleteStockPV,name="deleteStockPV"),
     path('deleteStockSellers/<int:id>',views.deleteStockSellers,name="deleteStockSellers"),
@@ -80,7 +83,7 @@ urlpatterns=[
     path('deleteRegisterSellers/<int:id>',views.deleteRegisterSellers,name="deleteRegisterSellers"),
     path('deleteRegisterPV/<int:id>',views.deleteRegisterPV,name="deleteRegisterPV"),
     path('addStockMatrix/',views.addMatrixStock,name="addStockMatrix"),
-    path('storeData/',views.storeData,name="storeData")
+    # path('storeData/',views.storeData,name="storeData")
 
 
 

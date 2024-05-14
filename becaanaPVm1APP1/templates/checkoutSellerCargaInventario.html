@@ -1,0 +1,17 @@
+{% load humanize %}
+<div class="container-fluid">
+    <form action="" id="checkout-form">
+        <div class="form-group mb-3">
+            <label for="payable_amount" class="control-label">Valor de la mercancía que te llevas</label>
+            <input type="text" id="payable_amount" class="form-control form-control-lg rounded-0 text-end" value="{{ grand_total }}" required disabled>
+        </div>
+        
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#checkout-form').submit(function(e) {
+            $('#pos-form').submit()
+        })
+    })
+</script>

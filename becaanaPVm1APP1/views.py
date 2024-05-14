@@ -28,53 +28,107 @@ from django.db.models import F, ExpressionWrapper, FloatField
 from collections import defaultdict
 from itertools import chain
 
-
-
-
-def storeData(request):
-    productos = articulosModel.objects.all()
-    if request.method == 'POST':
-        print(list(request.POST.items()))
-        for producto in productos:
-            print("producto: ",producto)
-            cantidad = int(request.POST.get('cantidad_' + str(producto.id), 0))
-            print("cantidad: ",cantidad)
-            prod=articulosModel.objects.all().filter(id=producto.id).get()
-            precioventaVendedorReparto=prod.precioVentaVendedorReparto
-            precioVentaVendedorExterno=prod.precioVentaVendedorExterno
-            costo=prod.costo
-            
-            
-            if cantidad > 0:
-                try:
-                    producto_seleccionado,created = sellerInventory.objects.get_or_create(seller_id_id=request.user.id,product_id_id=producto.id)
-                    if not created:
-                        producto_seleccionado.qty+=cantidad
-                    else:
-                        producto_seleccionado.qty=cantidad
-
-                    prod.cantidad=prod.cantidad-cantidad
-                    prod.save()
-                    producto_seleccionado.save()
-                    RegistroInventarioVendedores.objects.create(
-                        usuario_id=request.user.id,
-                        nombre_producto=prod.nombreArticulo,  
-                        cantidad=cantidad
-                        )
-                except sellerInventory.DoesNotExist:
-                    producto_seleccionado = sellerInventory(nombreArticulo=producto, qty=cantidad,precioVentaVendedorExterno=precioVentaVendedorExterno,seller_id_id=request.user.id,product_id_id=producto.id,precioOriginal=costo,precioVentaVendedor=precioventaVendedorReparto)
-                    prod.cantidad=prod.cantidad-cantidad
-                    prod.save()
-                    producto_seleccionado.save()
-                    RegistroInventarioVendedores.objects.create(
-                        usuario_id=request.user.id,
-                        nombre_producto=prod.nombreArticulo,  
-                        cantidad=cantidad
-                        )
-        return redirect('cargarInventarioVendedores')
-    return render(request, 'listaInventarioVendedor.html', {'productos': productos})
 # Create your views here.
+
+def receiptChargeSeller(request):
+    if request.user.is_authenticated:
+        print(request.GET)
+        id = request.GET.get('id')
+        transaction = {'date_added':timezone.now()}
+        usuarioData=User.objects.all().filter(id=request.user.id).get()
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name
+        
+        total_value = 0
+        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()
+        for elemento in ItemList:
+            print(elemento.product_id)
+            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()
+            print(articulo.precioVentaVendedorReparto)
+            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
+            elemento.nombreArticulo=articulo.nombreArticulo
+            
+        
+        context = {
+            "total":total_value,
+            # "total_discounts":total_discounts,
+            "transaction" : transaction,
+            "salesItems" : ItemList,
+            'nombreUsuario':nombreUsuario,
+        }
+
+        return render(request, 'receiptCharge.html',context)
+    else:
+        return render(request,'forbiden.html')
+
+
+def save_SellerInventory(request):
+    resp = {'status':'failed','msg':''}
+    data = request.POST
     
+    pref = datetime.now().year + datetime.now().year * 1000 
+    i = 1
+    while True:
+        code = '{:0>5}'.format(i)
+        i += int(1)
+        check = RegistroInventarioVendedores.objects.filter(code = str(pref) + str(code)).all()
+        if len(check) <= 0:
+            break
+    code = str(pref) + str(code)
+
+    try:
+        # print(data)
+        i = 0
+        for prod in data.getlist('product_id[]'):
+            product_id = prod 
+            product = articulosModel.objects.all().filter(id=prod).first()
+            
+            precioVentaVendedor=product.precioVentaVendedorReparto
+            qty = int(data.getlist('qty[]')[i] )
+            precioVentaVendedorExterno=product.precioVentaVendedorExterno
+            precioOriginal=product.costo
+            nombreArticulo=product.nombreArticulo
+            seller_id=request.user.id
+            
+            # price = data.getlist('price[]')[i]
+            obj, created = sellerInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
+            if not created:
+                sellerInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
+
+            else:
+                obj.product_id_id=product_id
+                obj.seller_id_id=seller_id
+                obj.precioVentaVendedor=precioVentaVendedor
+                obj.precioVentaVendedorExterno=precioVentaVendedorExterno
+                obj.precioOriginal=precioOriginal
+                obj.nombreArticulo=nombreArticulo
+                obj.qty=qty
+                obj.code=code
+                # obj.product_id=product_id
+                obj.save()
+
+            RegistroInventarioVendedores(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
+            
+            i += int(1)
+
+            product.cantidad=product.cantidad-qty #Restar de inventario de matriz
+            product.save() #Restar de inventario de matriz
+
+        sale_id=code
+        resp['status'] = 'success'
+        resp['sale_id'] = sale_id
+        articulosModel.success(request, "Venta guardada.")
+    except Exception as e:
+        print(e)
+        resp['msg'] = "Ocurrió un error"
+        #print("Unexpected errors:", e)###############################
+    return HttpResponse(json.dumps(resp),content_type="application/json")
+
+# # # #
+
+
+
+
+
 def addMatrixStock(request):
     if request.user.is_authenticated:
         lista = articulosModel.objects.all()
@@ -279,7 +333,7 @@ def dashboard(request):
         if (objetoUsuario.is_staff and objetoUsuario.is_superuser and objetoUsuario.is_active):# dashboard de administrador
             return render(request,'dashboard.html',context={'mensaje':mensaje})
         elif (objetoUsuario.is_active and not objetoUsuario.is_staff and not objetoUsuario.is_superuser and not objetoUsuario.is_externalSeller and not objetoUsuario.is_matrixSeller):#dashboard de vendedores
-            print("Vendedor Normal")
+            #print("Vendedor Normal")
             try:
                 ventasUsuarioSemanaActual=sellerSales.objects.filter(
                     origin=request.user.id,
@@ -621,6 +675,22 @@ def checkout_modal(request):
             'sucursales' : sucursales,
         }
         return render(request, 'checkout.html',context)
+    else:
+        return render(request, 'forbiden.html')
+
+
+def checkout_modal_carga_vendedores(request):
+    if request.user.is_authenticated:
+        sucursales = puntoVenta.objects.all()
+        grand_total = 0
+        if 'grand_total' in request.GET:
+            grand_total = request.GET['grand_total']
+        
+        context = {
+            'grand_total' : grand_total,
+            'sucursales' : sucursales,
+        }
+        return render(request, 'checkoutSellerCargaInventario.html',context)
     else:
         return render(request, 'forbiden.html')
 
