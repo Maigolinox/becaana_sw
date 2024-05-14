@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 
-                <div class="col-2 text-end fw-bold ">${{total}}</div>
+                <div class="col-2 text-end fw-bold ">${{total|floatformat:"2"}}</div>
 
             </div>
             {% endfor %}
@@ -48,7 +48,7 @@
             <hr>
             <div class="d-flex w-100 align-items-end">
                 <div class="col-6 text-start fw-bold">Total de valor en tu carga</div>
-                <div class="col-6 text-end fw-bold">$ {{ total|floatformat:"-2"|intcomma }}</div>
+                <div class="col-6 text-end fw-bold">$ {{ total|floatformat:"2"|intcomma }}</div>
             </div>
         </div>
     </div>

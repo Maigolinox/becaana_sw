@@ -32,18 +32,19 @@ from itertools import chain
 
 def receiptChargeSeller(request):
     if request.user.is_authenticated:
-        print(request.GET)
+        # print(request.GET)
         id = request.GET.get('id')
         transaction = {'date_added':timezone.now()}
-        usuarioData=User.objects.all().filter(id=request.user.id).get()
-        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name
+
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         total_value = 0
-        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()
+        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
-            print(elemento.product_id)
-            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()
-            print(articulo.precioVentaVendedorReparto)
+            # print(elemento.product_id)
+            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
+            # print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
             elemento.nombreArticulo=articulo.nombreArticulo
             
@@ -2477,7 +2478,7 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
         for product in products:
             ##print(product.product_id_id)
             ##print(product)            
-            product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorExterno),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
+            product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorReparto),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
 
         total_public_price = sum(item.precio_publico_total for item in lista)
         total_cost = sum(item.qty * item.product_id.costo for item in lista)
