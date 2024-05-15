@@ -29,6 +29,38 @@ from collections import defaultdict
 from itertools import chain
 
 # Create your views here.
+def receiptChargePV(request):
+    if request.user.is_authenticated:
+        # print(request.GET)
+        id = request.GET.get('id')
+        transaction = {'date_added':timezone.now()}
+
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        
+        total_value = 0
+        ItemList = RegistroInventarioPuntoVenta.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        for elemento in ItemList:
+            # print(elemento.product_id)
+            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
+            # print(articulo.precioVentaVendedorReparto)
+            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
+            elemento.nombreArticulo=articulo.nombreArticulo
+            
+        
+        context = {
+            "total":total_value,
+            # "total_discounts":total_discounts,
+            "transaction" : transaction,
+            "salesItems" : ItemList,
+            'nombreUsuario':nombreUsuario,
+        }
+
+        return render(request, 'receiptCharge.html',context)
+    else:
+        return render(request,'forbiden.html')
+
+
 
 def receiptChargeSellerExternal(request):
     if request.user.is_authenticated:
@@ -122,7 +154,8 @@ def save_SellerInventory(request):
             nombreArticulo=product.nombreArticulo
             seller_id=request.user.id
             
-            # price = data.getlist('price[]')[i]
+            price = data.getlist('price[]')[i]
+            # print("Precio del producto de vendedor",price)
             obj, created = sellerInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
             if not created:
                 sellerInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
@@ -130,16 +163,81 @@ def save_SellerInventory(request):
             else:
                 obj.product_id_id=product_id
                 obj.seller_id_id=seller_id
-                obj.precioVentaVendedor=precioVentaVendedor
+                obj.precioVentaVendedor=price
                 obj.precioVentaVendedorExterno=precioVentaVendedorExterno
                 obj.precioOriginal=precioOriginal
                 obj.nombreArticulo=nombreArticulo
+                obj.qty=qty
+                # obj.code=code
+                # obj.product_id=product_id
+                obj.save()
+
+            RegistroInventarioPuntoVenta(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
+            
+            i += int(1)
+
+            product.cantidad=product.cantidad-qty #Restar de inventario de matriz
+            product.save() #Restar de inventario de matriz
+
+        sale_id=code
+        resp['status'] = 'success'
+        resp['sale_id'] = sale_id
+        articulosModel.success(request, "Venta guardada.")
+    except Exception as e:
+        print(e)
+        resp['msg'] = "Ocurrió un error"
+        #print("Unexpected errors:", e)###############################
+    return HttpResponse(json.dumps(resp),content_type="application/json")
+
+
+def save_PVInventory(request):
+    resp = {'status':'failed','msg':''}
+    data = request.POST
+    
+    pref = datetime.now().year + datetime.now().year * 1000 
+    i = 1
+    while True:
+        code = '{:0>5}'.format(i)
+        i += int(1)
+        check = RegistroInventarioPuntoVenta.objects.filter(code = str(pref) + str(code)).all()
+        if len(check) <= 0:
+            break
+    code = str(pref) + str(code)
+
+    try:
+        # print(data)
+        i = 0
+        for prod in data.getlist('product_id[]'):
+            product_id = prod 
+            product = articulosModel.objects.all().filter(id=prod).first()
+            
+            precioVentaVendedor=product.precioVentaVendedorReparto
+            qty = int(data.getlist('qty[]')[i] )
+            precioVentaVendedorExterno=product.precioVentaVendedorExterno
+            precioOriginal=product.costo
+            nombreArticulo=product.nombreArticulo
+            precioVenta=product.precioVentaPublico
+            seller_id=request.user.id
+            
+            # price = data.getlist('price[]')[i]
+            obj, created = pvInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
+            if not created:
+                pvInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
+
+            else:
+                obj.product_id_id=product_id
+                obj.seller_id_id=seller_id
+                obj.precioVentaVendedor=precioVentaVendedor
+                obj.precioVentaVendedorExterno=precioVentaVendedorExterno
+                obj.precioOriginal=precioOriginal#costo
+                obj.nombreArticulo=nombreArticulo
+                obj.precioVenta=precioVenta
                 obj.qty=qty
                 obj.code=code
                 # obj.product_id=product_id
                 obj.save()
 
-            RegistroInventarioVendedores(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
+            RegistroInventarioPuntoVenta(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
             
             i += int(1)
 
@@ -713,6 +811,21 @@ def checkout_modal(request):
 
 
 def checkout_modal_carga_vendedores(request):
+    if request.user.is_authenticated:
+        sucursales = puntoVenta.objects.all()
+        grand_total = 0
+        if 'grand_total' in request.GET:
+            grand_total = request.GET['grand_total']
+        
+        context = {
+            'grand_total' : grand_total,
+            'sucursales' : sucursales,
+        }
+        return render(request, 'checkoutSellerCargaInventario.html',context)
+    else:
+        return render(request, 'forbiden.html')
+    
+def checkout_modal_carga_pv(request):
     if request.user.is_authenticated:
         sucursales = puntoVenta.objects.all()
         grand_total = 0
@@ -1797,10 +1910,9 @@ def save_posSeller(request):##EJEMPLO
             
         resp['status'] = 'success'
         resp['sale_id'] = sale_id
-        articulosModel.success(request, "Venta guardada.")
     except Exception as e:
         resp['msg'] = "Ocurrió un error"
-        ##print("Unexpected errors:", e)###############################
+        print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
@@ -2489,7 +2601,6 @@ def pvConsultaInventario(request):
         return render(request,'forbiden.html')
 
 
-
 def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARIO VENDEDORES
     if request.user.is_authenticated:
         inventarioVendedor = get_object_or_404(Seller, pk=pk) if pk else None
@@ -2644,6 +2755,13 @@ def registrar_inventario_puntos_venta(request, pk=None):  # AUTOCARGA DE INVENTA
         lista = pvInventory.objects.all().filter(seller_id_id=request.user.id)
         today=date.today()
         registro=RegistroInventarioPuntoVenta.objects.all().filter(usuario_id=request.user.id,fecha=today)
+        products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
+        product_json = []
+        ##print(products)
+        for product in products:
+            ##print(product.product_id_id)
+            ##print(product)            
+            product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaPublico),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
         
 
         for item in lista:
@@ -2688,17 +2806,12 @@ def registrar_inventario_puntos_venta(request, pk=None):  # AUTOCARGA DE INVENTA
                         nombre_producto=instance.product_id.nombreArticulo,  # Ajusta esto según el nombre del campo en tu modelo articulosModel
                         cantidad=instance.qty
                         )
-                    # RegistroInventarioVendedores.objects.create(
-                    #     usuario=request.user,
-                    #     nombre_producto=instance.product_id.nombreArticulo,  # Ajusta esto según el nombre del campo en tu modelo articulosModel
-                    #     cantidad=instance.qty
-                    #     )
 
                 return redirect('cargarInventarioPV')
         else:
             form = inventarioCargaPVForm(instance=inventarioPuntoVenta)
 
-            return render(request, 'listaInventarioPV.html', {'form': form, 'inventario': inventarioPuntoVenta, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro})
+            return render(request, 'listaInventarioPV.html', {'form': form, 'inventario': inventarioPuntoVenta, 'lista': lista, 'total_public_price': total_public_price, 'total_cost': total_cost, 'gananciaTotal': gananciaTotal,'registro':registro,'product_json' : json.dumps(product_json),'products':products})
 
     else:
         return render(request, 'forbiden.html')

@@ -222,6 +222,9 @@ class pvInventory(models.Model):#INVENTARIO DE VENDEDORES
     #precioOriginal=models.FloatField(default=0,verbose_name="Costo para BECAANA")
     precioOriginal = models.FloatField(default=0, verbose_name="Costo para BECAANA")
     nombreArticulo=models.CharField(max_length=100,verbose_name="Nombre del artículo")
+    precioVentaVendedorExterno=models.FloatField(default=0,verbose_name="Precio de venta para vendedor externo")
+
+
 
 
     fecha = models.DateTimeField(default=timezone.now,verbose_name="Fecha:") 
@@ -263,6 +266,8 @@ class RegistroInventarioPuntoVenta(models.Model):
     nombre_producto = models.CharField(max_length=100)
     cantidad = models.IntegerField()
     fecha = models.DateField(auto_now_add=True)
+    code = models.CharField(max_length=100,default="0")
+    product_id=models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.nombre_producto} - {self.fecha}"

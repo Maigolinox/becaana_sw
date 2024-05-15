@@ -14,7 +14,6 @@
 {% block heading %}Sellers{% endblock heading %}
 
 <!-- Page content  -->
-{% block content %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -37,6 +36,8 @@
       
     
 </head>
+{% block content %}
+
 <body>
     <br><br><br><br><br><br>
     <!-- sección de carga -->
@@ -245,27 +246,27 @@
             }
         }
     </style>
-      <script>
-        (function($) {
-            $(document).ready(function() {
-                $('#stockTable').dataTable();
-            });
-        })(jQuery);
-    </script>
-    <script>
-      (function($) {
-          $(document).ready(function() {
-              $('#cargaTable').dataTable();
-          });
-      })(jQuery);
-  </script>
+      
     
 </body>
-</html>
 
 {% endblock %}
 
 {% block ScriptBlock %}
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#stockTable').dataTable();
+        });
+    })(jQuery);
+</script>
+<script>
+  (function($) {
+      $(document).ready(function() {
+          $('#cargaTable').dataTable();
+      });
+  })(jQuery);
+</script>
 
 
         <script>
@@ -384,7 +385,7 @@
                         },
                         url: "{% url 'save-seller-inventory' %}",
                         data: new FormData($(this)[0]),//JSON.stringify(new FormData($(this)[0])),//new FormData($(this)[0]),
-                        cache: false,
+                        // cache: false,
                         contentType: false,
                         processData: false,
                         method: 'POST',
@@ -397,7 +398,7 @@
                         success: function(resp) {
                             if (typeof resp == 'object' && resp.status == 'success') {
                                 el.removeClass("alert alert-danger err-msg")
-                                    // location.reload()
+                                location.reload()
                                 uni_modal("Recibo", "{% url 'receipt-charge-seller' %}?id=" + resp.sale_id)
                                 $('#uni_modal').on('hide.bs.modal', function() {
                                     location.reload()
@@ -419,3 +420,4 @@
             })
         </script>
         {% endblock ScriptBlock %}
+</html>

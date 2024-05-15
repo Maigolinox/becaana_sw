@@ -36,7 +36,6 @@
                 <div class="col-8 fw-bold">
                     <div class="lh-1" style="text-align: center;">
                         <small>{{ item.nombreArticulo }}</small><br>
-                        <!-- <small>{{ item.price|intcomma }}</small><br> -->
                     </div>
                 </div>
                 
@@ -78,8 +77,8 @@
                 setTimeout(() => {
                     nw.close()
                     end_loader()
-                }, 250)
-            }, 300)
+                }, 5000)
+            }, 5000)
         })
     })
 </script>
