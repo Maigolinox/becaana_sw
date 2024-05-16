@@ -162,171 +162,168 @@
 {% endblock %}
 </body>
 {% block ScriptBlock %}
-
-
-        <script>
-            var product_json = '{{ product_json }}'
-            if (product_json == "" || product_json == "{}") {
-                product_json = {}
-            } else {
-                product_json = product_json.replaceAll('&quot;', '"')
-                product_json = $.parseJSON(product_json)
-            }
-            var prod_arr = {}
-            if (Object.keys(product_json).length > 0) {
-                Object.keys(product_json).map(k => {
-                    prod_arr[product_json[k].general_id] = product_json[k]
-                })
-            }
-            console.log(product_json)
+<script>
+var product_json = '{{ product_json }}'
+if (product_json == "" || product_json == "{}") {
+    product_json = {}
+} else {
+    product_json = product_json.replaceAll('&quot;', '"')
+    product_json = $.parseJSON(product_json)
+}
+var prod_arr = {}
+if (Object.keys(product_json).length > 0) {
+    Object.keys(product_json).map(k => {
+        prod_arr[product_json[k].general_id] = product_json[k]
+    })
+}
+// console.log(product_json)
         
-            function calc() {
-                var sub_total = 0;
-                var grand_total = 0;
-                $('#POS-field table tbody tr').each(function() {
-                    price = $(this).find('[name="price[]"]').val()
-                    qty = $(this).find('[name="qty[]"]').val()
-                    qty = qty > 0 ? qty : 0
-                    discount = $(this).find('.discount').val()
-                    discount = discount > 0 ? discount : 0;
-                    tax = $(this).find('[name="grand_total"]').val()
-                    discounted_price = price - (price * (discount / 100));
-                    
-                    total = parseFloat(discounted_price) * parseFloat(qty)
-                    $(this).find('.product_total').text(parseFloat(total))
-                    sub_total += parseFloat(total)
-                })
-                tax = $('[name="tax"]').val()
-                tax = tax / 100;
-                var tax_amount = parseFloat(sub_total) * parseFloat(tax);
-                //sub_total= sub_total+tax_amount;
-                $('#tax_amount').text(parseFloat(tax_amount).toFixed(2))
-                $('[name="tax_amount"]').val(parseFloat(tax_amount))
-                $('#grand_total').text(parseFloat(sub_total+tax_amount).toFixed(2))
-                $('[name="grand_total"]').val(parseFloat(sub_total+tax_amount).toFixed(2))
-                $('#sub_total').text(parseFloat(sub_total))
-                $('[name="sub_total"]').val(parseFloat(sub_total))
-        
+function calc() {
+    var sub_total = 0;
+    var grand_total = 0;
+    $('#POS-field table tbody tr').each(function() {
+        price = $(this).find('[name="price[]"]').val()
+        qty = $(this).find('[name="qty[]"]').val()
+        qty = qty > 0 ? qty : 0
+        discount = $(this).find('.discount').val()
+        discount = discount > 0 ? discount : 0;
+        tax = $(this).find('[name="grand_total"]').val()
+        discounted_price = price - (price * (discount / 100));
+        total = parseFloat(discounted_price) * parseFloat(qty)
+        $(this).find('.product_total').text(parseFloat(total))
+        sub_total += parseFloat(total)
+    })
+    tax = $('[name="tax"]').val()
+    tax = tax / 100;
+    var tax_amount = parseFloat(sub_total) * parseFloat(tax);
+    //sub_total= sub_total+tax_amount;
+    $('#tax_amount').text(parseFloat(tax_amount).toFixed(2))
+    $('[name="tax_amount"]').val(parseFloat(tax_amount))
+    $('#grand_total').text(parseFloat(sub_total+tax_amount).toFixed(2))
+    $('[name="grand_total"]').val(parseFloat(sub_total+tax_amount).toFixed(2))
+    $('#sub_total').text(parseFloat(sub_total))
+    $('[name="sub_total"]').val(parseFloat(sub_total))   
+}
+$(function() {
+    // $('#sucursal-id').select2({
+    //     placeholder:"Por favor elige una sucursal",
+    //     width:'100%',
+    // })
+    $('#product-id').select2({
+        placeholder: "Por favor elige un producto",
+        width: '100%'
+    })
+    $('#add_item').click(function(event) {
+        event.preventDefault();
+        var id = $('#product-id').val()
+        // console.log(id)
+        var qty = $('#product-qty').val()
+        var general_id=$('#general-id').val()//yo
+        // console.log(id, qty)
+        if (id == '' || qty == '' || id == null || qty == null ) {
+            alert("Cantidad, Producto y sucursal son datos necesarios")
+            return false
+        }
+        // console.log(prod_arr)
+        if (!!prod_arr[id]) {
+            if ($('#POS-field table tbody input[name="product_id[]"][value="' + id + '"]').length > 0) {
+                alert('Artículo ya en la lista.')
+                return false;
             }
-            $(function() {
-                // $('#sucursal-id').select2({
-                //     placeholder:"Por favor elige una sucursal",
-                //     width:'100%',
-                // })
-                $('#product-id').select2({
-                    placeholder: "Por favor elige un producto",
-                    width: '100%'
-                })
-                $('#add_item').click(function(event) {
-                    event.preventDefault();
-                    
-                    var id = $('#product-id').val()
-                    console.log(id)
-                    var qty = $('#product-qty').val()
-                    var general_id=$('#general-id').val()//yo
-                    console.log(id, qty)
-                    if (id == '' || qty == '' || id == null || qty == null ) {
-                        alert("Cantidad, Producto y sucursal son datos necesarios")
-                        return false
-                    }
-                    console.log(prod_arr)
-                    if (!!prod_arr[id]) {
-                        if ($('#POS-field table tbody input[name="product_id[]"][value="' + id + '"]').length > 0) {
-                            alert('Artículo ya en la lista.')
-                            return false;
-                        }
-                        data = prod_arr[id]
-                        console.log(data)
-                        var tr = $($('noscript#item-clone').html()).clone()
-                        //tr.find('[name="sucursal_id[]"]').val(sucursal)
-                        tr.find('[name="qty[]"]').val(qty)
-                        tr.find('[name="product_id[]"]').val(id)
-                        tr.find('[name="general_id[]"]').val(general_id)
-                        tr.find('[name="price[]"]').val(data.price)
-                        tr.find('.product_name').text(data.name)
-                        tr.find('.product_price').text(parseFloat(data.price))
-                        tr.find('.product_total').text(parseFloat(data.price * qty))
-                        $('#POS-field table tbody').append(tr)
-                        $('#product-id').val('').trigger('change')
-                        $('#product-qty').val(1)
-                        calc()
-                        tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
-                            calc()
-                        })
-                        tr.find('[name="disc[]"]').on('input keypress keyup keydown', function() {
-                            calc()
-                        })
-                        tr.find('.rem-item').click(function() {
-                            if (confirm("¿Estás seguro de quitar el producto" + data.name + " de la lista?") == true) {
-                                tr.remove()
-                                calc()
-                            }
-                        })
-                    } else {
-                        alert("Undefined Product");
-                    }
-                })
-                $('[name="tax"]').on('input keypress keydown keyup', function() {
-                    calc()
-                })
-                $('#check_out').click(function() {
-                    if ($('#POS-field table tbody tr').length <= 0) {
-                        alert("Por lo menos agrega un producto primero")
-                        return false;
-                    }
-                    uni_modal("Checkout", "{% url 'checkout-modal' %}?grand_total=" + $('[name="grand_total"]').val())
-                })
-                $('#pos-form').submit(function(e) {
-                    e.preventDefault();
-                    var _this = $(this)
-                    $('.err-msg').remove();
-                    var el = $('<div>')
-                    el.addClass("alert alert-danger err-msg")
-                    el.hide()
-                    if (_this[0].checkValidity() == false) {
-                        _this[0].reportValidity();
-                        return false;
-                    }
-                    start_loader();
-                    $.ajax({
-                        headers: {
-                            "X-CSRFToken": '{{csrf_token}}'
-                        },
-                        url: "{% url 'save-pos-pv' %}",
-                        data: new FormData($(this)[0]),
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        method: 'POST',
-                        type: 'POST',
-                        dataType: 'json',
-                        error: err => {
-                            console.log(err)
-                            end_loader();
-                        },
-                        success: function(resp) {
-                            if (typeof resp == 'object' && resp.status == 'success') {
-                                el.removeClass("alert alert-danger err-msg")
-                                    // location.reload()
-                                uni_modal("Recibo", "{% url 'receipt-modal' %}?id=" + resp.sale_id)
-                                $('#uni_modal').on('hide.bs.modal', function() {
-                                    location.reload()
-                                })
-                            } else if (resp.status == 'failed' && !!resp.msg) {
-                                el.text(resp.msg)
-                            } else {
-                                el.text("An error occured", 'error');
-                                end_loader();
-                                console.err(resp)
-                            }
-                            _this.prepend(el)
-                            el.show('slow')
-                            $("html, body, .modal").scrollTop(0);
-                            end_loader()
-                        }
-                    })
-                })
+            data = prod_arr[id]
+            // console.log(data)
+            var tr = $($('noscript#item-clone').html()).clone()
+            //tr.find('[name="sucursal_id[]"]').val(sucursal)
+            tr.find('[name="qty[]"]').val(qty)
+            tr.find('[name="product_id[]"]').val(id)
+            tr.find('[name="general_id[]"]').val(general_id)
+            tr.find('[name="price[]"]').val(data.price)
+            tr.find('.product_name').text(data.name)
+            tr.find('.product_price').text(parseFloat(data.price))
+            tr.find('.product_total').text(parseFloat(data.price * qty))
+            $('#POS-field table tbody').append(tr)
+            $('#product-id').val('').trigger('change')
+            $('#product-qty').val(1)
+            calc()
+            tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
+                calc()
             })
-        </script>
-        {% endblock ScriptBlock %}
+            tr.find('[name="disc[]"]').on('input keypress keyup keydown', function() {
+                calc()
+            })
+            tr.find('.rem-item').click(function() {
+                if (confirm("¿Estás seguro de quitar el producto" + data.name + " de la lista?") == true) {
+                    tr.remove()
+                    calc()
+                }
+            })
+        } else {
+            alert("Undefined Product");
+        }
+    })
+    $('[name="tax"]').on('input keypress keydown keyup', function() {
+        calc()
+    })
+    $('#check_out').click(function() {
+        if ($('#POS-field table tbody tr').length <= 0) {
+            alert("Por lo menos agrega un producto primero")
+            return false;
+        }
+        uni_modal("Checkout", "{% url 'checkout-modal' %}?grand_total=" + $('[name="grand_total"]').val())
+    })
+    $('#pos-form').submit(function(e) {
+        e.preventDefault();
+        var _this = $(this)
+        $('.err-msg').remove();
+        var el = $('<div>')
+        el.addClass("alert alert-danger err-msg")
+        el.hide()
+        if (_this[0].checkValidity() == false) {
+            _this[0].reportValidity();
+            return false;
+        }
+        start_loader();
+        $.ajax({
+            headers: {
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            url: "{% url 'save-pos-pv' %}",
+            data: new FormData($(this)[0]),
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            type: 'POST',
+            dataType: 'json',
+            error: err => {
+                // console.log(err)
+                end_loader();
+            },
+            success: function(resp) {
+                if (typeof resp == 'object' && resp.status == 'success') {
+                    // console.log(resp)
+                    // alert("Nueva")
+                    el.removeClass("alert alert-danger err-msg")
+                    // location.reload()
+                    uni_modal("Recibo", "{% url 'receipt-modal' %}?id=" + resp.sale_id)
+                    $('#uni_modal').on('hide.bs.modal', function() {
+                        location.reload()
+                    })
+                } else if (resp.status == 'failed' && !!resp.msg) {
+                    el.text(resp.msg)
+                } else {
+                    el.text("An error occured", 'error');
+                    end_loader();
+                    console.err(resp)
+                }
+                _this.prepend(el)
+                el.show('slow')
+                $("html, body, .modal").scrollTop(0);
+                end_loader()
+            }
+        })
+    })
+})
+</script>
+{% endblock ScriptBlock %}
 </html>

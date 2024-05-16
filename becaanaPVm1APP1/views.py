@@ -28,7 +28,75 @@ from django.db.models import F, ExpressionWrapper, FloatField
 from collections import defaultdict
 from itertools import chain
 
+
 # Create your views here.
+def save_SellerExternalInventory(request):
+    resp = {'status':'failed','msg':''}
+    data = request.POST
+    
+    pref = datetime.now().year + datetime.now().year * 1000 
+    i = 1
+    while True:
+        code = '{:0>5}'.format(i)
+        i += int(1)
+        check = RegistroInventarioVendedores.objects.filter(code = str(pref) + str(code)).all()
+        if len(check) <= 0:
+            break
+    code = str(pref) + str(code)
+
+    try:
+        # print(data)
+        i = 0
+        for prod in data.getlist('product_id[]'):
+            product_id = prod 
+            product = articulosModel.objects.all().filter(id=prod).first()
+            
+            precioVentaVendedor=product.precioVentaVendedorReparto
+            qty = int(data.getlist('qty[]')[i] )
+            precioVentaVendedorExterno=product.precioVentaVendedorExterno
+            precioOriginal=product.costo
+            nombreArticulo=product.nombreArticulo
+            seller_id=request.user.id
+            
+            price = data.getlist('price[]')[i]
+            # print("Precio del producto de vendedor",price)
+            obj, created = sellerInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
+            if not created:
+                sellerInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
+
+            else:
+                obj.product_id_id=product_id
+                obj.seller_id_id=seller_id
+                obj.precioVentaVendedor=price
+                obj.precioVentaVendedorExterno=precioVentaVendedorExterno
+                obj.precioOriginal=precioOriginal
+                obj.nombreArticulo=nombreArticulo
+                obj.qty=qty
+                # obj.code=code
+                # obj.product_id=product_id
+                obj.save()
+
+            RegistroInventarioVendedores(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
+            
+            i += int(1)
+
+            product.cantidad=product.cantidad-qty #Restar de inventario de matriz
+            product.save() #Restar de inventario de matriz
+
+        sale_id=code
+        resp['status'] = 'success'
+        resp['sale_id'] = sale_id
+        # articulosModel.success(request, "Venta guardada.")
+    except Exception as e:
+        print(e)
+        resp['msg'] = "Ocurrió un error"
+        #print("Unexpected errors:", e)###############################
+    return HttpResponse(json.dumps(resp),content_type="application/json")
+
+
+
+
+
 def receiptChargePV(request):
     if request.user.is_authenticated:
         # print(request.GET)
@@ -44,8 +112,11 @@ def receiptChargePV(request):
             # print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
             # print(articulo.precioVentaVendedorReparto)
-            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
+            total_value=total_value+(elemento.cantidad*articulo.precioVentaPublico)
             elemento.nombreArticulo=articulo.nombreArticulo
+            elemento.precioPV=articulo.precioVentaPublico
+            elemento.precioVExterno=articulo.precioVentaVendedorExterno
+            elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
         
         context = {
@@ -79,6 +150,9 @@ def receiptChargeSellerExternal(request):
             # print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorExterno)
             elemento.nombreArticulo=articulo.nombreArticulo
+            elemento.precioPV=articulo.precioVentaPublico
+            elemento.precioPV=articulo.precioVentaVendedorExterno
+            elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
         
         context = {
@@ -106,11 +180,15 @@ def receiptChargeSeller(request):
         total_value = 0
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
+            print(elemento)
             # print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
             # print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
             elemento.nombreArticulo=articulo.nombreArticulo
+            elemento.precioPV=articulo.precioVentaVendedorReparto
+            elemento.precioVExterno=articulo.precioVentaVendedorExterno
+            elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
         
         context = {
@@ -172,7 +250,7 @@ def save_SellerInventory(request):
                 # obj.product_id=product_id
                 obj.save()
 
-            RegistroInventarioPuntoVenta(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
+            RegistroInventarioVendedores(nombre_producto=nombreArticulo,cantidad=qty,usuario_id=seller_id,code=code,product_id=product_id).save()#Registro de inventario
             
             i += int(1)
 
@@ -182,7 +260,7 @@ def save_SellerInventory(request):
         sale_id=code
         resp['status'] = 'success'
         resp['sale_id'] = sale_id
-        articulosModel.success(request, "Venta guardada.")
+        # articulosModel.success(request, "Venta guardada.")
     except Exception as e:
         print(e)
         resp['msg'] = "Ocurrió un error"
@@ -247,7 +325,7 @@ def save_PVInventory(request):
         sale_id=code
         resp['status'] = 'success'
         resp['sale_id'] = sale_id
-        articulosModel.success(request, "Venta guardada.")
+        # articulosModel.success(request, "Venta guardada.")
     except Exception as e:
         print(e)
         resp['msg'] = "Ocurrió un error"
@@ -2607,14 +2685,6 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
         lista = sellerInventory.objects.all().filter(seller_id_id=request.user.id)
         fecha_actual = datetime.now().date()
         registro=RegistroInventarioVendedores.objects.all().filter(usuario_id=request.user.id,fecha=fecha_actual)
-
-
-        for item in lista:
-            item.costo_total = item.qty * item.product_id.costo
-            item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
-            item.ganancia = item.precio_publico_total - item.costo_total
-            item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
-
         products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
         ##print(products)
@@ -2622,6 +2692,12 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
             ##print(product.product_id_id)
             ##print(product)            
             product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorReparto),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
+
+        for item in lista:
+            item.costo_total = item.qty * item.product_id.costo
+            item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
+            item.ganancia = item.precio_publico_total - item.costo_total
+            item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
 
         total_public_price = sum(item.precio_publico_total for item in lista)
         total_cost = sum(item.qty * item.product_id.costo for item in lista)

@@ -11,6 +11,7 @@
 <script>
     $(function() {
         $('#checkout-form').submit(function(e) {
+            e.preventDefault();
             $('#pos-form').submit()
         })
     })
