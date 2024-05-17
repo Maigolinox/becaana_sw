@@ -107,6 +107,7 @@ def receiptChargePV(request):
         nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         total_value = 0
+        acumulador_total_productos=0
         ItemList = RegistroInventarioPuntoVenta.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
             # print(elemento.product_id)
@@ -117,6 +118,7 @@ def receiptChargePV(request):
             elemento.precioPV=articulo.precioVentaPublico
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
+            acumulador_total_productos+elemento.cantidad
             
         
         context = {
@@ -125,6 +127,8 @@ def receiptChargePV(request):
             "transaction" : transaction,
             "salesItems" : ItemList,
             'nombreUsuario':nombreUsuario,
+            'total_productos':acumulador_total_productos,
+
         }
 
         return render(request, 'receiptCharge.html',context)
@@ -144,11 +148,13 @@ def receiptChargeSellerExternal(request):
         
         total_value = 0
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        acumulador_total_productos=0
         for elemento in ItemList:
             # print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
             # print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorExterno)
+            acumulador_total_productos+=elemento.cantidad
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaPublico
             elemento.precioPV=articulo.precioVentaVendedorExterno
@@ -158,6 +164,7 @@ def receiptChargeSellerExternal(request):
         context = {
             "total":total_value,
             # "total_discounts":total_discounts,
+            'total_productos':acumulador_total_productos,
             "transaction" : transaction,
             "salesItems" : ItemList,
             'nombreUsuario':nombreUsuario,
@@ -178,6 +185,7 @@ def receiptChargeSeller(request):
         nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         total_value = 0
+        acumulador_total_productos=0
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
             print(elemento)
@@ -187,6 +195,7 @@ def receiptChargeSeller(request):
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaVendedorReparto
+            acumulador_total_productos+=articulo.cantidad
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
@@ -195,6 +204,8 @@ def receiptChargeSeller(request):
             "total":total_value,
             # "total_discounts":total_discounts,
             "transaction" : transaction,
+            'total_productos':acumulador_total_productos,
+
             "salesItems" : ItemList,
             'nombreUsuario':nombreUsuario,
         }
