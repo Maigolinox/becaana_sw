@@ -1,4 +1,8 @@
 {% load humanize %} {% load static %} {% load mathfilters %}
+
+<script src="https://printjs.crabbly.com/js/print.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
 <style>
     #uni_modal .modal-footer {
         display: none
@@ -64,27 +68,55 @@
         <button class="btn btn-secondary bg-gradient border rounded-0 btn-sm" type="button" data-bs-dismiss="modal"><i class="mdi mdi-close"></i> Cerrar</button>
     </div>
 </div>
+<!-- <script>
+    $(function() {
+        $('#receipt_print').click(function() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = ua.indexOf("android") > -1;
+            // console.log(isAndroid);
+            if (isAndroid){
+                var gadget = new cloudprint.Gadget();
+                gadget.setPrintDocument("url", $('title').html(), window.location.href, "utf-8");
+                gadget.openPrintDialog();
+            }else{
+                var head = $('head').clone()
+                var p = $('#outprint').clone()
+                var el = $("<div>")
+                head.append('<style>body{background-color:unset !important}</style>')
+                el.append(head)
+                el.find('title').text("Recibo - Vista de Impresión")
+                el.append(p)
+                start_loader()
+                var nw = window.open('', '_blank', "width=800,height=800,left=300, top = 200")
+                nw.document.write(el.html())
+                nw.document.close()
+                setTimeout(() => {
+                    nw.print()
+                    setTimeout(() => {
+                        nw.close()
+                        end_loader()
+                    }, 250)
+                }, 500)
+            }
+        })
+    })  
+</script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.js"></script>
+
 <script>
     $(function() {
         $('#receipt_print').click(function() {
-            var head = $('head').clone()
-            var p = $('#outprint').clone()
-            var el = $("<div>")
-            head.append('<style>body{background-color:unset !important}</style>')
-            el.append(head)
-            el.find('title').text("Recibo - Vista de Impresión")
-            el.append(p)
-            start_loader()
-            var nw = window.open('', '_blank', "width=800,height=800,left=300, top = 200")
-            nw.document.write(el.html())
-            nw.document.close()
-            setTimeout(() => {
-                nw.print()
-                setTimeout(() => {
-                    nw.close()
-                    end_loader()
-                }, 250)
-            }, 300)
-        })
-    })
+            // Use Print.js for printing
+            printJS({
+                printable: 'outprint', // ID of the element to print
+                type: 'html', // Type of content: html, image, canvas, pdf
+                documentTitle: 'Recibo - Vista de Impresión', // Title of the printed document
+                showModal: false, // Do not show a modal before printing
+                onError: function(error) {
+                    console.error('Error occurred while printing:', error);
+                }
+            });
+        });
+    });
 </script>
+In this adjusted co
