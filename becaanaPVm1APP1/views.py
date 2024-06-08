@@ -197,7 +197,7 @@ def receiptChargeSeller(request):
             elemento.precioPV=articulo.precioVentaVendedorReparto
             
             acumulador_total_productos+=elemento.cantidad
-            print(acumulador_total_productos)
+            #print(acumulador_total_productos)
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
