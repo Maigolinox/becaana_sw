@@ -188,14 +188,16 @@ def receiptChargeSeller(request):
         acumulador_total_productos=0
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
-            print(elemento)
+            print("impresion: ",elemento)
             # print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
             # print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaVendedorReparto
-            acumulador_total_productos+=articulo.cantidad
+            
+            acumulador_total_productos+=elemento.cantidad
+            print(acumulador_total_productos)
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
