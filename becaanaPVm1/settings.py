@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-=oylhm$275w)q8ep!oo7(exy0zvhaxp6$4&k+o^!r@@!e_hast
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.68.193.151','127.0.0.1']
+ALLOWED_HOSTS = ['54.68.193.151','127.0.0.1','10.13.4.38','becaana.store']
 
 ##NECESARIO PARA ALLAUTH
 
@@ -48,11 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'becaanaPVm1APP1',#NUEVA APLICACIÓN
     'mathfilters',
     'django.contrib.humanize',
     'django_extensions',#ERD diagrams
     'django.contrib.sites',#AllAuth
+    'becaanaPVm1APP1',#NUEVA APLICACIÓN
     
 
     'allauth',
