@@ -1897,13 +1897,17 @@ def registrarVentaVendedorView(request):
         products = sellerInventory.objects.all().filter(seller_id=id_vendedor)######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
         ##print(products)
+        
         for product in products:
             ##print(product.product_id_id)
             ##print(product)            
             product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedor),'qty':float(product.qty),'general_id':product.product_id_id})
+            
+            
         context = {
             'page_title' : "Punto de venta",
             'products' : products,
+            
             'product_json' : json.dumps(product_json)
         }
         # return HttpResponse('')
@@ -1975,11 +1979,13 @@ def save_posSeller(request):##EJEMPLO
         sales.save()
         sale_id = sellerSales.objects.last().pk
         i = 0
+        cantidadTotalProductos=0
         for prod in data.getlist('product_id[]'):
             #product_id = prod 
             sale = sellerSales.objects.filter(id=sale_id).first()
             product = articulosModel.objects.all().filter(id=prod).first()
             qty = int(data.getlist('qty[]')[i] )
+            cantidadTotalProductos=cantidadTotalProductos+qty
             
             price = data.getlist('price[]')[i]
             total = float(qty) * float(price)
@@ -2025,10 +2031,13 @@ def receiptSeller(request):
         # transaction['code']=str(transaction['code'])
         ItemList = sellerSalesItems.objects.filter(sale_id = sales).all()
         total_discounts=0
+        acumulador_total_productos=0
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
             # #print(discount)
             total_discounts+=discount
+            acumulador_total_productos=acumulador_total_productos+elemento.qty
+
         total=transaction["grand_total"]+total_discounts
         
         
@@ -2036,7 +2045,8 @@ def receiptSeller(request):
             "total":total,
             "total_discounts" : total_discounts,
             "transaction" : transaction,
-            "salesItems" : ItemList
+            "salesItems" : ItemList,
+            'total_productos':acumulador_total_productos
         }
 
         return render(request, 'receipt.html',context)
@@ -2625,6 +2635,7 @@ def receiptPV(request):
             discount=(elemento.discount*elemento.price*elemento.qty)/100
             #print(discount)
             total_discounts+=discount
+            acumulador_total_productos=acumulador_total_productos+elemento.qty
         total=transaction["grand_total"]+total_discounts
         
 
@@ -2632,7 +2643,8 @@ def receiptPV(request):
             "total":total,
             "total_discounts":total_discounts,
             "transaction" : transaction,
-            "salesItems" : ItemList
+            "salesItems" : ItemList,
+            'total_productos':acumulador_total_productos,
         }
 
         return render(request, 'receipt.html',context)
