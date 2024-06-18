@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-=oylhm$275w)q8ep!oo7(exy0zvhaxp6$4&k+o^!r@@!e_hast
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.68.193.151','127.0.0.1','10.13.4.38','https://becaana.store','www.becaana.store','becaana.store']
+ALLOWED_HOSTS = ['54.68.193.151','52.34.219.20','127.0.0.1','10.13.4.38','https://becaana.store','www.becaana.store','becaana.store']
 
 CSRF_TRUSTED_ORIGINS = ['https://becaana.store', 'https://www.becaana.store']
 
