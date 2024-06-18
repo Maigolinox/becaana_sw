@@ -18,7 +18,8 @@
         <div class="lh-1">
             <div>
                 <span>Fecha:</span> {{ transaction.date_added|date:"M d Y" }} <br>
-                <span>Código de la transacción:</span> {{ transaction.code }}
+                <span>Código de la transacción:</span> {{ transaction.code }} <br>
+                <span>Nombre de vendedor:</span> {{nombreUsuario}}
             </div>
         </div>
         <div class="clear-fix py-3"></div>

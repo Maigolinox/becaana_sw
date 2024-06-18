@@ -987,6 +987,9 @@ def save_pos(request):
 
 def receipt(request):
     if request.user.is_authenticated:
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+
 
         id = request.GET.get('id')
         sales = Sales.objects.filter(id = id).first()
@@ -998,6 +1001,7 @@ def receipt(request):
             transaction['tax_amount'] = format(float(transaction['tax_amount']))
 
         ItemList = salesItems.objects.filter(sale_id = sales).all()
+        
         total_discounts=0
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
@@ -1011,7 +1015,8 @@ def receipt(request):
             "total":total,
             "total_discounts":total_discounts,
             "transaction" : transaction,
-            "salesItems" : ItemList
+            "salesItems" : ItemList,
+            "nombreUsuario":nombreUsuario,
         }
 
         return render(request, 'receipt.html',context)
@@ -2039,6 +2044,8 @@ def receiptSeller(request):
             acumulador_total_productos=acumulador_total_productos+elemento.qty
 
         total=transaction["grand_total"]+total_discounts
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         
         context = {
@@ -2046,7 +2053,8 @@ def receiptSeller(request):
             "total_discounts" : total_discounts,
             "transaction" : transaction,
             "salesItems" : ItemList,
-            'total_productos':acumulador_total_productos
+            'total_productos':acumulador_total_productos,
+            "nombreUsuario":nombreUsuario,
         }
 
         return render(request, 'receipt.html',context)
@@ -2637,6 +2645,8 @@ def receiptPV(request):
             total_discounts+=discount
             acumulador_total_productos=acumulador_total_productos+elemento.qty
         total=transaction["grand_total"]+total_discounts
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
 
         context = {
@@ -2645,6 +2655,7 @@ def receiptPV(request):
             "transaction" : transaction,
             "salesItems" : ItemList,
             'total_productos':acumulador_total_productos,
+            "nombreUsuario":nombreUsuario,
         }
 
         return render(request, 'receipt.html',context)
@@ -2671,13 +2682,16 @@ def receiptMatrix(request):
             #print(discount)
             total_discounts+=discount
         total=transaction["grand_total"]+total_discounts
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
 
         context = {
             "total":total,
             "total_discounts":total_discounts,
             "transaction" : transaction,
-            "salesItems" : ItemList
+            "salesItems" : ItemList,
+            "nombreUsuario":nombreUsuario,
         }
 
         return render(request, 'receipt.html',context)
