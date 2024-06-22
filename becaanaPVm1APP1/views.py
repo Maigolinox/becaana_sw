@@ -1629,8 +1629,7 @@ def financeDashboard(request):#MENU DE FINANZAS
         except Exception as e:
             totalGlobalSemanal=0
 
-        if not ganancia_vendedores:
-            ganancia_vendedores=0
+        ganancia_vendedores=0
 
         context = {
             ########################       DATOS DEL GRÁFICO       ########################
