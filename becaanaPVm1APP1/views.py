@@ -1214,6 +1214,8 @@ def financeDashboard(request):#MENU DE FINANZAS
                 resultado_combinado.append({'origin': origin, 'total_ventas': total_ventas, 'ganancia': ganancia,'conteo':conteo,'cantidadArticulos':cantidadArticulos})
 
             # #print(resultado_combinado)
+                
+
 
             for venta in resultado_combinado:#ventas_ultima_semana:
                 usuario = usuarios_ultima_semana.get(id=venta['origin'])
@@ -1613,6 +1615,8 @@ def financeDashboard(request):#MENU DE FINANZAS
                 ganancias_puntos_venta += elemento['ganancia']
 
             ganancia_global_semanal=0
+            if not ganancia_vendedores:
+                ganancia_vendedores=0
             ganancia_global_semanal=ganancia_vendedores+ganancias_puntos_venta
 
         except Exception as e:
