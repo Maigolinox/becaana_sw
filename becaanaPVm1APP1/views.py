@@ -1906,13 +1906,16 @@ def registrarVentaVendedorView(request):
     if request.user.is_authenticated:
         id_vendedor=request.user.id
         products = sellerInventory.objects.all().filter(seller_id=id_vendedor)######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
+
         product_json = []
         ##print(products)
         
         for product in products:
             ##print(product.product_id_id)
-            ##print(product)            
-            product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedor),'qty':float(product.qty),'general_id':product.product_id_id})
+            ##print(product)   
+            modeloOriginal=articulosModel.objects.all().filter(id=product.product_id_id).get()
+            precio=modeloOriginal.precioVentaVendedorReparto
+            product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(precio),'qty':float(product.qty),'general_id':product.product_id_id})
             
             
         context = {
@@ -1934,9 +1937,12 @@ def registrarVentaVendedorExternoView(request):
         product_json = []
         ##print(products)
         for product in products:
+
+            modeloOriginal=articulosModel.objects.all().filter(id=product.product_id_id).get()
+            precio=modeloOriginal.precioVentaVendedorExterno
             ##print(product.product_id_id)
             ##print(product)            
-            product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorExterno),'qty':float(product.qty),'general_id':product.product_id_id})
+            product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(precio),'qty':float(product.qty),'general_id':product.product_id_id})
         context = {
             'page_title' : "Punto de venta",
             'products' : products,
