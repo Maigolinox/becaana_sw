@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponse,JsonResponse
 from django.urls import reverse
@@ -1111,8 +1112,173 @@ def dash_ventas(request):
     else:
         return render(request,'forbiden.html')
 
+@login_required
+def financeDashboard(request):
+    today=timezone.now().date()
+    diasDesdeLunes=today.weekday()
+    lunesSemana = today - timedelta(days=diasDesdeLunes)
+    # print(lunesSemana)
+    domingoSemana=lunesSemana+timedelta(days=7)
+    # print(domingoSemana)
+    
+    vendedorMasRepetido=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER VENDEDOR SEMANAL QUE HIZO MAS VENTAS
+    vendedorMasRepetido=User.objects.all().filter(id=vendedorMasRepetido['origin'])#EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL VENDEDOR
 
-def financeDashboard(request):#MENU DE FINANZAS
+    puntoVentaMasRepetido=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER PUNTO DE VENTA QUE HIZO MÁS VENTAS
+    if puntoVentaMasRepetido is None:
+        puntoVentaMasRepetido="No hay punto de venta con más ventas todavía"
+    else:
+        puntoVentaMasRepetido=User.objects.all().filter(id=puntoVentaMasRepetido['origin'])# EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL PUNTO DE VENTA
+
+    ventasSemanalesSellers=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosSemanalesSellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasSemanalesSellers)
+    ventasAgrupadas = articulosSemanalesSellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    productMasVendidoSellerSemanal=articulosModel.objects.all().filter(id=ventasAgrupadas['product_id_id'])
+    ventasSemanalesVendedores=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
+    
+    grouped_sales = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasSemanalesVendedores:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=sellerSalesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales[sale.origin].append(sale)
+
+    # print(grouped_sales)
+    
+    
+
+    ventasSemanalesPorVendedorOrigin=ventasSemanalesVendedores.values('origin').annotate(total_ventas=Sum('grand_total'))
+    # print(ventasSemanalesVendedores)
+    for elemento in ventasSemanalesPorVendedorOrigin:#salarios
+        ventas=elemento['total_ventas']
+        identificadorUsuario=elemento['origin']
+        datos=User.objects.all().filter(id=identificadorUsuario).get()
+        elemento['origin']="Usuario: "+datos.username+". Nombre Completo: "+datos.first_name+" "+datos.last_name+"."
+        if ventas >= 22000 and  ventas < 26000:
+            elemento['salario'] = ventas*1.11
+        elif ventas >= 26000 and ventas < 30000:
+            elemento['salario'] = ventas*1.12
+        elif ventas >= 30000 and ventas < 34000:
+            elemento['salario'] = ventas*1.13
+        elif ventas >= 34000 and ventas < 40000:
+            elemento['salario'] = ventas*1.14
+        elif ventas >= 40000:
+            elemento['salario'] = ventas*1.15
+        elif ventas < 22000:
+            elemento['salario'] = 1750
+        else:
+            elemento['salario'] = 0
+    
+    ventasSemanalesPV=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)
+    ventasSemanalesPVNormal=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
+    dineroSemanalPV=0
+    cantidadVentasSemanalesPV=0
+    for elemento in ventasSemanalesPVNormal:
+        dineroSemanalPV=elemento.grand_total+dineroSemanalPV
+        cantidadVentasSemanalesPV+=int(1)
+
+    dineroSemanalSeller=0
+    cantidadVentasSemanalesVendedores=0
+    for elemento in ventasSemanalesVendedores:
+        dineroSemanalSeller=elemento.grand_total+dineroSemanalSeller
+        cantidadVentasSemanalesVendedores+=int(1)
+
+    cantidadTotalVentasSemanales=cantidadVentasSemanalesVendedores+cantidadVentasSemanalesPV
+
+    dineroSemanalTotal=dineroSemanalSeller+dineroSemanalPV
+
+    articulosSemanalesPV=salesItems.objects.filter(sale_id_id__in=ventasSemanalesPV)
+    
+    ventasAgrupadasPV = articulosSemanalesPV.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    productMasVendidoPVSemanal=articulosModel.objects.all().filter(id=ventasAgrupadasPV['product_id_id'])
+
+    articulosSemanalesGlobales = articulosSemanalesPV.union(articulosSemanalesSellers)
+    qty_totals = defaultdict(int)
+    for elemento in articulosSemanalesGlobales:
+        qty_totals[elemento.product_id_id] += elemento.qty
+    max_product_id = max(qty_totals, key=qty_totals.get)
+    productoGlobalMasVendidoSemanal=articulosModel.objects.all().filter(id=max_product_id)
+    
+    todaySellerSales=sellerSales.objects.all().filter(date_added__date=today)
+    todayPVSales=Sales.objects.all().filter(date_added__date=today)
+    historicSellerSales=sellerSales.objects.all()
+    historicPVSales=Sales.objects.all()
+    
+    addSalesSellerAcumulator=0#acumulador de ventas de vendedores hoy
+    numerosVentasHoySellers=0#acumulador de numero de ventas de vendedores hoy
+    for elemento in todaySellerSales:#para calculo de total de ventas en dinero y cantidad de ventas de vendedores
+        addSalesSellerAcumulator=addSalesSellerAcumulator+elemento.grand_total
+        numerosVentasHoySellers+=int(1)
+    
+    addPVSalesAcumulator=0
+    numerosVentaPVHoy=0
+    for elemento in todayPVSales:#para calculo total de ventas de puntos de venta y numero de ventas de puntos de venta
+        addPVSalesAcumulator=addPVSalesAcumulator+elemento.grand_total
+        numerosVentaPVHoy+=int(1)
+
+    addHistoricPVSales=0
+    numerosHistoricPVSales=0
+    for elemento in historicPVSales:# para calculo historico de ventas PUNTOS DE VENTA dinero y numero
+        addHistoricPVSales=addHistoricPVSales+elemento.grand_total
+        numerosHistoricPVSales+=int(1)
+
+    addHistoricSellerSales=0
+    numerosHistoricSellerSales=0
+    for elemento in historicSellerSales:
+        addHistoricSellerSales=addHistoricSellerSales+elemento.grand_total
+        numerosHistoricSellerSales+=int(1)
+
+    totalVentasHoy=addPVSalesAcumulator+addSalesSellerAcumulator#total de ventas hoy dinero
+    numeroTotalVentasHoy=numerosVentasHoySellers+numerosVentaPVHoy#total ventas hoy numero
+    totalVentasHistorico=addHistoricSellerSales+addHistoricPVSales#total ventas historico dinero
+    totalNumeroVentasHistorico=numerosHistoricPVSales+numerosHistoricSellerSales#total ventas historico numero
+
+
+    context = {
+        'totalVentasHoy':totalVentasHoy,#dinero hoy
+        'ventas_hoy_vendedores':addSalesSellerAcumulator,#dinero hoy
+        'ventas_hoy_puntos_venta':addPVSalesAcumulator,#dinero hoy
+        'numerosVentaPVHoy':numerosVentaPVHoy,#cantidad hoy
+        'numerosVentasHoySellers':numerosVentasHoySellers,#cantidad hoy 
+        'numeroTotalVentasHoy':numeroTotalVentasHoy,#cantidad hoy
+        'dineroSemanalTotal':dineroSemanalTotal,# dinero semanal global
+        'dineroSemanalSeller':dineroSemanalSeller,# dinero semanal vendedores
+        'dineroSemanalPV':dineroSemanalPV,# dinero semanal puntos de venta
+        'cantidadTotalVentasSemanales':cantidadTotalVentasSemanales,# cantidad semanal global
+        'cantidadVentasSemanalesVendedores':cantidadVentasSemanalesVendedores,# cantidad semanal vendedores
+        'cantidadVentasSemanalesPV':cantidadVentasSemanalesPV,# cantidad semanal puntos de venta
+        'ventas_historico_vendedores':addHistoricSellerSales, #dinero historico puntos de venta
+        'ventas_historico_puntos_venta':addHistoricPVSales, # dinero historico puntos de venta
+        'numero_ventas_historico_vendedores':numerosHistoricSellerSales, #cantidad vendedores historicos
+        'numero_ventas_historico_puntos_venta':numerosHistoricPVSales, #cantidad vendedores puntos de venta
+        'total_ventas_historico':totalVentasHistorico, #dinero total historico
+        'total_ventas_historico_numero':totalNumeroVentasHistorico, #cantidad total historico
+        'puntoVentaMasRepetido':puntoVentaMasRepetido,#mejor punto de venta semanal
+        'vendedorMasRepetido':vendedorMasRepetido, #mejor vendedor semanal
+        'productMasVendidoSellerSemanal':productMasVendidoSellerSemanal, # mejor producto semanal vendedor
+        'productMasVendidoPVSemanal':productMasVendidoPVSemanal, #mejor producto semanal puntos de venta
+        'productoGlobalMasVendidoSemanal':productoGlobalMasVendidoSemanal, #mejor producto semanal
+        'ventasSemanalesPorVendedorOrigin':ventasSemanalesPorVendedorOrigin,#parámetro de salario
+        'grouped_sales':dict(grouped_sales),#ventas agrupadas para vendedores
+        }
+    return render(request, 'finance.html',context)
+        
+
+
+
+
+def financeDashboardOld(request):#MENU DE FINANZAS
     if request.user.is_authenticated:
 
         today = timezone.now().date()
@@ -1696,6 +1862,8 @@ def financeDashboard(request):#MENU DE FINANZAS
         return render(request, 'finance.html',context)
     else:
         return render(request,'forbiden.html')
+
+
 
 
 def sellersDashboard(request):#DASHBOARD DE VENDEDORES DE REPARTO
