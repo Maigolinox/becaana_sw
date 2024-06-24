@@ -165,8 +165,36 @@
         <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
           <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
           <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5>
+
+          <div class="row">
+            <div class="col-3"><span></span></div>
+            <div class="col-6">
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Ganancias para tipo de usuario repartidor normal</th>
+                            <th>Ganancia para tipo de usuario repartidor externo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario, datos in sumatorios.items %}
+                        <tr>
+                            <td>{{ usuario }}</td>
+                            <td>${{ datos.gananciaProductoReparto|stringformat:".2f"|intcomma }}</td>
+                            <td>${{ datos.gananciaProductoRepartoExterno|stringformat:".2f"|intcomma }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-3"><span></span></div>
+          </div>
+
+          
+
         {% for origin, sales in listaAgrupada.items %}
-            <h5 style="text-align: left;"> {{ origin }} </h5>
+            <h5 style="text-align: left;"> {{ origin }} </h5> 
             <table class="table" id="table_stockTable_{{forloop.counter}}">
                 <thead class="thead-dark">
                     <tr>

@@ -1274,6 +1274,7 @@ def financeDashboard(request):
     lista = sellerInventory.objects.all()
     # listaAgrupada=sellerInventory.objects.values('seller_id_id')
     listaAgrupada=defaultdict(list)
+    acumuladorValorStockVendedor=0
     for elemento in lista:
         userData=User.objects.all().filter(id=elemento.seller_id_id).get()
         elemento.seller_id_id="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
@@ -1287,9 +1288,36 @@ def financeDashboard(request):
         
         listaAgrupada[elemento.seller_id_id].append(elemento)
 
+    sumatorios={}
+    for llave,valores in listaAgrupada.items():
+
+        sumatorios[llave] = {
+            'gananciaProductoReparto': 0,
+            'gananciaProductoRepartoExterno': 0
+        }
+
+        print(llave)
+        for elemento in valores:
+            productID=elemento.product_id_id
+            cantidad=elemento.qty
+            datosProducto=articulosModel.objects.all().filter(id=productID).get()
+            costoProductos=datosProducto.costo
+            precioVentaReparto=datosProducto.precioVentaVendedorReparto
+            precioVentaRepartoExterno=datosProducto.precioVentaVendedorExterno
+            gananciaProductoReparto=(cantidad*precioVentaReparto)-(cantidad*costoProductos)
+            gananciaProductoRepartoExterno=(cantidad*precioVentaRepartoExterno)-(cantidad*costoProductos)
+            
+            sumatorios[llave]['gananciaProductoReparto'] += gananciaProductoReparto
+            sumatorios[llave]['gananciaProductoRepartoExterno'] += gananciaProductoRepartoExterno
+            # listaAgrupada[llave].append(gananciaProductoReparto)
+
+            # sumador+=elemento.gananciaTotal
+        
+        # listaAgrupada.llave.gananciaVendedor=sumador
+
     try:
         total_public_price = sum(item.precio_publico_total for item in lista)
-        total_cost = sum(item.qty * item.product_id.costo for item in lista)
+        total_cost = sum(item.qty * item.product_id.costo for item in lista)        
         gananciaTotal = total_public_price - total_cost
     except:
         pass
@@ -1313,6 +1341,7 @@ def financeDashboard(request):
 
 
     context = {
+        'sumatorios':sumatorios,
         'gananciaTotal':gananciaTotal,
         'total_cost':total_cost,
         'total_public_price':total_public_price,
