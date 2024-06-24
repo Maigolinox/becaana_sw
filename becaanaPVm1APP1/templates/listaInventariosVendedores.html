@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
+
 <!-- Page title  -->
 {% block title %}Sellers{% endblock title %}
 
@@ -57,9 +59,9 @@
         <div class="titlepage text_align_center">
           <br />
           <h2>Stock Actual de Vendedor</h2>
-          <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|floatformat:"2"}} MXN </h5>
-          <h5>Dinero al vender al público: $ {{total_public_price|floatformat:"2"}} MXN </h5>
-          <h5>Ganancia Total: $ {{ gananciaTotal |floatformat:"2"}}</h5>
+          <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
+          <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
+          <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5>
         </div>
         <div class="row">
           <div class="col-sm">

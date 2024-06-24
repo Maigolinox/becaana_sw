@@ -1122,6 +1122,10 @@ def financeDashboard(request):
     # print(domingoSemana)
     vendedorMasRepetido="Ninguno"
     productMasVendidoSellerSemanal="Ninguno"
+    total_public_price=0
+    total_cost=0
+    gananciaTotal=0
+
     try:
         vendedorMasRepetido=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER VENDEDOR SEMANAL QUE HIZO MAS VENTAS
         vendedorMasRepetido=User.objects.all().filter(id=vendedorMasRepetido['origin'])#EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL VENDEDOR
@@ -1278,7 +1282,17 @@ def financeDashboard(request):
         elemento.precio_publico_total = elemento.qty * elemento.product_id.precioVentaVendedorReparto
         elemento.ganancia = elemento.precio_publico_total - elemento.costo_total
         elemento.gananciaUnitaria = elemento.product_id.precioVentaVendedorReparto - elemento.product_id.costo
+
+        elemento.gananciaTotal=elemento.product_id.precioVentaVendedorReparto-elemento.product_id.costo
+        
         listaAgrupada[elemento.seller_id_id].append(elemento)
+
+    try:
+        total_public_price = sum(item.precio_publico_total for item in lista)
+        total_cost = sum(item.qty * item.product_id.costo for item in lista)
+        gananciaTotal = total_public_price - total_cost
+    except:
+        pass
 
 
     # print(listaAgrupada)##################################################################
@@ -1299,6 +1313,9 @@ def financeDashboard(request):
 
 
     context = {
+        'gananciaTotal':gananciaTotal,
+        'total_cost':total_cost,
+        'total_public_price':total_public_price,
         'listaAgrupada': dict(listaAgrupada), 
         'total_public_price': total_public_price,
         'total_cost': total_cost, 

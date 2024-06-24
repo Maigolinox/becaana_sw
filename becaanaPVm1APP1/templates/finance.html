@@ -162,6 +162,9 @@
     </div>
     <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
         <h3>Stock de Vendedores 👨‍💼</h3>
+        <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
+          <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
+          <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5>
         {% for origin, sales in listaAgrupada.items %}
             <h5 style="text-align: left;"> {{ origin }} </h5>
             <table class="table" id="table_stockTable_{{forloop.counter}}">
