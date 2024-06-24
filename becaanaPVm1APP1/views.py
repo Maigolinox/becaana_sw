@@ -1120,9 +1120,15 @@ def financeDashboard(request):
     # print(lunesSemana)
     domingoSemana=lunesSemana+timedelta(days=7)
     # print(domingoSemana)
+    vendedorMasRepetido="Ninguno"
+    productMasVendidoSellerSemanal="Ninguno"
+    try:
+        vendedorMasRepetido=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER VENDEDOR SEMANAL QUE HIZO MAS VENTAS
+        vendedorMasRepetido=User.objects.all().filter(id=vendedorMasRepetido['origin'])#EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL VENDEDOR
+    except:
+        vendedorMasRepetido="Ninguno"
+
     
-    vendedorMasRepetido=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER VENDEDOR SEMANAL QUE HIZO MAS VENTAS
-    vendedorMasRepetido=User.objects.all().filter(id=vendedorMasRepetido['origin'])#EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL VENDEDOR
 
     puntoVentaMasRepetido=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values('origin').annotate(origin_count=Count('origin')).order_by('-origin_count').first()#OBTENER PUNTO DE VENTA QUE HIZO MÁS VENTAS
     if puntoVentaMasRepetido is None:
@@ -1132,8 +1138,14 @@ def financeDashboard(request):
 
     ventasSemanalesSellers=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
     articulosSemanalesSellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasSemanalesSellers)
-    ventasAgrupadas = articulosSemanalesSellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
-    productMasVendidoSellerSemanal=articulosModel.objects.all().filter(id=ventasAgrupadas['product_id_id'])
+    try:
+        ventasAgrupadas = articulosSemanalesSellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadas="Nada"
+    if ventasAgrupadas is None:
+        pass
+    else:
+        productMasVendidoSellerSemanal=articulosModel.objects.all().filter(id=ventasAgrupadas['product_id_id'])
     ventasSemanalesVendedores=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
     
     grouped_sales = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
@@ -1206,12 +1218,20 @@ def financeDashboard(request):
     except:
         productMasVendidoPVSemanal="Ninguno"
 
+
+    
     articulosSemanalesGlobales = articulosSemanalesPV.union(articulosSemanalesSellers)
+    
     qty_totals = defaultdict(int)
     for elemento in articulosSemanalesGlobales:
         qty_totals[elemento.product_id_id] += elemento.qty
-    max_product_id = max(qty_totals, key=qty_totals.get)
-    productoGlobalMasVendidoSemanal=articulosModel.objects.all().filter(id=max_product_id)
+
+    try:
+        max_product_id = max(qty_totals, key=qty_totals.get)
+        productoGlobalMasVendidoSemanal=articulosModel.objects.all().filter(id=max_product_id)
+    except:
+        max_product_id=0
+        productoGlobalMasVendidoSemanal="No hay"
     
     todaySellerSales=sellerSales.objects.all().filter(date_added__date=today)
     todayPVSales=Sales.objects.all().filter(date_added__date=today)
