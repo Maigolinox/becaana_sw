@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     
     <style>
-        @media print {
+         /* Estilos para la impresión */
+         @media print {
             body * {
                 visibility: hidden;
             }
@@ -25,8 +26,12 @@
                 left: 0;
                 top: 0;
             }
+
+            /* Ajuste para evitar cortes en la tabla */
             table {
                 page-break-inside: auto !important;
+                page-break-before: always;
+                margin-top: 20px; /* Añade un margen superior adicional */
             }
 
             /* Márgenes para la hoja de impresión */
