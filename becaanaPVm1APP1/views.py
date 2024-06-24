@@ -1201,7 +1201,10 @@ def financeDashboard(request):
     articulosSemanalesPV=salesItems.objects.filter(sale_id_id__in=ventasSemanalesPV)
     
     ventasAgrupadasPV = articulosSemanalesPV.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
-    productMasVendidoPVSemanal=articulosModel.objects.all().filter(id=ventasAgrupadasPV['product_id_id'])
+    try:
+        productMasVendidoPVSemanal=articulosModel.objects.all().filter(id=ventasAgrupadasPV.product_id_id)
+    except:
+        productMasVendidoPVSemanal="Ninguno"
 
     articulosSemanalesGlobales = articulosSemanalesPV.union(articulosSemanalesSellers)
     qty_totals = defaultdict(int)
