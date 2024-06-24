@@ -1247,8 +1247,42 @@ def financeDashboard(request):
     totalVentasHistorico=addHistoricSellerSales+addHistoricPVSales#total ventas historico dinero
     totalNumeroVentasHistorico=numerosHistoricPVSales+numerosHistoricSellerSales#total ventas historico numero
 
+    lista = sellerInventory.objects.all()
+    # listaAgrupada=sellerInventory.objects.values('seller_id_id')
+    listaAgrupada=defaultdict(list)
+    for elemento in lista:
+        userData=User.objects.all().filter(id=elemento.seller_id_id).get()
+        elemento.seller_id_id="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        # print(elemento.seller_id_id)
+        elemento.costo_total = elemento.qty * elemento.product_id.costo
+        elemento.precio_publico_total = elemento.qty * elemento.product_id.precioVentaVendedorReparto
+        elemento.ganancia = elemento.precio_publico_total - elemento.costo_total
+        elemento.gananciaUnitaria = elemento.product_id.precioVentaVendedorReparto - elemento.product_id.costo
+        listaAgrupada[elemento.seller_id_id].append(elemento)
+
+
+    # print(listaAgrupada)##################################################################
+    
+    
+         
+    # for item in lista:
+    #     item.costo_total = item.qty * item.product_id.costo
+    #     item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
+    #     item.ganancia = item.precio_publico_total - item.costo_total
+    #     item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
+
+    
+
+    total_public_price = sum(item.precio_publico_total for item in lista)
+    total_cost = sum(item.qty * item.product_id.costo for item in lista)
+    gananciaTotal = total_public_price - total_cost
+
 
     context = {
+        'listaAgrupada': dict(listaAgrupada), 
+        'total_public_price': total_public_price,
+        'total_cost': total_cost, 
+        'gananciaTotal': gananciaTotal,
         'totalVentasHoy':totalVentasHoy,#dinero hoy
         'ventas_hoy_vendedores':addSalesSellerAcumulator,#dinero hoy
         'ventas_hoy_puntos_venta':addPVSalesAcumulator,#dinero hoy

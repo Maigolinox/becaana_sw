@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load humanize %} {% block content %}
+{% extends "base.html" %} {% load humanize %} {% block content %}{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,25 +15,46 @@
 
 <!-- DataTables -->
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+    
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    
+        <!-- Add DataTables JavaScript -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" 
+      href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" 
+      src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
 </head>
 <body> <br><br><br><br><br><br><br>
     <div class="container">
         <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Finanzas de la empresa 💸</h1>
         <div class="row">
-            <div class="col-sm" style="text-align: center;">
+            <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#todayData"> Datos de hoy </a>
             </div>
-            <div class="col-sm" style="text-align: center;">
+            <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#weeklyData" > Datos semanales </a>
             </div>
-            <div class="col-sm" style="text-align: center;">
+            <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#podio" > Podio </a>
             </div>
-            <div class="col-sm" style="text-align: center;">
+            <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#historicData" > Datos históricos </a>
             </div>
-            <div class="col-sm" style="text-align: center;">
+            <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#salarios" > Salarios </a>
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#ventasSemanalesVendedores" > Ventas Semanales Vendedores </a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#valorStockVendedores" > Valor de Stock de Vendedores </a>
             </div>
         </div>
         <hr>
@@ -109,7 +130,7 @@
             </table>
         </div>
         <!-- VENTAS SEMANALES POR VENDEDORES -->
-        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="salarios">
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
             <h3>Ventas semanales por vendedores 👨‍💼</h3>
             <!-- {{grouped_sales}} -->
             {% for origin, sales in grouped_sales.items %}
@@ -137,11 +158,49 @@
                 </tbody>
             </table>
         {% endfor %}
-            
-            
-            
         </div>
     </div>
+    <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
+        <h3>Stock de Vendedores 👨‍💼</h3>
+        {% for origin, sales in listaAgrupada.items %}
+            <h5 style="text-align: left;"> {{ origin }} </h5>
+            <table class="table" id="table_stockTable_{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Stock Actual</th>
+                        <th>Costo Unitario</th>
+                        <th>Precio Venta Reparto</th>
+                        <th>Ganancia Unitaria</th>
+                        <th>Ganancia Total</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.product_id }}</td>
+                            <td>{{ sale.qty|floatformat:"-2"|intcomma }}</td>
+                            <td>${{ sale.product_id.costo|stringformat:".2f"|intcomma }}</td>
+                            <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
+                            <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
+                            <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
+                  <td><a href="{% url 'updateStockSeller' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#table_stockTable_{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+        {% endfor %}
+    </div>
+
     
 
 </body>
