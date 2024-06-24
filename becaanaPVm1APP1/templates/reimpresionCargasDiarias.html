@@ -29,8 +29,8 @@
 
             /* Ajuste para evitar cortes en la tabla */
             table {
-                page-break-inside: auto !important;
-                page-break-before: always;
+                page-break-inside: avoid;
+                page-break-before: auto;
                 margin-top: 20px; /* Añade un margen superior adicional */
             }
 
@@ -55,40 +55,46 @@
       {% for usuario_id, registro in registros_por_usuario.items %}
           <div class="user-section" id="user-section-{{ usuario_id }}">
             <div class="row">
-              <center> <img src="{% static 'images/logo_Black.png' %}" width="441.5px" height="133.5px"></center>
-              <div class="col-sm" style="margin: 20px;">
-                <h4>Usuario: {{ usuario_id }}</h4>
-              </div>
-              <div class="col-sm" style="margin: 20px;">
-                <button class="btn btn-primary" onclick="printTable('user-section-{{ usuario_id }}')">🖨️</button>
+              <div class="col-sm text-center">
+                <img src="{% static 'images/logo_Black.png' %}" width="300px" height="100px" style="margin-bottom: 10px;">
               </div>
             </div>
-              <table class="table table-bordered">
-                  <thead class="">
-                      <tr>
-                          <th>ID de la carga</th>
-                          <th>Fecha</th>
-                          <th>Producto</th>
-                          <th>Cantidad</th>
-                          <th>Valor</th>
-                          <!-- Agrega más columnas según tu modelo -->
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {% for registro in registro.registros %}
-                          <tr>
-                              <td>{{ registro.id }}</td>
-                              <td>{{ registro.fecha }}</td>
-                              <td>{{ registro.nombre_producto }}</td>
-                              <td>{{ registro.cantidad }}</td>
-                              <td>${{ registro.valor|stringformat:".2f"|intcomma }}</td>
-                              <!-- Agrega más columnas según tu modelo -->
-                          </tr>
-                      {% endfor %}
-                  </tbody>
-              </table>
-              Total de productos: {{registro.total_productos}}<br>
-              Total del valor de tu carga: ${{registro.valor_total_stock|stringformat:".2f"|intcomma}}<br>
+            <div class="row">
+              <div class="col-sm" style="text-align: center;">
+                <h4>Usuario: {{ usuario_id }}</h4>
+              </div>
+              <div class="col-sm" style="text-align: center;">
+                <button class="btn btn-primary" onclick="printTable('user-section-{{ usuario_id }}')">🖨️ Imprimir Tabla</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID de la carga</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reg in registro.registros %}
+                            <tr>
+                                <td>{{ reg.id }}</td>
+                                <td>{{ reg.fecha }}</td>
+                                <td>{{ reg.nombre_producto }}</td>
+                                <td>{{ reg.cantidad }}</td>
+                                <td>${{ reg.valor|stringformat:".2f"|intcomma }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p>Total de productos: {{ registro.total_productos }}</p>
+                <p>Total del valor de la carga: ${{ registro.valor_total_stock|stringformat:".2f"|intcomma }}</p>
+              </div>
+            </div>
           </div>
       {% endfor %}
 
@@ -99,21 +105,19 @@
       function printTable(sectionId) {
           const printSection = document.getElementById(sectionId);
           const originalContent = document.body.innerHTML;
-          const printBtn = printSection.querySelector('.print-btn');
-          
 
-
+          // Ocultar el botón de impresión durante la impresión
+          printSection.querySelector('.btn').style.display = 'none';
 
           document.body.innerHTML = printSection.innerHTML;
           window.print();
 
+          // Restaurar el contenido original y mostrar nuevamente el botón
           document.body.innerHTML = originalContent;
-          window.location.reload();  // Recargar la página para restaurar los eventos y estado original
+          window.location.reload();
       }
   </script>
-  
-    
 </body>
 </html>
 
-{% endblock%}
+{% endblock %}
