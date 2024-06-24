@@ -159,77 +159,75 @@
             </table>
         {% endfor %}
         </div>
-    </div>
-    <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
-        <h3>Stock de Vendedores 👨‍💼</h3>
-        <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
-          <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
-          <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5>
-
-          <div class="row">
-            <div class="col-3"><span></span></div>
-            <div class="col-6">
-                <table class="table table-bordered">
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
+            <h3>Stock de Vendedores 👨‍💼</h3>
+            <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
+              <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
+              <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5>
+    
+              <div class="row">
+                <div class="col-sm">
+                    <table class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Ganancias para tipo de usuario repartidor normal</th>
+                                <th>Ganancia para tipo de usuario repartidor externo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario, datos in sumatorios.items %}
+                            <tr>
+                                <td>{{ usuario }}</td>
+                                <td>${{ datos.gananciaProductoReparto|stringformat:".2f"|intcomma }}</td>
+                                <td>${{ datos.gananciaProductoRepartoExterno|stringformat:".2f"|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+    
+              
+    
+            {% for origin, sales in listaAgrupada.items %}
+                <h5 style="text-align: left;"> {{ origin }} </h5> 
+                <table class="table" id="table_stockTable_{{forloop.counter}}">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Usuario</th>
-                            <th>Ganancias para tipo de usuario repartidor normal</th>
-                            <th>Ganancia para tipo de usuario repartidor externo</th>
+                            <th>Producto</th>
+                            <th>Stock Actual</th>
+                            <th>Costo Unitario</th>
+                            <th>Precio Venta Reparto</th>
+                            <th>Ganancia Unitaria</th>
+                            <th>Ganancia Total</th>
+                            <th>Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for usuario, datos in sumatorios.items %}
-                        <tr>
-                            <td>{{ usuario }}</td>
-                            <td>${{ datos.gananciaProductoReparto|stringformat:".2f"|intcomma }}</td>
-                            <td>${{ datos.gananciaProductoRepartoExterno|stringformat:".2f"|intcomma }}</td>
-                        </tr>
+                        {% for sale in sales %}
+                            <tr>
+                                <td>{{ sale.product_id }}</td>
+                                <td>{{ sale.qty|floatformat:"-2"|intcomma }}</td>
+                                <td>${{ sale.product_id.costo|stringformat:".2f"|intcomma }}</td>
+                                <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
+                                <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
+                                <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
+                      <td><a href="{% url 'updateStockSeller' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
+    
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="col-3"><span></span></div>
-          </div>
-
-          
-
-        {% for origin, sales in listaAgrupada.items %}
-            <h5 style="text-align: left;"> {{ origin }} </h5> 
-            <table class="table" id="table_stockTable_{{forloop.counter}}">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Producto</th>
-                        <th>Stock Actual</th>
-                        <th>Costo Unitario</th>
-                        <th>Precio Venta Reparto</th>
-                        <th>Ganancia Unitaria</th>
-                        <th>Ganancia Total</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sale in sales %}
-                        <tr>
-                            <td>{{ sale.product_id }}</td>
-                            <td>{{ sale.qty|floatformat:"-2"|intcomma }}</td>
-                            <td>${{ sale.product_id.costo|stringformat:".2f"|intcomma }}</td>
-                            <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
-                            <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
-                            <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
-                  <td><a href="{% url 'updateStockSeller' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
-
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <script>
-                (function($) {
-                    $(document).ready(function() {
-                        $('#table_stockTable_{{forloop.counter}}').dataTable();
-                    });
-                })(jQuery);
-            </script>
-        {% endfor %}
+                <script>
+                    (function($) {
+                        $(document).ready(function() {
+                            $('#table_stockTable_{{forloop.counter}}').dataTable();
+                        });
+                    })(jQuery);
+                </script>
+            {% endfor %}
+        </div>
     </div>
 
     

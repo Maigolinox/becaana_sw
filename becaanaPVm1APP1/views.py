@@ -3122,7 +3122,8 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
                     RegistroInventarioVendedores.objects.create(
                         usuario=request.user,
                         nombre_producto=instance.product_id.nombreArticulo,  # Ajusta esto según el nombre del campo en tu modelo articulosModel
-                        cantidad=instance.qty
+                        cantidad=instance.qty,
+                        product_id=instance.product_id
                         )
 
                     
@@ -3296,3 +3297,53 @@ def reporteInventario(request):
         return render(request,'reporteInventario.html',context)
     else:
         return render(request,'forbiden.html')
+    
+@login_required
+def reimpresionCargasDiarias(request):
+    today=datetime.now().date()
+    # fechas_disponibles = RegistroInventarioVendedores.objects.values_list('fecha', flat=True).distinct()
+
+    cargasHoyVendedores= RegistroInventarioVendedores.objects.all().filter(fecha=today)
+
+    registros_por_usuario = {}
+    
+    for registro in cargasHoyVendedores:
+        usuario_id = registro.usuario_id
+        permisosAdicionales=usersPermission.objects.all().filter(user_id=usuario_id).get()
+        isExternal = permisosAdicionales.is_externalSeller
+        
+        datosArticulo=articulosModel.objects.filter(id=registro.product_id).get()
+        if isExternal:
+            precioArticulo=datosArticulo.precioVentaVendedorExterno
+        else:
+            precioArticulo=datosArticulo.precioVentaVendedorReparto
+
+        registro.valor=precioArticulo*registro.cantidad
+        
+        datosUsuario=User.objects.all().filter(id=usuario_id).get()
+        usuario_key = f" {datosUsuario.username} Nombre: {datosUsuario.first_name} {datosUsuario.last_name}"
+        if usuario_key not in registros_por_usuario:
+            registros_por_usuario[usuario_key] = {
+                'registros': [],
+                'total_productos': 0,
+                'valor_total_stock':0,
+                }
+        registros_por_usuario[usuario_key]['registros'].append(registro)
+        registros_por_usuario[usuario_key]['total_productos'] += registro.cantidad
+        registros_por_usuario[usuario_key]['valor_total_stock'] += registro.valor
+
+
+        # usuario_id=" "+datosUsuario.username+" Nombre: "+datosUsuario.first_name+" "+datosUsuario.last_name
+        # if usuario_id not in registros_por_usuario:
+        #     registros_por_usuario[usuario_id] = []
+        # registros_por_usuario[usuario_id].append(registro)
+
+
+    # sumaCantidad=sum(registro.cantidad for registro in cargasHoyVendedores)
+    # print(sumaCantidad)
+
+    context={
+        'registros_por_usuario':registros_por_usuario,        
+    }
+
+    return render(request,'reimpresionCargasDiarias.html',context)

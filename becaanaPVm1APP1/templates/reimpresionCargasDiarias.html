@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account %}
+{% load humanize %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operaciones con Stock</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-section, .print-section * {
+                visibility: visible;
+            }
+            .print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <br><br><br><br><br>
+    <div class="col-sm" style="text-align: center;">
+        <div class="titlepage text_align_center">
+            <br>
+            <h2> Cargas de Hoy</h2>
+        </div>    
+        
+    </div>
+    <div class="container">
+      
+      {% for usuario_id, registro in registros_por_usuario.items %}
+          <div class="user-section" id="user-section-{{ usuario_id }}">
+            <div class="row">
+              <center> <img src="{% static 'images/logo_Black.png' %}" width="441.5px" height="133.5px"></center>
+              <div class="col-sm" style="margin: 20px;">
+                <h4>Usuario: {{ usuario_id }}</h4>
+              </div>
+              <div class="col-sm" style="margin: 20px;">
+                <button class="btn btn-primary" onclick="printTable('user-section-{{ usuario_id }}')">🖨️</button>
+              </div>
+            </div>
+              <table class="table table-bordered">
+                  <thead class="">
+                      <tr>
+                          <th>ID de la carga</th>
+                          <th>Fecha</th>
+                          <th>Producto</th>
+                          <th>Cantidad</th>
+                          <th>Valor</th>
+                          <!-- Agrega más columnas según tu modelo -->
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for registro in registro.registros %}
+                          <tr>
+                              <td>{{ registro.id }}</td>
+                              <td>{{ registro.fecha }}</td>
+                              <td>{{ registro.nombre_producto }}</td>
+                              <td>{{ registro.cantidad }}</td>
+                              <td>${{ registro.valor|stringformat:".2f"|intcomma }}</td>
+                              <!-- Agrega más columnas según tu modelo -->
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              Total de productos: {{registro.total_productos}}<br>
+              Total del valor de tu carga: ${{registro.valor_total_stock|stringformat:".2f"|intcomma}}<br>
+          </div>
+      {% endfor %}
+
+      
+  </div>
+
+  <script>
+      function printTable(sectionId) {
+          const printSection = document.getElementById(sectionId);
+          const originalContent = document.body.innerHTML;
+          const printBtn = printSection.querySelector('.print-btn');
+          
+
+
+
+          document.body.innerHTML = printSection.innerHTML;
+          window.print();
+
+          document.body.innerHTML = originalContent;
+          window.location.reload();  // Recargar la página para restaurar los eventos y estado original
+      }
+  </script>
+  
+    
+</body>
+</html>
+
+{% endblock%}
