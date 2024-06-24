@@ -1166,15 +1166,15 @@ def financeDashboard(request):
         datos=User.objects.all().filter(id=identificadorUsuario).get()
         elemento['origin']="Usuario: "+datos.username+". Nombre Completo: "+datos.first_name+" "+datos.last_name+"."
         if ventas >= 22000 and  ventas < 26000:
-            elemento['salario'] = ventas*1.11
+            elemento['salario'] = ventas*0.11
         elif ventas >= 26000 and ventas < 30000:
-            elemento['salario'] = ventas*1.12
+            elemento['salario'] = ventas*0.12
         elif ventas >= 30000 and ventas < 34000:
-            elemento['salario'] = ventas*1.13
+            elemento['salario'] = ventas*0.13
         elif ventas >= 34000 and ventas < 40000:
-            elemento['salario'] = ventas*1.14
+            elemento['salario'] = ventas*0.14
         elif ventas >= 40000:
-            elemento['salario'] = ventas*1.15
+            elemento['salario'] = ventas*0.15
         elif ventas < 22000:
             elemento['salario'] = 1750
         else:
