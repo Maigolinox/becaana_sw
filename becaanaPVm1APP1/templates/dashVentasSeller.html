@@ -107,6 +107,14 @@
                   </a>
                 </span>
               </div>
+              <div class="col-xs-6 col-sm-4 col-lg-3" style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                <a href="{% url 'reimpresionCargasDiariasInd' %}" style="display: block;"><img src="{% static 'images/reprint.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                <span>
+                  <a href="{% url 'reimpresionCargasDiariasInd' %}" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                    <strong>Consultar Mi historial de cargas</strong>
+                  </a>
+                </span>
+              </div>
         </div>
         <br>
         <h2 style="text-align: center;"> <strong>Total de mis ventas de hoy: {% if totalVentasUsuario.total_ventas %} ${{ totalVentasUsuario.total_ventas|floatformat:"2" }} {% else %} $0,00 {% endif %}</strong> </h2>

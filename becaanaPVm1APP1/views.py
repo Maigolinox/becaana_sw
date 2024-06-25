@@ -3347,3 +3347,88 @@ def reimpresionCargasDiarias(request):
     }
 
     return render(request,'reimpresionCargasDiarias.html',context)
+
+@login_required
+def reimpresionCargasDiariasInd(request):
+    # Obtengo todas las cargas del vendedor
+    cargasVendedor = RegistroInventarioVendedores.objects.filter(usuario_id=request.user.id).values_list('code', flat=True).distinct()
+    # print(cargasVendedor)
+    
+    sale_data_vendedor = []
+    
+    for code in cargasVendedor:
+        # Obtengo una carga de ejemplo para este código
+        carga = RegistroInventarioVendedores.objects.filter(code=code, usuario_id=request.user.id).first()
+        aditionalPermissions=usersPermission.objects.filter(user_id=request.user.id).get()
+        
+        data = {}
+        for field in carga._meta.get_fields(include_parents=False):
+            if field.related_model is None:
+                data[field.name] = getattr(carga, field.name)
+        
+        # Obtengo todos los items con el mismo code y usuario_id
+        items = RegistroInventarioVendedores.objects.filter(code=code, usuario_id=request.user.id).values()
+        # print(items)
+        acumuladorValor=0
+        for elemento in items:
+            cantidad=elemento['cantidad']
+            infoProducto=articulosModel.objects.all().filter(id=elemento['product_id']).get()
+            if aditionalPermissions.is_externalSeller:
+                precioProducto=infoProducto.precioVentaVendedorExterno*cantidad
+            else:
+                precioProducto=infoProducto.precioVentaVendedorReparto*cantidad
+            acumuladorValor+=precioProducto
+        data['acumuladorValor']=acumuladorValor
+        data['items'] = list(items)
+        data['item_count'] = sum(item['cantidad'] for item in items)
+        
+        sale_data_vendedor.append(data)
+    
+    context = {
+        'sale_data': sale_data_vendedor,
+    }
+    return render(request, 'reimpresionCargasDiariasInd.html', context)
+
+
+def receiptSellerCharge(request):
+    if request.user.is_authenticated:
+        id = request.GET.get('id')
+        transaction = {}        
+        transaction['code']=int(id)
+        transaction['code']=str(transaction['code'])
+        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()
+        
+        permisosEspeciales=usersPermission.objects.filter(user_id=request.user.id).get()
+        total=0
+        acumulador_total_productos=0
+        for elemento in ItemList:
+            datosProducto=articulosModel.objects.filter(id=elemento.product_id).get()
+            
+            if permisosEspeciales.is_externalSeller:
+                elemento.precio=datosProducto.precioVentaVendedorExterno
+            else:
+                elemento.precio=datosProducto.precioVentaVendedorReparto
+
+            total=total + (elemento.precio*elemento.cantidad)
+            acumulador_total_productos+=elemento.cantidad
+            
+
+            
+        datosTransaccin=RegistroInventarioVendedores.objects.filter(code = id).first()
+        transaction['date_added']=datosTransaccin.fecha
+        
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        
+        
+        context = {
+            "total":total,
+            "transaction" : transaction,
+            "salesItems" : ItemList,
+            'total_productos':acumulador_total_productos,
+            "nombreUsuario":nombreUsuario,
+        }
+
+        return render(request, 'receiptCharge.html',context)
+    else:
+        return render(request,'forbiden.html')
