@@ -9,6 +9,8 @@
 <!-- Datatables -->
 <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css ' %}" rel="stylesheet">
 <link href="{% static 'css/pagination_buttons.css ' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 {% endblock stylesheets %}
 
 <!-- Page Heading -->
@@ -115,6 +117,24 @@
                   </a>
                 </span>
               </div>
+              <!-- <div class="col-xs-6 col-sm-4 col-lg-3" class=" view-data-inventory" data-id="{{ user.id }}" 
+              title="View Receipt"style="text-align: center; display: inline-block; background-color: #f7f7f7; border-radius: 25% 10%; margin-top: 10px; margin-left: 10px; margin-right: 10px; margin-bottom: 10px;">
+                <a href="{% url 'reimpresionInventariosI' %}" class=" view-data-inventory"data-id="{{ user.id }}" 
+                title="View Receipt" style="display: block;"><img src="{% static 'images/receipt.png' %}" alt="List Projects" width="200px" height="200px" style="margin-top: 10px;"></a>
+                <span>
+                  <a href="{% url 'reimpresionInventariosI' %}" class=" view-data-inventory" data-id="{{ user.id }}" 
+                  title="View Receipt" style="display: block; margin: 10px; color: #37517E; font-size: 1.2em;"><br>
+                    <strong>Mi inventario</strong>
+                  </a>
+                </span>
+              </div> -->
+
+              <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data-inventory" 
+                                type="button" 
+                                data-id="{{ user.id }}" 
+                                title="View Receipt">Reimprimir mi inventario
+                                    <i class="material-icons mdc-button__icon">receipt</i>
+                                </button>
         </div>
         <br>
         <h2 style="text-align: center;"> <strong>Total de mis ventas de hoy: {% if totalVentasUsuario.total_ventas %} ${{ totalVentasUsuario.total_ventas|floatformat:"2" }} {% else %} $0,00 {% endif %}</strong> </h2>
@@ -125,6 +145,78 @@
 
 
     </div>
+    <script>
+      $(function() {
+          
+          $('.view-data-inventory').click(function() {
+              uni_modal("Recibo", "{% url 'receipt-modal-inventory' %}?id=" + $(this).attr('data-id'))
+          })
+          $('.delete-data').click(function() {
+              _conf("Are you sure to delete <b>" + $(this).attr('data-code') + "</b> Transaction record?", "delete_sale", [$(this).attr('data-id')])
+          })
+          $('.delete-data-sellers').click(function() {
+              _conf("Are you sure to delete <b>" + $(this).attr('data-code') + "</b> Transaction record Sellers?", "delete_sale_sellers", [$(this).attr('data-id')])
+          })
+  
+      })
+  
+      function delete_sale_sellers($id){
+          start_loader();
+          $.ajax({
+              headers: {
+                  "X-CSRFToken": '{{csrf_token}}'
+              },
+              url: "{% url 'delete-sale-sellers' %}",
+              method: "POST",
+              data: {
+                  id: $id
+              },
+              dataType: "json",
+              error: err => {
+                  console.log(err)
+                  alert_toast("An error occured.", 'error');
+                  end_loader();
+              },
+              success: function(resp) {
+                  if (typeof resp == 'object' && resp.status == 'success') {
+                      location.reload();
+                  } else {
+                      alert_toast("An error occured.", 'error');
+                      end_loader();
+                  }
+              }
+          })
+      }
+      
+  
+      function delete_sale($id) {
+          start_loader();
+          $.ajax({
+              headers: {
+                  "X-CSRFToken": '{{csrf_token}}'
+              },
+              url: "{% url 'delete-sale' %}",
+              method: "POST",
+              data: {
+                  id: $id
+              },
+              dataType: "json",
+              error: err => {
+                  console.log(err)
+                  alert_toast("An error occured.", 'error');
+                  end_loader();
+              },
+              success: function(resp) {
+                  if (typeof resp == 'object' && resp.status == 'success') {
+                      location.reload();
+                  } else {
+                      alert_toast("An error occured.", 'error');
+                      end_loader();
+                  }
+              }
+          })
+      }
+  </script>
     
 </body>
 </html>

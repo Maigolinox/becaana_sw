@@ -91,7 +91,7 @@ urlpatterns=[
     path('reimpresionCargasDiarias/',views.reimpresionCargasDiarias,name="reimpresionCargasDiarias"),
     path('receiptSellerCharge/', views.receiptSellerCharge, name="receipt-modal-charge"),
     path('reimpresionCargasDiariasI/',views.reimpresionCargasDiariasInd,name="reimpresionCargasDiariasInd"),
-    path('impresionInventariosI/<int:id>', views.impresionInventariosI, name="reimpresionInventariosI"),
+    path('impresionInventariosI/', views.impresionInventariosI, name="reimpresionInventariosI"),
     path('impresionInventarios/', views.impresionInventarios, name="reimpresionInventarios"),
     path('receiptSellerInventory/', views.receiptSellerInventory, name="receipt-modal-inventory"),
 

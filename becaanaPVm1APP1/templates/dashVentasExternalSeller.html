@@ -115,6 +115,12 @@
                   </a>
                 </span>
               </div>
+              <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data-inventory" 
+                                type="button" 
+                                data-id="{{ user.id }}" 
+                                title="View Receipt">Reimprimir mi inventario 
+                                    <i class="material-icons mdc-button__icon">receipt</i>
+                                </button>
         </div>
         <br>
         <h2 style="text-align: center;"> <strong>Total de mis ventas de hoy: {% if totalVentasUsuario.total_ventas %} ${{ totalVentasUsuario.total_ventas|floatformat:"2" }} {% else %} $0,00 {% endif %}</strong> </h2>
@@ -127,6 +133,78 @@
     </div>
     
 </body>
+<script>
+  $(function() {
+      
+      $('.view-data-inventory').click(function() {
+          uni_modal("Recibo", "{% url 'receipt-modal-inventory' %}?id=" + $(this).attr('data-id'))
+      })
+      $('.delete-data').click(function() {
+          _conf("Are you sure to delete <b>" + $(this).attr('data-code') + "</b> Transaction record?", "delete_sale", [$(this).attr('data-id')])
+      })
+      $('.delete-data-sellers').click(function() {
+          _conf("Are you sure to delete <b>" + $(this).attr('data-code') + "</b> Transaction record Sellers?", "delete_sale_sellers", [$(this).attr('data-id')])
+      })
+
+  })
+
+  function delete_sale_sellers($id){
+      start_loader();
+      $.ajax({
+          headers: {
+              "X-CSRFToken": '{{csrf_token}}'
+          },
+          url: "{% url 'delete-sale-sellers' %}",
+          method: "POST",
+          data: {
+              id: $id
+          },
+          dataType: "json",
+          error: err => {
+              console.log(err)
+              alert_toast("An error occured.", 'error');
+              end_loader();
+          },
+          success: function(resp) {
+              if (typeof resp == 'object' && resp.status == 'success') {
+                  location.reload();
+              } else {
+                  alert_toast("An error occured.", 'error');
+                  end_loader();
+              }
+          }
+      })
+  }
+  
+
+  function delete_sale($id) {
+      start_loader();
+      $.ajax({
+          headers: {
+              "X-CSRFToken": '{{csrf_token}}'
+          },
+          url: "{% url 'delete-sale' %}",
+          method: "POST",
+          data: {
+              id: $id
+          },
+          dataType: "json",
+          error: err => {
+              console.log(err)
+              alert_toast("An error occured.", 'error');
+              end_loader();
+          },
+          success: function(resp) {
+              if (typeof resp == 'object' && resp.status == 'success') {
+                  location.reload();
+              } else {
+                  alert_toast("An error occured.", 'error');
+                  end_loader();
+              }
+          }
+      })
+  }
+</script>
 </html>
 
 {% endblock %}
