@@ -89,8 +89,12 @@ urlpatterns=[
     path('deleteRegisterPV/<int:id>',views.deleteRegisterPV,name="deleteRegisterPV"),
     path('addStockMatrix/',views.addMatrixStock,name="addStockMatrix"),
     path('reimpresionCargasDiarias/',views.reimpresionCargasDiarias,name="reimpresionCargasDiarias"),
-    path('reimpresionCargasDiariasI/',views.reimpresionCargasDiariasInd,name="reimpresionCargasDiariasInd"),
     path('receiptSellerCharge/', views.receiptSellerCharge, name="receipt-modal-charge"),
+    path('reimpresionCargasDiariasI/',views.reimpresionCargasDiariasInd,name="reimpresionCargasDiariasInd"),
+    path('impresionInventariosI/<int:id>', views.impresionInventariosI, name="reimpresionInventariosI"),
+    path('impresionInventarios/', views.impresionInventarios, name="reimpresionInventarios"),
+    path('receiptSellerInventory/', views.receiptSellerInventory, name="receipt-modal-inventory"),
+
 
     # path('storeData/',views.storeData,name="storeData")
 
