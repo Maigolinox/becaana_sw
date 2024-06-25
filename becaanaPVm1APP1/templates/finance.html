@@ -182,7 +182,7 @@
                                 <tr>
                                     <td>{{ item.nombreUsuario }}</td>
                                     <td>$ {{ item.valordeStock|stringformat:".2f"|intcomma  }}</td>
-                                    <td>$ {{ item.acumuladorProductos|stringformat:".2f"|intcomma  }}</td>
+                                    <td>{{ item.acumuladorProductos|stringformat:".2f"|intcomma  }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
