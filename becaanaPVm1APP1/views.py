@@ -46,7 +46,7 @@ def save_SellerExternalInventory(request):
     code = str(pref) + str(code)
 
     try:
-        # print(data)
+        # #print(data)
         i = 0
         for prod in data.getlist('product_id[]'):
             product_id = prod 
@@ -60,7 +60,7 @@ def save_SellerExternalInventory(request):
             seller_id=request.user.id
             
             price = data.getlist('price[]')[i]
-            # print("Precio del producto de vendedor",price)
+            # #print("Precio del producto de vendedor",price)
             obj, created = sellerInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
             if not created:
                 sellerInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
@@ -89,9 +89,9 @@ def save_SellerExternalInventory(request):
         resp['sale_id'] = sale_id
         # articulosModel.success(request, "Venta guardada.")
     except Exception as e:
-        print(e)
+        #print(e)
         resp['msg'] = "Ocurrió un error"
-        #print("Unexpected errors:", e)###############################
+        ##print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
@@ -100,7 +100,7 @@ def save_SellerExternalInventory(request):
 
 def receiptChargePV(request):
     if request.user.is_authenticated:
-        # print(request.GET)
+        # #print(request.GET)
         id = request.GET.get('id')
         transaction = {'date_added':timezone.now()}
 
@@ -111,9 +111,9 @@ def receiptChargePV(request):
         acumulador_total_productos=0
         ItemList = RegistroInventarioPuntoVenta.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
-            # print(elemento.product_id)
+            # #print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
-            # print(articulo.precioVentaVendedorReparto)
+            # #print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaPublico)
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaPublico
@@ -140,7 +140,7 @@ def receiptChargePV(request):
 
 def receiptChargeSellerExternal(request):
     if request.user.is_authenticated:
-        # print(request.GET)
+        # #print(request.GET)
         id = request.GET.get('id')
         transaction = {'date_added':timezone.now()}
 
@@ -151,9 +151,9 @@ def receiptChargeSellerExternal(request):
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         acumulador_total_productos=0
         for elemento in ItemList:
-            # print(elemento.product_id)
+            # #print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
-            # print(articulo.precioVentaVendedorReparto)
+            # #print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorExterno)
             acumulador_total_productos+=elemento.cantidad
             elemento.nombreArticulo=articulo.nombreArticulo
@@ -178,7 +178,7 @@ def receiptChargeSellerExternal(request):
 
 def receiptChargeSeller(request):
     if request.user.is_authenticated:
-        # print(request.GET)
+        # #print(request.GET)
         id = request.GET.get('id')
         transaction = {'date_added':timezone.now()}
 
@@ -189,16 +189,16 @@ def receiptChargeSeller(request):
         acumulador_total_productos=0
         ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
         for elemento in ItemList:
-            print("impresion: ",elemento)
-            # print(elemento.product_id)
+            #print("impresion: ",elemento)
+            # #print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
-            # print(articulo.precioVentaVendedorReparto)
+            # #print(articulo.precioVentaVendedorReparto)
             total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaVendedorReparto
             
             acumulador_total_productos+=elemento.cantidad
-            #print(acumulador_total_productos)
+            ##print(acumulador_total_productos)
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
             
@@ -233,7 +233,7 @@ def save_SellerInventory(request):
     code = str(pref) + str(code)
 
     try:
-        # print(data)
+        # #print(data)
         i = 0
         for prod in data.getlist('product_id[]'):
             product_id = prod 
@@ -247,7 +247,7 @@ def save_SellerInventory(request):
             seller_id=request.user.id
             
             price = data.getlist('price[]')[i]
-            # print("Precio del producto de vendedor",price)
+            # #print("Precio del producto de vendedor",price)
             obj, created = sellerInventory.objects.get_or_create(product_id_id=product_id,seller_id_id=seller_id)
             if not created:
                 sellerInventory.objects.filter(product_id_id=product_id,seller_id_id=seller_id).update(qty=F('qty')+qty)
@@ -276,9 +276,9 @@ def save_SellerInventory(request):
         resp['sale_id'] = sale_id
         # articulosModel.success(request, "Venta guardada.")
     except Exception as e:
-        print(e)
+        #print(e)
         resp['msg'] = "Ocurrió un error"
-        #print("Unexpected errors:", e)###############################
+        ##print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
@@ -297,7 +297,7 @@ def save_PVInventory(request):
     code = str(pref) + str(code)
 
     try:
-        # print(data)
+        # #print(data)
         i = 0
         for prod in data.getlist('product_id[]'):
             product_id = prod 
@@ -341,9 +341,9 @@ def save_PVInventory(request):
         resp['sale_id'] = sale_id
         # articulosModel.success(request, "Venta guardada.")
     except Exception as e:
-        print(e)
+        #print(e)
         resp['msg'] = "Ocurrió un error"
-        #print("Unexpected errors:", e)###############################
+        ##print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 # # # #
@@ -419,7 +419,7 @@ def editProducts(request):
             return render(request,'editProducts.html',context={'articulos':articulos})
 
         except Exception as e:
-            ##print(e)
+            ###print(e)
             pass
         return render(request,'editProducts.html')
     else:
@@ -552,11 +552,11 @@ def dashboard(request):
         objetoUsuario.is_matrixSeller=objeto.is_matrixSeller
 
         mensaje=""
-        ##print(userName)
+        ###print(userName)
         if (objetoUsuario.is_staff and objetoUsuario.is_superuser and objetoUsuario.is_active):# dashboard de administrador
             return render(request,'dashboard.html',context={'mensaje':mensaje})
         elif (objetoUsuario.is_active and not objetoUsuario.is_staff and not objetoUsuario.is_superuser and not objetoUsuario.is_externalSeller and not objetoUsuario.is_matrixSeller):#dashboard de vendedores
-            #print("Vendedor Normal")
+            ##print("Vendedor Normal")
             try:
                 ventasUsuarioSemanaActual=sellerSales.objects.filter(
                     origin=request.user.id,
@@ -572,13 +572,13 @@ def dashboard(request):
 
                 ventasUsuario=sellerSales.objects.all().filter(origin=request.user.id,date_added__date=timezone.now().date()).aggregate(total_ventas=Sum('grand_total'))
             except Exception as e:
-                #print(e)
+                ##print(e)
                 ventasUsuario=0
                 ventasUsuarioSemanaPasada=0
                 ventasUsuarioSemanaActual=0
             return render(request,'dashVentasSeller.html',context={'mensaje':mensaje,'user_id':user_id,'totalVentasUsuario':ventasUsuario,'ventasUsuarioSemanaPasada':ventasUsuarioSemanaPasada,'ventasUsuarioSemanaActual':ventasUsuarioSemanaActual})
         elif (objetoUsuario.is_active and not objetoUsuario.is_staff and not objetoUsuario.is_superuser and objetoUsuario.is_externalSeller and not objetoUsuario.is_matrixSeller):#dashboard de vendedores externos
-            print("Vendedor Externo")
+            #print("Vendedor Externo")
             try:
                 ventasUsuarioSemanaActual=sellerSales.objects.filter(
                     origin=request.user.id,
@@ -594,7 +594,7 @@ def dashboard(request):
 
                 ventasUsuario=sellerSales.objects.all().filter(origin=request.user.id,date_added__date=timezone.now().date()).aggregate(total_ventas=Sum('grand_total'))
             except Exception as e:
-                #print(e)
+                ##print(e)
                 ventasUsuario=0
                 ventasUsuarioSemanaPasada=0
                 ventasUsuarioSemanaActual=0
@@ -604,12 +604,12 @@ def dashboard(request):
             try:
                 Ventas=Sales.objects.all().filter(origin=request.user.id,date_added__date=timezone.now().date()).aggregate(total_ventas=Sum('grand_total'))
             except Exception as e:
-                #print(e)
+                ##print(e)
                 Ventas=0
             return render(request,'dahsPuntosVenta.html',context={'Ventas':Ventas})
         
         elif (objetoUsuario.is_active and not objetoUsuario.is_staff and not objetoUsuario.is_superuser and not objetoUsuario.is_externalSeller and objetoUsuario.is_matrixSeller):#dashboard de vendedores matrix
-            # print("Vendedor Matriz")
+            # #print("Vendedor Matriz")
             try:
                 ventasUsuarioSemanaActual=Sales.objects.filter(
                     origin=request.user.id,
@@ -625,7 +625,7 @@ def dashboard(request):
 
                 ventasUsuario=Sales.objects.all().filter(origin=request.user.id,date_added__date=timezone.now().date()).aggregate(total_ventas=Sum('grand_total'))
             except Exception as e:
-                #print(e)
+                ##print(e)
                 ventasUsuario=0
                 ventasUsuarioSemanaPasada=0
                 ventasUsuarioSemanaActual=0
@@ -695,7 +695,7 @@ def listPVs(request):
             
             return render(request,'listPVs.html',context={'puntosVenta':puntosVenta})
         except:
-            ##print("Error")
+            ###print("Error")
             return render(request,'listPVs.html')
     else:
         return render(request,'forbiden.html')
@@ -730,7 +730,7 @@ def editPVs(request):
             
             return render(request,'listPVs.html',context={'puntosVenta':puntosVenta})
         except:
-            ##print("Error")
+            ###print("Error")
             return render(request,'listPVs.html')
     else:
         return render(request,'forbiden.html')
@@ -757,7 +757,7 @@ def addProducts(request):
                 return render(request,"addProduct.html",context={'mensaje':mensaje})
                 #return redirect('addProduct')
             except Exception as e:
-                #print(e)
+                ##print(e)
                 mensaje="Ocurrió un error al registrar el producto"
                 return render(request,"addProduct.html",context={'mensaje':mensaje})
         else:
@@ -852,7 +852,7 @@ def updateStockSeller(request, id):
             return render(request, 'updateStockSeller.html', context={'currentStock': None})
         except Exception as e:
             # Manejar otras excepciones de manera genérica
-            print(e)
+            #print(e)
             return render(request, 'updateStockSeller.html', context={'currentStock': None})
     else:
         return render(request, 'forbiden.html')
@@ -869,10 +869,10 @@ def registrarVentaMatrixView(request):
     if request.user.is_authenticated:
         products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
-        ##print(products)
+        ###print(products)
         for product in products:
-            ##print(product.product_id_id)
-            # print('id',product.id, 'name',product.nombreArticulo, 'price',float(product.precioVentaPublico),'qty',float(product.cantidad),'general_id',product.id)            
+            ###print(product.product_id_id)
+            # #print('id',product.id, 'name',product.nombreArticulo, 'price',float(product.precioVentaPublico),'qty',float(product.cantidad),'general_id',product.id)            
             product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(product.precioVentaPublico),'qty':float(product.cantidad),'general_id':product.id})
         
         context = {
@@ -936,7 +936,7 @@ def checkout_modal_carga_pv(request):
 def save_pos(request):
     resp = {'status':'failed','msg':''}
     data = request.POST
-    ##print(data)
+    ###print(data)
     pref = datetime.now().year + datetime.now().year
     
     i = 1
@@ -964,7 +964,7 @@ def save_pos(request):
             
             price = data.getlist('price[]')[i]
             total = float(qty) * float(price)
-            ##print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
+            ###print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
             salesItems(sale_id = sale, product_id = product, qty = qty, price = price, total = total).save()
             try:
                 productoDecremento=stockPuntoVenta.objects.get(producto_id=prod)
@@ -982,7 +982,7 @@ def save_pos(request):
         articulosModel.success(request, "Venta guardada.")
     except Exception as e:
         resp['msg'] = "Ocurrió un error"
-        ##print("Unexpected error:", e)
+        ###print("Unexpected error:", e)
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
@@ -1006,7 +1006,7 @@ def receipt(request):
         total_discounts=0
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
-            # #print(discount)
+            # ##print(discount)
             total_discounts+=discount
 
         
@@ -1042,9 +1042,9 @@ def salesList(request):
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
-            # ##print(data)
+            # ###print(data)
             sale_data.append(data)
-        # ##print(sale_data)
+        # ###print(sale_data)
         for sale in salesVendedor:
             data = {}
             for field in sale._meta.get_fields(include_parents=False):
@@ -1054,9 +1054,9 @@ def salesList(request):
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
-            # ##print(data)
+            # ###print(data)
             sale_data_vendedor.append(data)
-        # ##print(sale_data)  
+        # ###print(sale_data)  
 
         context = {
             'page_title':'Sales Transactions',
@@ -1080,7 +1080,7 @@ def delete_sale(request):
             messages.success(request, 'Registro de venta eliminado.')
         except:
             resp['msg'] = "Ha ocurrido un error."
-            ##print("Unexpected error:", sys.exc_info()[0])
+            ###print("Unexpected error:", sys.exc_info()[0])
         return HttpResponse(json.dumps(resp), content_type='application/json')
     
     else:
@@ -1098,7 +1098,7 @@ def delete_sale_sellers(request):
             messages.success(request, 'Registro de venta eliminado.')
         except:
             resp['msg'] = "Ha ocurrido un error."
-            ##print("Unexpected error:", sys.exc_info()[0])
+            ###print("Unexpected error:", sys.exc_info()[0])
         return HttpResponse(json.dumps(resp), content_type='application/json')
     
     else:
@@ -1117,9 +1117,9 @@ def financeDashboard(request):
     today=timezone.now().date()
     diasDesdeLunes=today.weekday()
     lunesSemana = today - timedelta(days=diasDesdeLunes)
-    # print(lunesSemana)
+    # #print(lunesSemana)
     domingoSemana=lunesSemana+timedelta(days=7)
-    # print(domingoSemana)
+    # #print(domingoSemana)
     vendedorMasRepetido="Ninguno"
     productMasVendidoSellerSemanal="Ninguno"
     total_public_price=0
@@ -1170,12 +1170,12 @@ def financeDashboard(request):
         
         grouped_sales[sale.origin].append(sale)
 
-    # print(grouped_sales)
+    # #print(grouped_sales)
     
     
 
     ventasSemanalesPorVendedorOrigin=ventasSemanalesVendedores.values('origin').annotate(total_ventas=Sum('grand_total'))
-    # print(ventasSemanalesVendedores)
+    # #print(ventasSemanalesVendedores)
     for elemento in ventasSemanalesPorVendedorOrigin:#salarios
         ventas=elemento['total_ventas']
         identificadorUsuario=elemento['origin']
@@ -1278,7 +1278,7 @@ def financeDashboard(request):
     for elemento in lista:
         userData=User.objects.all().filter(id=elemento.seller_id_id).get()
         elemento.seller_id_id="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
-        # print(elemento.seller_id_id)
+        # #print(elemento.seller_id_id)
         elemento.costo_total = elemento.qty * elemento.product_id.costo
         elemento.precio_publico_total = elemento.qty * elemento.product_id.precioVentaVendedorReparto
         elemento.ganancia = elemento.precio_publico_total - elemento.costo_total
@@ -1289,14 +1289,56 @@ def financeDashboard(request):
         listaAgrupada[elemento.seller_id_id].append(elemento)
 
     sumatorios={}
-    for llave,valores in listaAgrupada.items():
+
+    #OBTENER EL VALOR DE SU STOCK DE VENDEDORES
+    listaUsuarios = User.objects.all().values('id','username','first_name','last_name')
+    usuarios_dict = {
+        user['id']: {
+            'last_name': user['last_name'],
+            'username': user['username']
+            }
+            for user in listaUsuarios}
+    
+    resultados=[]
+    for llave, valor in usuarios_dict.items():
+        # print(llave)#identificador del usuario
+        userData=User.objects.all().filter(id=llave).get()
+        nombreUsuario="Usuario: "+userData.username+" Nombre completo: "+userData.first_name+" "+ userData.last_name
+        permisosEspeciales=usersPermission.objects.filter(user_id=llave).get()
+        # print(valor)
+        inventarioVendedor=sellerInventory.objects.all().filter(seller_id_id=llave)#recuperamos su inventario
+        valordeStock=0
+        acumuladorProductos=0
+        for elemento in inventarioVendedor:
+            datosProducto=articulosModel.objects.filter(id=elemento.product_id_id).get()
+            if permisosEspeciales.is_externalSeller:
+                elemento.precio=datosProducto.precioVentaVendedorExterno
+            else:
+                elemento.precio=datosProducto.precioVentaVendedorReparto
+            elemento.costo=datosProducto.costo
+            valordeStock+=(elemento.costo*elemento.qty)#costo para becaana *cantidad
+            acumuladorProductos+=elemento.qty
+
+        usuario_resultado = {
+            "nombreUsuario": nombreUsuario,
+            "valordeStock": valordeStock,
+            "acumuladorProductos": acumuladorProductos
+            }
+        resultados.append(usuario_resultado)
+
+
+
+    
+
+
+    for llave,valores in listaAgrupada.items():#OBTENER EL CALCULO DE GANANCIAS TOTAL
+        
 
         sumatorios[llave] = {
             'gananciaProductoReparto': 0,
             'gananciaProductoRepartoExterno': 0
         }
 
-        print(llave)
         for elemento in valores:
             productID=elemento.product_id_id
             cantidad=elemento.qty
@@ -1309,11 +1351,6 @@ def financeDashboard(request):
             
             sumatorios[llave]['gananciaProductoReparto'] += gananciaProductoReparto
             sumatorios[llave]['gananciaProductoRepartoExterno'] += gananciaProductoRepartoExterno
-            # listaAgrupada[llave].append(gananciaProductoReparto)
-
-            # sumador+=elemento.gananciaTotal
-        
-        # listaAgrupada.llave.gananciaVendedor=sumador
 
     try:
         total_public_price = sum(item.precio_publico_total for item in lista)
@@ -1322,18 +1359,6 @@ def financeDashboard(request):
     except:
         pass
 
-
-    # print(listaAgrupada)##################################################################
-    
-    
-         
-    # for item in lista:
-    #     item.costo_total = item.qty * item.product_id.costo
-    #     item.precio_publico_total = item.qty * item.product_id.precioVentaVendedorReparto
-    #     item.ganancia = item.precio_publico_total - item.costo_total
-    #     item.gananciaUnitaria = item.product_id.precioVentaVendedorReparto - item.product_id.costo
-
-    
 
     total_public_price = sum(item.precio_publico_total for item in lista)
     total_cost = sum(item.qty * item.product_id.costo for item in lista)
@@ -1374,599 +1399,9 @@ def financeDashboard(request):
         'productoGlobalMasVendidoSemanal':productoGlobalMasVendidoSemanal, #mejor producto semanal
         'ventasSemanalesPorVendedorOrigin':ventasSemanalesPorVendedorOrigin,#parámetro de salario
         'grouped_sales':dict(grouped_sales),#ventas agrupadas para vendedores
+        'resultados':resultados,
         }
     return render(request, 'finance.html',context)
-        
-
-
-
-
-def financeDashboardOld(request):#MENU DE FINANZAS
-    if request.user.is_authenticated:
-
-        today = timezone.now().date()
-        start_of_two_weeks_ago = today - timedelta(days=14)
-        start_of_week = today - timedelta(days=today.weekday())
-        #############BLOQUES PARA VENDEDORES
-        try:
-            ventas_ultimas_dos_semanas = sellerSales.objects.filter(date_added__date__gte=start_of_two_weeks_ago).values('id','origin','date_added','grand_total','code')
-
-            user_ids = ventas_ultimas_dos_semanas.values_list('origin', flat=True).distinct()
-            usuarios = User.objects.filter(id__in=user_ids)
-            user_info_dict = {user.id: {'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name} for user in usuarios}
-            ventas_con_info_usuario = []
-            for venta in ventas_ultimas_dos_semanas:
-                items_venta = sellerSalesItems.objects.filter(sale_id=venta['id'])
-                
-                costo_total_venta = items_venta.aggregate(costo_total=Sum('product_id__costo'))['costo_total'] or 0
-                ganancia_venta = venta['grand_total'] - costo_total_venta
-
-                user_id = venta['origin']
-                usuario_info = user_info_dict.get(user_id, {})
-                venta_con_info_usuario = {
-                    'origin': user_id,
-                    'username': usuario_info.get('username', 'Usuario Desconocido'),
-                    'first_name': usuario_info.get('first_name', 'Sin Nombre'),
-                    'last_name': usuario_info.get('last_name', 'Sin Apellido'),
-                    'date_added': venta['date_added'],
-                    'grand_total': venta['grand_total'],
-                    'code': venta['code'],
-                    'ganancia':ganancia_venta,
-                }
-                ventas_con_info_usuario.append(venta_con_info_usuario)
-
-            ventas_ultimas_dos_semanas=ventas_con_info_usuario
-
-            ventas_ultima_semana = sellerSales.objects.filter(date_added__date__gte=start_of_week,date_added__date__lt=start_of_week + timedelta(days=7)).values('origin').annotate(total_ventas=Sum('grand_total'), count_origin=Count('origin'))
-            ##############################
-            lista_ventas_u_s=sellerSales.objects.filter(date_added__date__gte=start_of_week,date_added__date__lt=start_of_week + timedelta(days=7)).values('origin','id','grand_total')
-            ventas_informacion=[]
-
-            for venta in lista_ventas_u_s:
-                items_venta=sellerSalesItems.objects.filter(sale_id=venta['id'])
-                
-                costo_total_venta=items_venta.aggregate(costo_total=Sum('product_id__costo'))['costo_total'] or 0
-                ganancia_venta = venta['grand_total'] - costo_total_venta
-                
-                informacion={
-                    'ganancia':ganancia_venta,
-                    'origin':venta['origin'],
-                    'cantidadArticulos':len(items_venta)
-                } 
-                ventas_informacion.append(informacion)
-
-            # #print(ventas_informacion) #ya tiene cantidad de articulos por venta 'cantidadArticulos'
-
-            cantidadArticulosOrigin={}
-            for cantidad in ventas_informacion:
-                origin=cantidad['origin']
-                cantidadArticulos = cantidad['cantidadArticulos']
-                if origin in cantidadArticulosOrigin:
-                    cantidadArticulosOrigin[origin] += cantidadArticulos
-                else:
-                    cantidadArticulosOrigin[origin] = cantidadArticulos
-            
-            # #print(cantidadArticulosOrigin)
-            
-            sumas_por_origin = {}
-            for dato in ventas_informacion:
-                ##print(dato)
-                origin = dato['origin']
-                ganancia = dato['ganancia']
-                cantidadArticulos = dato['cantidadArticulos']
-                
-                if origin in sumas_por_origin:
-                    sumas_por_origin[origin] += ganancia
-                    # sumas_por_origin['cantidadArticulos']+= cantidadArticulos
-                else:
-                    sumas_por_origin[origin] = ganancia
-            resultado = [{'origin': origin, 'ganancia': ganancia} for origin, ganancia in sumas_por_origin.items()]
-            
-            
-            ##########################
-            user_ids_ultima_semana = ventas_ultima_semana.values_list('origin', flat=True).distinct()
-            usuarios_ultima_semana = User.objects.filter(id__in=user_ids_ultima_semana)
-
-            ventas_ultima_semana_con_nombres_de_usuario = []
-            
-            resultado_combinado = []
-            
-            for venta in ventas_ultima_semana:
-                # #print(venta)
-                conteo=venta['count_origin']
-                origin = venta['origin']
-                total_ventas = venta['total_ventas']
-                ganancia = sumas_por_origin.get(origin, 0)  # Obtenemos la ganancia correspondiente al origin, si no existe, es 0
-                cantidadArticulos=cantidadArticulosOrigin.get(origin,0)#Obtenemos la cantidad de articulos vendidos, sino existe, es 0
-                
-                
-                resultado_combinado.append({'origin': origin, 'total_ventas': total_ventas, 'ganancia': ganancia,'conteo':conteo,'cantidadArticulos':cantidadArticulos})
-
-            # #print(resultado_combinado)
-                
-
-
-            for venta in resultado_combinado:#ventas_ultima_semana:
-                usuario = usuarios_ultima_semana.get(id=venta['origin'])
-                salario=0
-                conteo=venta['conteo']
-                if venta['total_ventas'] >= 22000 and venta['total'] < 26000:#################TABULADOR DE SALARIOS
-                    salario=venta['total_ventas']*1.11
-                elif venta['total_ventas']>= 26000 and venta['total'] < 30000:
-                    salario=venta['total_ventas']*1.12
-                elif venta['total_ventas']>= 30000 and venta['total'] < 34000:
-                    salario=venta['total_ventas']*1.13
-                elif venta['total_ventas']>= 34000 and venta['total'] < 40000:
-                    salario=venta['total_ventas']*1.14
-                elif venta['total_ventas']>= 40000:
-                    salario=venta['total_ventas']*1.15
-                elif venta['total_ventas'] < 22000:
-                    salario=1750
-                else:
-                    salario=0
-                    
-                venta_con_nombre_usuario = {
-                    'username':usuario.username,
-                    'first_name':usuario.first_name,
-                    'last_name':usuario.last_name,
-                    'total_ventas': venta['total_ventas'],
-                    'salario':salario,
-                    'ganancia':venta['ganancia'],
-                    'conteo':conteo,
-                    'cantidadArticulos':venta['cantidadArticulos'],
-                }
-                ventas_ultima_semana_con_nombres_de_usuario.append(venta_con_nombre_usuario)
-            ventas_ultima_semana=ventas_ultima_semana_con_nombres_de_usuario
-
-            ganancia_vendedores=0
-            for elemento in ventas_ultima_semana:
-                ganancia_vendedores+=elemento['ganancia']
-
-        except Exception as e:
-            # #print(e)
-            pass
-        
-        
-
-        now = datetime.now()
-        current_year = now.strftime("%Y")
-        current_month = now.strftime("%m")
-        current_day = now.strftime("%d")
-        transaction = len(Sales.objects.filter(
-            date_added__year=current_year,
-            date_added__month = current_month,
-            date_added__day = current_day
-        ))
-        today_sales = Sales.objects.filter(
-            date_added__year=current_year,
-            date_added__month = current_month,
-            date_added__day = current_day
-        ).all()
-        today_sales_seller = sellerSales.objects.filter(
-            date_added__year=current_year,
-            date_added__month = current_month,
-            date_added__day = current_day
-        ).all()
-        transaction_seller = len(sellerSales.objects.filter(
-            date_added__year=current_year,
-            date_added__month = current_month,
-            date_added__day = current_day
-        ))
-        historic_number_pv = len(Sales.objects.all())
-        historic_number_sellers = len(sellerSales.objects.all())
-        historic_total_sales_money_sellers=sum(sellerSales.objects.all().values_list('grand_total',flat=True))
-        historic_total_sales_money_pv=sum(Sales.objects.all().values_list('grand_total',flat=True))
-        total_historic_transactions=historic_number_pv+historic_number_sellers
-        total_historic_money=historic_total_sales_money_pv+historic_total_sales_money_sellers
-
-        total_sales = sum(today_sales.values_list('grand_total',flat=True))
-        total_sales_seller =sum(today_sales_seller.values_list('grand_total',flat=True))
-        total_sales_combined=total_sales+total_sales_seller
-        total_number_sales=transaction_seller+transaction
-        
-
-
-    # CARACTERÍSTICAS PARA SER CONSIDERADO UN PRODUCTO MAS VENDIDO:
-    #  DEBE SER EL PRODUCTO CON MAYOR CANTIDAD DE VENTAS
-    #     * DISPONIBLE EN EL MODELO DE SALES ITEMS PARA PUNTOS DE VENTA
-    #     * DISPONIBLE EN EL MODELO DE SELLER SALES ITEMS
-
-
-        #PRODUCTO MAS VENDIDO PV
-        producto_mas_vendido_pv= salesItems.objects.values('product_id__nombreArticulo').annotate(repetido=Count('product_id')).order_by('-repetido').first()
-        
-        ###print(producto_mas_vendido_pv)
-        #PRODUCTO MAS VENDIDO VENDEDOR
-        producto_mas_vendido_seller = sellerSalesItems.objects.values('product_id__nombreArticulo').annotate(repetido=Count('product_id')).order_by('-repetido').first()
-        try:
-            url_producto_mas_vendido_sellers=salesItems.objects.values('product_id__urlArticulo').annotate(repetido=Count('product_id')).order_by('-repetido').first()
-            url_producto_mas_vendido_sellers=url_producto_mas_vendido_sellers['product_id__urlArticulo']
-        except:
-            url_producto_mas_vendido_sellers="https://static.vecteezy.com/system/resources/thumbnails/007/126/739/small/question-mark-icon-free-vector.jpg"
-        try:
-            url_producto_mas_vendido_pv=salesItems.objects.values('product_id__urlArticulo').annotate(repetido=Count('product_id')).order_by('-repetido').first()
-            url_producto_mas_vendido_pv=url_producto_mas_vendido_pv['product_id__urlArticulo']
-        except:
-            url_producto_mas_vendido_pv="https://static.vecteezy.com/system/resources/thumbnails/007/126/739/small/question-mark-icon-free-vector.jpg"
-        #PUNTO VENTA CON MAS VENTAS
-        
-        try:
-
-            punto_venta_mas_ventas=Sales.objects.values('origin').annotate(repetido=Count('origin')).order_by('-repetido').first()
-            punto_venta_mas_ventas=User.objects.all().filter(id=punto_venta_mas_ventas['origin']).values('first_name','last_name','username').get()
-        except Exception as e:
-            #print(e)
-            pass
-        #VENDEDOR CON MAS VENTAS
-        try:
-            vendedor_mas_ventas=sellerSales.objects.values('origin').annotate(repetido=Count('origin')).order_by('-repetido').first()
-            vendedor_mas_ventas=User.objects.all().filter(id=vendedor_mas_ventas['origin']).values('first_name','last_name','username').get()
-        except Exception as e:
-            
-            vendedor_mas_ventas="No hay"
-        
-        #COSTOS DE PUNTOS DE VENTA
-        try:
-            costosPuntoVenta = pd.DataFrame(costosEmpresaPuntosVentaModel.objects.values('fecha').annotate(
-                total_salarios=Sum('salarios'),
-                total_productos=Sum('productos'),
-                total_otros=Sum('otros'),
-                total=Sum('salarios')+Sum('productos')+Sum('otros')
-                ))
-        except:
-            costosPuntoVenta=0
-        #COSTOS DE VENDEDORES
-        try:
-            costosVendedores = pd.DataFrame(costosEmpresaVendedoresModel.objects.values('fecha').annotate(
-                total_salario=Sum('salario'),
-                total_gasolina=Sum('gasolina'),
-                total_otros=Sum('otros'),
-                total=Sum('salario')+Sum('gasolina')+Sum('otros')
-                ))
-        except:
-            costosVendedores=0
-
-        ##print(costosVendedores)
-        try:
-            costosVendedores['fecha']=pd.to_datetime(costosVendedores['fecha'])
-        except:
-            pass
-        try:
-            resultados_agrupados = costosVendedores.groupby('fecha').sum().reset_index()
-        except:
-            pass
-        # ##print(resultados_agrupados.columns)
-        try:
-            costosPuntoVenta['fecha']=pd.to_datetime(costosPuntoVenta['fecha'])
-        except:
-            pass
-        try:
-            resultados_agrupados_puntoVenta = costosPuntoVenta.groupby('fecha').sum().reset_index()
-        except:
-            pass
-        ##print(resultados_agrupados_puntoVenta.columns)
-
-        
-        df_ventas_puntos_venta=pd.DataFrame(Sales.objects.values('date_added').annotate(total_sales=Sum('grand_total')))
-        try:
-            df_ventas_puntos_venta['date_added']=pd.to_datetime(df_ventas_puntos_venta['date_added'])#.dt.strftime('%Y-%m-%d')
-            df_ventas_puntos_venta = df_ventas_puntos_venta.groupby(df_ventas_puntos_venta['date_added'].dt.date)['total_sales'].sum().reset_index()
-            df_ventas_puntos_venta=df_ventas_puntos_venta.set_index('date_added').sort_index()
-        except:
-            pass
-        # df_ventas_puntos_venta['date_added']=df_ventas_puntos_venta['date_added'].strftime('%Y-%m-%d')
-        df_ventas_vendedores=pd.DataFrame(sellerSales.objects.values('date_added').annotate(total_sales=Sum('grand_total')))
-        try:
-            df_ventas_vendedores['date_added']=pd.to_datetime(df_ventas_vendedores['date_added'])#.dt.strftime('%Y-%m-%d')
-            df_ventas_vendedores = df_ventas_vendedores.groupby(df_ventas_vendedores['date_added'].dt.date)['total_sales'].sum().reset_index()
-            df_ventas_vendedores=df_ventas_vendedores.set_index('date_added').sort_index()
-
-        except:
-            pass
-
-        try:
-            lista_fechas_costos_vendedores=list(date.strftime('%Y-%m-%d') for date in costosVendedores['fecha'])
-        except:
-            lista_fechas_costos_vendedores=[0]
-        try:
-            lista_total_salarios_vendedores=list(costosVendedores['total_salario'])
-        except:
-            lista_total_salarios_vendedores=[0]
-        
-        try:
-            lista_total_gasolina_vendedores=list(costosVendedores['total_gasolina'])
-        except:
-            lista_total_gasolina_vendedores=[0]
-        try:
-            lista_total_otros_vendedores=list(costosVendedores['total_otros'])
-        except:
-            lista_total_otros_vendedores=[0]
-        try:
-            lista_total_vendedores=list(costosVendedores['total'])
-        except:
-            lista_total_vendedores=[0]
-        lista_concatenada_vendedores_valores=list(itertools.chain(lista_total_salarios_vendedores,lista_total_gasolina_vendedores,lista_total_otros_vendedores,lista_total_vendedores))
-        
-
-        try:
-            lista_fechas_puntos_venta=list(date.strftime('%Y-%m-%d') for date in costosPuntoVenta['fecha'])
-        except:
-            lista_fechas_puntos_venta=[0]
-        try:
-            lista_total_salarios_puntos_venta=list(costosPuntoVenta['total_salarios'])
-        except:
-            lista_total_salarios_puntos_venta=[0]
-        try:
-            lista_productos_puntos_venta=list(costosPuntoVenta['total_productos'])
-        except:
-            lista_productos_puntos_venta=[0]
-        try:
-            lista_otros_puntos_venta=list(costosPuntoVenta['total_otros'])
-        except:
-            lista_otros_puntos_venta=[0]
-        try:
-            lista_total_puntos_venta=list(costosPuntoVenta['total'])
-        except:
-            lista_total_puntos_venta=[0]
-        lista_concatenada_puntos_venta_valores=list(itertools.chain(lista_total_salarios_puntos_venta,lista_productos_puntos_venta,lista_otros_puntos_venta,lista_total_puntos_venta))
-
-        
-        try:
-            lista_fechas_vendedores=list(date.strftime('%Y-%m-%d') for date in df_ventas_vendedores.index)
-        except:
-            lista_fechas_vendedores=[0]
-        try:
-            lista_datos_ventas_vendedores=list(df_ventas_vendedores['total_sales'])
-        except:
-            lista_datos_ventas_vendedores=[0]
-
-        try:
-            lista_fechas_ventas_puntos_venta=list(date.strftime('%Y-%m-%d') for date in df_ventas_puntos_venta.index)
-        except:
-            lista_fechas_ventas_puntos_venta=[0]
-        try:
-            lista_datos_ventas_puntos_venta=list(df_ventas_puntos_venta['total_sales'])
-        except:
-            lista_datos_ventas_puntos_venta=[0]
-        
-        df_combinado = pd.concat([df_ventas_puntos_venta, df_ventas_vendedores], ignore_index=False)
-        try:
-                
-            df_combinado_sumado = df_combinado.groupby('date_added').sum()
-            df_combinado_sumado = df_combinado_sumado.reset_index()
-            df_combinado_sumado['date_added'] = pd.to_datetime(df_combinado_sumado['date_added'])
-        except:
-            df_combinado_sumado=[]
-        try:
-            lista_fechas=list(df_combinado_sumado['date_added'].dt.strftime('%Y-%m-%d'))
-            lista_datos=list(df_combinado_sumado['total_sales'])
-        except:
-            lista_fechas=[]
-            lista_datos=[]
-
-
-        try:
-            fecha_actual=timezone.now()
-            fecha_inicio=fecha_actual-timedelta(14)
-            ventas_ultimas_dos_semanas_puntosVenta = Sales.objects.filter(date_added__gte=fecha_inicio, date_added__lte=fecha_actual).values('id','origin','date_added','grand_total','code')
-            #################################DE LOS ULTIMOS 14 DIAS PUNTOS DE VENTA
-            user_ids = ventas_ultimas_dos_semanas_puntosVenta.values_list('origin', flat=True).distinct()
-            usuarios = User.objects.filter(id__in=user_ids)
-            user_info_dict = {user.id: {'username': user.username, 'first_name': user.first_name, 'last_name': user.last_name} for user in usuarios}
-            ventas_con_info_usuario = []
-            for venta in ventas_ultimas_dos_semanas_puntosVenta:
-                items_venta = salesItems.objects.filter(sale_id=venta['id'])
-                
-                costo_total_venta = items_venta.aggregate(costo_total=Sum('product_id__costo'))['costo_total'] or 0
-                ganancia_venta = venta['grand_total'] - costo_total_venta
-
-                user_id = venta['origin']
-                usuario_info = user_info_dict.get(user_id, {})
-                venta_con_info_usuario = {
-                    'origin': user_id,
-                    'username': usuario_info.get('username', 'Usuario Desconocido'),
-                    'first_name': usuario_info.get('first_name', 'Sin Nombre'),
-                    'last_name': usuario_info.get('last_name', 'Sin Apellido'),
-                    'date_added': venta['date_added'],
-                    'grand_total': venta['grand_total'],
-                    'code': venta['code'],
-                    'ganancia':ganancia_venta,
-                }
-                ventas_con_info_usuario.append(venta_con_info_usuario)
-            ventas_ultimas_dos_semanas_puntosVenta=ventas_con_info_usuario
-            #########################################################################
-            ###########################################DE LA ULTIMA SEMANA INICIANDO CADA LUNES
-            fecha_actual = timezone.now()
-            dia_semana = fecha_actual.weekday()
-            fecha_inicio_semana = fecha_actual - timedelta(days=dia_semana)
-            ventas_semana_actual_puntosVenta = Sales.objects.filter(date_added__date__gte=fecha_inicio_semana,date_added__date__lt=fecha_actual).values('origin').annotate(total_ventas=Sum('grand_total'), count_origin=Count('origin'))
-            
-            lista_ventas_u_s_puntosVenta=Sales.objects.filter(date_added__date__gte=fecha_inicio_semana,date_added__date__lt=fecha_actual).values('origin','id','grand_total')
-            ventas_informacion_puntosVenta=[]
-
-            for venta in lista_ventas_u_s_puntosVenta:
-                items_venta=salesItems.objects.filter(sale_id=venta['id'])
-                
-                costo_total_venta=items_venta.aggregate(costo_total=Sum('product_id__costo'))['costo_total'] or 0
-                # #print(costo_total_venta)
-                ganancia_venta = venta['grand_total'] - costo_total_venta
-                # #print(ganancia_venta)
-                informacion={
-                    'ganancia':ganancia_venta,
-                    'origin':venta['origin'],
-                    'cantidadArticulos':len(items_venta)
-                } 
-                ventas_informacion_puntosVenta.append(informacion)
-
-            # #print(ventas_informacion_puntosVenta) #ya tiene cantidad de articulos por venta 'cantidadArticulos'
-
-            cantidadArticulosOrigin={}
-            for cantidad in ventas_informacion_puntosVenta:
-                origin=cantidad['origin']
-                cantidadArticulos = cantidad['cantidadArticulos']
-                if origin in cantidadArticulosOrigin:
-                    cantidadArticulosOrigin[origin] += cantidadArticulos
-                else:
-                    cantidadArticulosOrigin[origin] = cantidadArticulos
-            
-            # #print(cantidadArticulosOrigin)
-            
-            sumas_por_origin_puntosVenta = {}
-            for dato in ventas_informacion_puntosVenta:
-                # #print(dato)
-                origin = dato['origin']
-                ganancia = dato['ganancia']
-                cantidadArticulos = dato['cantidadArticulos']
-                
-                if origin in sumas_por_origin_puntosVenta:
-                    sumas_por_origin_puntosVenta[origin] += ganancia
-                    # sumas_por_origin['cantidadArticulos']+= cantidadArticulos
-                else:
-                    sumas_por_origin_puntosVenta[origin] = ganancia
-            resultado = [{'origin': origin, 'ganancia': ganancia} for origin, ganancia in sumas_por_origin_puntosVenta.items()]
-            # #print(resultado)
-            
-            
-            ##########################
-            user_ids_ultima_semana = ventas_semana_actual_puntosVenta.values_list('origin', flat=True).distinct()
-            usuarios_ultima_semana = User.objects.filter(id__in=user_ids_ultima_semana)
-
-            ventas_semana_actual_puntosVenta_con_nombres_de_usuario = []
-            
-            resultado_combinado_puntosVenta = []
-            
-            for venta in ventas_semana_actual_puntosVenta:
-                # #print(venta)
-                conteo=venta['count_origin']
-                origin = venta['origin']
-                total_ventas = venta['total_ventas']
-                ganancia = sumas_por_origin_puntosVenta.get(origin, 0)  # Obtenemos la ganancia correspondiente al origin, si no existe, es 0
-                cantidadArticulos=cantidadArticulosOrigin.get(origin,0)#Obtenemos la cantidad de articulos vendidos, sino existe, es 0
-                
-                
-                resultado_combinado_puntosVenta.append({'origin': origin, 'total_ventas': total_ventas, 'ganancia': ganancia,'conteo':conteo,'cantidadArticulos':cantidadArticulos})
-
-            # #print(resultado_combinado)
-
-            for venta in resultado_combinado_puntosVenta:#ventas_ultima_semana:
-                usuario = usuarios_ultima_semana.get(id=venta['origin'])
-                salario=0
-                conteo=venta['conteo']
-                if venta['total_ventas'] >= 22000 and venta['total'] < 26000:#################TABULADOR DE SALARIOS
-                    salario=venta['total_ventas']*1.11
-                elif venta['total_ventas']>= 26000 and venta['total'] < 30000:
-                    salario=venta['total_ventas']*1.12
-                elif venta['total_ventas']>= 30000 and venta['total'] < 34000:
-                    salario=venta['total_ventas']*1.13
-                elif venta['total_ventas']>= 34000 and venta['total'] < 40000:
-                    salario=venta['total_ventas']*1.14
-                elif venta['total_ventas']>= 40000:
-                    salario=venta['total_ventas']*1.15
-                elif venta['total_ventas'] < 22000:
-                    salario=1750
-                else:
-                    salario=0
-                    
-                venta_con_nombre_usuario = {
-                    'username':usuario.username,
-                    'first_name':usuario.first_name,
-                    'last_name':usuario.last_name,
-                    'total_ventas': venta['total_ventas'],
-                    'salario':salario,
-                    'ganancia':venta['ganancia'],
-                    'conteo':conteo,
-                    'cantidadArticulos':venta['cantidadArticulos'],
-                }
-                ventas_semana_actual_puntosVenta_con_nombres_de_usuario.append(venta_con_nombre_usuario)
-            ventas_ultima_semana_puntosVenta=ventas_semana_actual_puntosVenta_con_nombres_de_usuario
-            ganancias_puntos_venta=0
-            for elemento in ventas_ultima_semana_puntosVenta:
-                ganancias_puntos_venta += elemento['ganancia']
-
-            ganancia_global_semanal=0
-            if not ganancia_vendedores:
-                ganancia_vendedores=0
-            ganancia_global_semanal=ganancia_vendedores+ganancias_puntos_venta
-
-        except Exception as e:
-            pass
-        
-        try:
-            totalVendedoresSemanal=Sales.objects.filter(date_added__gte=fecha_inicio_semana, date_added__lte=fecha_actual).aggregate(totalVentasVendedoresSemanal=Sum('grand_total'))
-            totalPuntosVentaSemanal=sellerSales.objects.filter(date_added__gte=fecha_inicio_semana, date_added__lte=fecha_actual).aggregate(totalVentasPuntosVentaSemanal=Sum('grand_total'))
-            totalGlobalSemanal=totalVendedoresSemanal['totalVentasVendedoresSemanal']+totalPuntosVentaSemanal['totalVentasPuntosVentaSemanal']
-        except Exception as e:
-            totalGlobalSemanal=0
-
-        ganancia_vendedores=0
-
-        context = {
-            ########################       DATOS DEL GRÁFICO       ########################
-            # 'graphic': graphic,
-            'ganancia_global_semanal':ganancia_global_semanal,
-            'ganancia_vendedores':ganancia_vendedores,
-            'ganancias_puntos_venta':ganancias_puntos_venta,
-            'totalVendedoresSemanal':totalVendedoresSemanal,
-            'totalPuntosVentaSemanal':totalPuntosVentaSemanal,
-            'totalGlobalSemanal':totalGlobalSemanal,
-            'today':today,
-            'ventas_ultima_semana':ventas_ultima_semana,#VENDEDORES
-            'ventas_ultimas_dos_semanas':ventas_ultimas_dos_semanas,#VENDEDORES
-            'ventas_ultimas_dos_semanas_puntosVenta':ventas_ultimas_dos_semanas_puntosVenta,#PUNTOSVENTA
-            'ventas_ultima_semana_puntosVenta':ventas_ultima_semana_puntosVenta,
-            'ventas_semana_actual_puntosVenta':ventas_semana_actual_puntosVenta,
-            'start_of_week':start_of_week,
-            'start_of_two_weeks_ago':start_of_two_weeks_ago,
-            ###############################################################################
-            'lista_concatenada_puntos_venta_valores':lista_concatenada_puntos_venta_valores,
-            'lista_concatenada_vendedores_valores':lista_concatenada_vendedores_valores,
-            'lista_fechas_costos_vendedores':lista_fechas_costos_vendedores,
-            'lista_total_salarios_vendedores':lista_total_salarios_vendedores,
-            'lista_total_gasolina_vendedores':lista_total_gasolina_vendedores,
-            'lista_total_otros_vendedores':lista_total_otros_vendedores,
-            'lista_total_vendedores':lista_total_vendedores,
-            'lista_fechas_puntos_venta':lista_fechas_puntos_venta,
-            'lista_total_salarios_puntos_venta':lista_total_salarios_puntos_venta,
-            'lista_productos_puntos_venta':lista_productos_puntos_venta,
-            'lista_otros_puntos_venta':lista_otros_puntos_venta,
-            'lista_total_puntos_venta':lista_total_puntos_venta,
-            'costosPuntoVenta':costosPuntoVenta,
-            'costosVendedores':costosVendedores,
-            'url_producto_mas_vendido_sellers':url_producto_mas_vendido_sellers,
-            'url_producto_mas_vendido_pv':url_producto_mas_vendido_pv,
-            'lista_fechas':lista_fechas,
-            'lista_datos':lista_datos,
-            'lista_fechas_vendedores':lista_fechas_vendedores,
-            'lista_datos_ventas_vendedores':lista_datos_ventas_vendedores,
-            'lista_datos_ventas_puntos_venta':lista_datos_ventas_puntos_venta,
-            'lista_fechas_ventas_puntos_venta':lista_fechas_ventas_puntos_venta,
-            ###################################### DEL DIA #########################################################
-            'transaction' : transaction,#NUMERO DE VENTAS TODOS LOS PUNTOS DE VENTA
-            'transaction_seller' : transaction_seller,#NUMERO DE VENTAS TODOS LOS VENDEDORES
-            'total_sales' : total_sales,#TOTAL EN DINERO DE LAS VENTAS POR PUNTOS DE VENTA
-            'total_sales_seller' : total_sales_seller,#TOTAL EN DINERO DE LAS VENTAS POR VENDEDORES
-            'total_sales_combined':total_sales_combined,#TOTAL EN DINERO DE TODOS LOS VENDEDORES Y PUNTOS DE VENTA
-            'total_number_sales':total_number_sales,#TOTAL DE VENTAS DEL DIA DE HOY
-            ###################################### DE TODO EL TIEMPO #########################################################
-            'historic_number_sellers':historic_number_sellers,
-            'historic_number_pv':historic_number_pv,
-            'historic_total_sales_money_sellers':historic_total_sales_money_sellers,
-            'historic_total_sales_money_pv':historic_total_sales_money_pv,
-            'total_historic_transactions':total_historic_transactions,
-            'total_historic_money':total_historic_money,
-            #################################### PRODUCTO GANADOR #############################################
-            'producto_mas_vendido_pv':producto_mas_vendido_pv,#PUNTO DE VENTA
-            'producto_mas_vendido_seller':producto_mas_vendido_seller,#VENDEDOR
-            #################################### MEJOR PUNTO VENTA ###############################################
-            'punto_venta_mas_ventas':punto_venta_mas_ventas,
-            #################################### MEJOR VENDEDOR ###############################################
-            'vendedor_mas_ventas':vendedor_mas_ventas,
-        }
-        return render(request, 'finance.html',context)
-    else:
-        return render(request,'forbiden.html')
-
-
 
 
 def sellersDashboard(request):#DASHBOARD DE VENDEDORES DE REPARTO
@@ -2023,7 +1458,7 @@ def sellersAddView(request):#REGISTRO DE VENDEDORES
         except Exception as e:
             messages.success(
                 request, 'There was an error during the creation!', extra_tags="danger")
-            ##print(e)
+            ###print(e)
             return redirect('sellersAdd')
 
     return render(request, "customers_add.html", )
@@ -2043,7 +1478,7 @@ def sellersUpdateView(request, seller_id):#ACTUALIZACIÓN DE INFORMACIÓN DE VEN
     except Exception as e:
         messages.success(
             request, 'Error al obtener información del cliente!', extra_tags="danger")
-        ##print(e)
+        ###print(e)
         return redirect('sellersList')
 
     context = {
@@ -2055,7 +1490,7 @@ def sellersUpdateView(request, seller_id):#ACTUALIZACIÓN DE INFORMACIÓN DE VEN
         try:
             # Save the POST arguments
             data = request.POST
-            ##print(data)
+            ###print(data)
 
             attributes = {
                 "first_name": data['first_name'],
@@ -2089,7 +1524,7 @@ def sellersUpdateView(request, seller_id):#ACTUALIZACIÓN DE INFORMACIÓN DE VEN
         except Exception as e:
             messages.success(
                 request, 'Error en la actualización!', extra_tags="danger")
-            ##print(e)
+            ###print(e)
             return redirect('sellersList')
 
     return render(request, "customers_update.html", context=context)
@@ -2111,7 +1546,7 @@ def sellersDeleteView(request, seller_id):#ELIMINACIÓN DE VENDEDORES
     except Exception as e:
         messages.success(
             request, 'Ocurrió un error durante la eliminación!', extra_tags="danger")
-        ##print(e)
+        ###print(e)
         return redirect('sellersList')
 
 
@@ -2179,11 +1614,11 @@ def registrarVentaVendedorView(request):
         products = sellerInventory.objects.all().filter(seller_id=id_vendedor)######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
 
         product_json = []
-        ##print(products)
+        ###print(products)
         
         for product in products:
-            ##print(product.product_id_id)
-            ##print(product)   
+            ###print(product.product_id_id)
+            ###print(product)   
             modeloOriginal=articulosModel.objects.all().filter(id=product.product_id_id).get()
             precio=modeloOriginal.precioVentaVendedorReparto
             product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(precio),'qty':float(product.qty),'general_id':product.product_id_id})
@@ -2206,13 +1641,13 @@ def registrarVentaVendedorExternoView(request):
         id_vendedor=request.user.id
         products = sellerInventory.objects.all().filter(seller_id=id_vendedor)######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
-        ##print(products)
+        ###print(products)
         for product in products:
 
             modeloOriginal=articulosModel.objects.all().filter(id=product.product_id_id).get()
             precio=modeloOriginal.precioVentaVendedorExterno
-            ##print(product.product_id_id)
-            ##print(product)            
+            ###print(product.product_id_id)
+            ###print(product)            
             product_json.append({'id':product.id, 'name':product.nombreArticulo, 'price':float(precio),'qty':float(product.qty),'general_id':product.product_id_id})
         context = {
             'page_title' : "Punto de venta",
@@ -2251,7 +1686,7 @@ def posSeller(request):
 def save_posSeller(request):##EJEMPLO
     resp = {'status':'failed','msg':''}
     data = request.POST
-    ##print(data)
+    ###print(data)
     pref = datetime.now().year + datetime.now().year * 100000000
     i = 1
     while True:
@@ -2278,7 +1713,7 @@ def save_posSeller(request):##EJEMPLO
             price = data.getlist('price[]')[i]
             total = float(qty) * float(price)
             discount = float(data.getlist('disc[]')[i])
-            ##print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
+            ###print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
 
             sellerSalesItems(sale_id = sale, product_id = product, qty = qty, price = price, total = total,discount = discount).save()
 
@@ -2297,7 +1732,7 @@ def save_posSeller(request):##EJEMPLO
         resp['sale_id'] = sale_id
     except Exception as e:
         resp['msg'] = "Ocurrió un error"
-        print("Unexpected errors:", e)###############################
+        #print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
@@ -2322,7 +1757,7 @@ def receiptSeller(request):
         acumulador_total_productos=0
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
-            # #print(discount)
+            # ##print(discount)
             total_discounts+=discount
             acumulador_total_productos=acumulador_total_productos+elemento.qty
 
@@ -2348,7 +1783,7 @@ def receiptSeller(request):
 
 def consultaPropioInventario(request,id_vendedor):
     if request.user.is_authenticated:
-        ##print(id_vendedor)
+        ###print(id_vendedor)
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
         costoStock=0
         for elemento in articulosVendedor:
@@ -2364,7 +1799,7 @@ def consultaPropioInventario(request,id_vendedor):
 
 def consultaPropioInventarioExterno(request,id_vendedor):
     if request.user.is_authenticated:
-        ##print(id_vendedor)
+        ###print(id_vendedor)
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
         costoStock=0
         for elemento in articulosVendedor:
@@ -2380,7 +1815,7 @@ def consultaPropioInventarioExterno(request,id_vendedor):
     
 def consultaPropioInventarioMatriz(request,id_vendedor):
     if request.user.is_authenticated:
-        ##print(id_vendedor)
+        ###print(id_vendedor)
         articulosVendedor=articulosModel.objects.all()
         context={
             'lista':articulosVendedor,
@@ -2596,9 +2031,9 @@ def salesListVendedores(request):
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
-            # ##print(data)
+            # ###print(data)
             sale_data_vendedor.append(data)
-        # ##print(sale_data)  
+        # ###print(sale_data)  
 
         context = {
             'page_title':'Sales Transactions',
@@ -2624,9 +2059,9 @@ def salesListMatrix(request):
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
-            # ##print(data)
+            # ###print(data)
             sale_data_vendedor.append(data)
-        # ##print(sale_data)  
+        # ###print(sale_data)  
 
         context = {
             'page_title':'Sales Transactions',
@@ -2637,33 +2072,6 @@ def salesListMatrix(request):
     else:
         return render(request,'forbiden.html')
 
-# def inventariosPV(request,pk=None):#INVENTARIOS DE VENDEDORES
-#     if request.user.is_authenticated:
-
-#         inventarioPV = get_object_or_404(Seller, pk=pk) if pk else None
-#         lista=pvInventory.objects.all()
-
-#         for item in lista:
-#             item.costo_total = item.qty * item.product_id.costo
-#             item.precio_publico_total = item.qty * item.product_id.precioVentaPublico
-#             item.ganancia = item.precio_publico_total - item.costo_total
-#             item.gananciaUnitaria=item.product_id.precioVentaPublico - item.product_id.costo
-
-#         total_public_price = sum(item.precio_publico_total for item in lista)
-#         total_cost = sum(item.qty * item.product_id.costo for item in lista)
-#         gananciaTotal=total_public_price-total_cost
-        
-#         if request.method == 'POST':
-#             form = inventarioPuntoVentaForm(request.POST,instance=inventarioPV)
-#             if form.is_valid():
-#                 form.save()
-#             return redirect('puntosVenta')
-#         else:
-#             form = inventarioPuntoVentaForm(instance=inventarioPV)
-#             return render(request, 'listaInventariosPV.html', {'form': form,'inventario':inventarioPV,'lista':lista,'total_cost':total_cost,'total_public_price': total_public_price,'gananciaTotal':gananciaTotal})
-        
-#     else:
-#         return render(request,'forbiden.html')
 
 def inventariosPV(request, pk=None):
     if request.user.is_authenticated:
@@ -2807,7 +2215,7 @@ def posPV(request):
 def save_posPV(request):
     resp = {'status':'failed','msg':''}
     data = request.POST
-    ##print(data)
+    ###print(data)
     pref = datetime.now().year + datetime.now().year * 1000 
     i = 1
     while True:
@@ -2832,7 +2240,7 @@ def save_posPV(request):
             price = data.getlist('price[]')[i]
             discount = float(data.getlist('disc[]')[i])
             total = float(qty) * float(price)
-            ##print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
+            ###print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
 
             salesItems(sale_id = sale, product_id = product, qty = qty, price = price, total = total, discount = discount).save()
 
@@ -2852,13 +2260,13 @@ def save_posPV(request):
         articulosModel.success(request, "Venta guardada.")
     except Exception as e:
         resp['msg'] = "Ocurrió un error"
-        #print("Unexpected errors:", e)###############################
+        ##print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 def save_posMatrix(request):
     resp = {'status':'failed','msg':''}
     data = request.POST
-    ##print(data)
+    ###print(data)
     pref = datetime.now().year + datetime.now().year * 1000 
     i = 1
     while True:
@@ -2883,7 +2291,7 @@ def save_posMatrix(request):
             price = data.getlist('price[]')[i]
             discount = float(data.getlist('disc[]')[i])
             total = float(qty) * float(price)
-            # print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
+            # #print({'sale_id' : sale, 'product_id' : product, 'qty' : qty, 'price' : price, 'total' : total})
 
             salesItems(sale_id = sale, product_id = product, qty = qty, price = price, total = total, discount = discount).save()
 
@@ -2902,15 +2310,15 @@ def save_posMatrix(request):
         resp['sale_id'] = sale_id
         articulosModel.success(request, "Venta guardada.")
     except Exception as e:
-        print(e)
+        #print(e)
         resp['msg'] = "Ocurrió un error"
-        #print("Unexpected errors:", e)###############################
+        ##print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
 
 def receiptPV(request):
     if request.user.is_authenticated:
-        #print("Vista puntos venta")
+        ##print("Vista puntos venta")
         id = request.GET.get('id')
         sales = Sales.objects.filter(id = id).first()
         transaction = {}
@@ -2924,7 +2332,7 @@ def receiptPV(request):
 
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
-            #print(discount)
+            ##print(discount)
             total_discounts+=discount
             acumulador_total_productos=acumulador_total_productos+elemento.qty
         total=transaction["grand_total"]+total_discounts
@@ -2948,7 +2356,7 @@ def receiptPV(request):
 
 def receiptMatrix(request):
     if request.user.is_authenticated:
-        #print("Vista puntos venta")
+        ##print("Vista puntos venta")
         id = request.GET.get('id')
         sales = Sales.objects.filter(id = id).first()
         transaction = {}
@@ -2962,7 +2370,7 @@ def receiptMatrix(request):
 
         for elemento in ItemList:
             discount=(elemento.discount*elemento.price*elemento.qty)/100
-            #print(discount)
+            ##print(discount)
             total_discounts+=discount
         total=transaction["grand_total"]+total_discounts
         usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
@@ -3009,10 +2417,10 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
         registro=RegistroInventarioVendedores.objects.all().filter(usuario_id=request.user.id,fecha=fecha_actual)
         products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
-        ##print(products)
+        ###print(products)
         for product in products:
-            ##print(product.product_id_id)
-            ##print(product)            
+            ###print(product.product_id_id)
+            ###print(product)            
             product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorReparto),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
 
         for item in lista:
@@ -3042,7 +2450,7 @@ def registrar_inventario_vendedores(request, pk=None):  # AUTOCARGA DE INVENTARI
                         producto_inventario.save()
                     except sellerInventory.DoesNotExist:
                         # Si el producto no existe, crea un nuevo registro en el inventario
-                        #print("Producto Nuevo")
+                        ##print("Producto Nuevo")
                         form.save()
 
                     # Restar la cantidad de inventario agregada del stock disponible en articulosModel
@@ -3083,10 +2491,10 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
 
         products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
-        ##print(products)
+        ###print(products)
         for product in products:
-            ##print(product.product_id_id)
-            ##print(product)            
+            ###print(product.product_id_id)
+            ###print(product)            
             product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaVendedorExterno),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
 
         total_public_price = sum(item.precio_publico_total for item in lista)
@@ -3110,7 +2518,7 @@ def registrar_inventario_vendedores_external(request, pk=None):  # AUTOCARGA DE 
                         producto_inventario.save()
                     except sellerInventory.DoesNotExist:
                         # Si el producto no existe, crea un nuevo registro en el inventario
-                        #print("Producto Nuevo")
+                        ##print("Producto Nuevo")
                         form.save()
 
                     # Restar la cantidad de inventario agregada del stock disponible en articulosModel
@@ -3156,10 +2564,10 @@ def registrar_inventario_puntos_venta(request, pk=None):  # AUTOCARGA DE INVENTA
         registro=RegistroInventarioPuntoVenta.objects.all().filter(usuario_id=request.user.id,fecha=today)
         products = articulosModel.objects.all()######NECESARIO PARA FILTRAR SOLO EL INVENTARIO DE CADA VENDEDOR
         product_json = []
-        ##print(products)
+        ###print(products)
         for product in products:
-            ##print(product.product_id_id)
-            ##print(product)            
+            ###print(product.product_id_id)
+            ###print(product)            
             product_json.append({'id':product.pk, 'name':product.nombreArticulo, 'price':float(product.precioVentaPublico),'qty':float(product.cantidad),'descripcionArticulo':product.descripcionArticulo})
         
 
@@ -3191,7 +2599,7 @@ def registrar_inventario_puntos_venta(request, pk=None):  # AUTOCARGA DE INVENTA
                         producto_inventario.save()
                     except pvInventory.DoesNotExist:
                         # Si el producto no existe, crea un nuevo registro en el inventario
-                        #print("Producto Nuevo")
+                        ##print("Producto Nuevo")
                         form.save()
 
                     # Restar la cantidad de inventario agregada del stock disponible en articulosModel
@@ -3231,9 +2639,9 @@ def salesListPV(request):
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
-            # ##print(data)
+            # ###print(data)
             sale_data_vendedor.append(data)
-        # ##print(sale_data)  
+        # ###print(sale_data)  
 
         context = {
             'page_title':'Sales Transactions',
@@ -3280,7 +2688,7 @@ def reporteInventario(request):
             cargas_puntos_venta[usuario_id] = RegistroInventarioPuntoVenta.objects.filter(usuario_id=usuario_id)#values('usuario_id').distinct()
 
 
-        # #print(todos_cargas)
+        # ##print(todos_cargas)
         context={
             'cargas_pv_list':cargas_pv_list,
             'cargas_vendedores_list':cargas_vendedores_list,
@@ -3340,7 +2748,7 @@ def reimpresionCargasDiarias(request):
 
 
     # sumaCantidad=sum(registro.cantidad for registro in cargasHoyVendedores)
-    # print(sumaCantidad)
+    # #print(sumaCantidad)
 
     context={
         'registros_por_usuario':registros_por_usuario,        
@@ -3352,7 +2760,7 @@ def reimpresionCargasDiarias(request):
 def reimpresionCargasDiariasInd(request):
     # Obtengo todas las cargas del vendedor
     cargasVendedor = RegistroInventarioVendedores.objects.filter(usuario_id=request.user.id).values_list('code', flat=True).distinct()
-    # print(cargasVendedor)
+    # #print(cargasVendedor)
     
     sale_data_vendedor = []
     
@@ -3368,7 +2776,7 @@ def reimpresionCargasDiariasInd(request):
         
         # Obtengo todos los items con el mismo code y usuario_id
         items = RegistroInventarioVendedores.objects.filter(code=code, usuario_id=request.user.id).values()
-        # print(items)
+        # #print(items)
         acumuladorValor=0
         for elemento in items:
             cantidad=elemento['cantidad']
