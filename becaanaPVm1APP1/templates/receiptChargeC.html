@@ -21,8 +21,9 @@
         <hr>
         <div class="lh-1">
             <div>
-                <span>Fecha:</span> {{ transaction.date_added|date:"M d Y" }} <br>
-                <span>Usuario:</span> <strong>{{ nombreUsuario }}</strong> <br>
+                <span>Número de carga:</span> {{ transaction.code }} <br>
+                <span>Fecha:</span> {{ transaction.date_added }} <br>
+                <span><strong>Usuario:</span> {{ nombreUsuario }}</strong> <br>
             </div>
         </div>
         <div class="clear-fix py-3"></div>
@@ -40,12 +41,12 @@
 
                 <div class="col-6 fw-bold">
                     <div class="lh-1" style="text-align: center;">
-                        <small>{{ item.nombreArticulo }}</small><br>
+                        <small>{{ item.nombre_producto }}</small><br>
                     </div>
                 </div>
                 
-                <div class="col-2 text-end fw-bold ">${{item.precioPV|floatformat:"2"}}</div>
-                <div class="col-2 text-end fw-bold ">${{item.precioPV|mul:item.cantidad|floatformat:"2"}}</div>
+                <div class="col-2 text-end fw-bold ">${{item.precio|floatformat:"2"}}</div>
+                <div class="col-2 text-end fw-bold ">${{item.precio|mul:item.cantidad|floatformat:"2"}}</div>
 
             </div>
             {% endfor %}
@@ -65,42 +66,10 @@
     <div class="clear-fix py-3"></div>
     <div class="d-flex w-100 justify-content-end">
         <button class="btn btn-light bg-gradient border rounded-0 btn-sm me-1" type="button" id="receipt_print"><i class="mdi mdi-printer"></i> Imprimir</button>
-        <button class="btn btn-secondary bg-gradient border rounded-0 btn-sm" type="button" data-bs-dismiss="modal"><i class="mdi mdi-close"></i> Cerrar</button>
+        <button class="btn btn-secondary bg-gradient border rounded-0 btn-sm" type="button" data-bs-dismiss="modal" id="close-modal-s"><i class="mdi mdi-close"></i> Cerrar</button>
     </div>
 </div>
-<!-- <script>
-    $(function() {
-        $('#receipt_print').click(function() {
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.indexOf("android") > -1;
-            // console.log(isAndroid);
-            if (isAndroid){
-                var gadget = new cloudprint.Gadget();
-                gadget.setPrintDocument("url", $('title').html(), window.location.href, "utf-8");
-                gadget.openPrintDialog();
-            }else{
-                var head = $('head').clone()
-                var p = $('#outprint').clone()
-                var el = $("<div>")
-                head.append('<style>body{background-color:unset !important}</style>')
-                el.append(head)
-                el.find('title').text("Recibo - Vista de Impresión")
-                el.append(p)
-                start_loader()
-                var nw = window.open('', '_blank', "width=800,height=800,left=300, top = 200")
-                nw.document.write(el.html())
-                nw.document.close()
-                setTimeout(() => {
-                    nw.print()
-                    setTimeout(() => {
-                        nw.close()
-                        end_loader()
-                    }, 250)
-                }, 500)
-            }
-        })
-    })  
-</script> -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.js"></script>
 
 <script>
@@ -117,5 +86,9 @@
                 }
             });
         });
+        $('#close-modal-s').click(function(){
+            window.location.reload();
+        })
+
     });
 </script>

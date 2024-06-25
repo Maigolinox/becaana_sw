@@ -3429,6 +3429,6 @@ def receiptSellerCharge(request):
             "nombreUsuario":nombreUsuario,
         }
 
-        return render(request, 'receiptCharge.html',context)
+        return render(request, 'receiptChargeC.html',context)
     else:
         return render(request,'forbiden.html')
