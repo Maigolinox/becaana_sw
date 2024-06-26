@@ -135,7 +135,7 @@
             <!-- {{grouped_sales}} -->
             {% for origin, sales in grouped_sales.items %}
             <h5 style="text-align: left;"> {{ origin }}</h5>
-            <table class="table">
+            <table class="table" id="tableSalariosVendedores">
                 <thead class="thead-dark">
                     <tr>
                         <th>Número de operación</th>
@@ -157,6 +157,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+            
         {% endfor %}
         </div>
         <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
@@ -169,7 +170,7 @@
     
               <div class="row">
                 <div class="col-sm">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" id="tablaStockVendedoresValores">
                         <thead class="thead-dark">
                             <tr>
                                 <th>Información del usuario</th>
@@ -187,7 +188,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    
+
+                    
+
                 </div>
+
               </div>
     
               
@@ -229,10 +235,25 @@
                     })(jQuery);
                 </script>
             {% endfor %}
+            
         </div>
     </div>
 
-    
+
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tablaStockVendedoresValores').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tableSalariosVendedores').dataTable();
+            });
+        })(jQuery);
+    </script>
 
 </body>
 </html>
