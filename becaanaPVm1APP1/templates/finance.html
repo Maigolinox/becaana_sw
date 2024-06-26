@@ -110,7 +110,7 @@
     
         <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="salarios">
             <h3>Cálculo de salarios de vendedores 👨‍💼</h3>
-            <table class="table">
+            <table class="table" id="TablaSalarios">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Información del usuario</th>
@@ -135,7 +135,7 @@
             <!-- {{grouped_sales}} -->
             {% for origin, sales in grouped_sales.items %}
             <h5 style="text-align: left;"> {{ origin }}</h5>
-            <table class="table" id="tableSalariosVendedores">
+            <table class="table" id="tableSalariosVendedores{{forloop.counter}}">
                 <thead class="thead-dark">
                     <tr>
                         <th>Número de operación</th>
@@ -157,6 +157,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedores{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
             
         {% endfor %}
         </div>
@@ -251,6 +258,13 @@
         (function($) {
             $(document).ready(function() {
                 $('#tableSalariosVendedores').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#TablaSalarios').dataTable();
             });
         })(jQuery);
     </script>
