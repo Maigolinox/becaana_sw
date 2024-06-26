@@ -168,7 +168,7 @@
         {% endfor %}
         </div>
         <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
-            <h3>Stock de Vendedores 👨‍💼</h3>
+            <h3>Stock de Vendedores para BECAANA👨‍💼</h3>
             <!-- <h5>Valor del stock (costo para BECAANA * Stock) : $ {{total_cost|stringformat:".2f"|intcomma}} MXN </h5>
               <h5>Dinero al vender al público: $ {{total_public_price|stringformat:".2f"|intcomma}} MXN </h5>
               <h5>Ganancia Total: $ {{ gananciaTotal |stringformat:".2f"|intcomma}}</h5> -->
@@ -195,12 +195,39 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    
-
-                    
-
                 </div>
+              </div>
 
+              <div class="row">
+            <h3>Stock de Vendedores para Límites de carga👨‍💼</h3>
+
+                <div class="col-sm">
+                    <table class="table table-bordered" id="tablaStockLimites">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Información del usuario</th>
+                                <th>Valor del Stock</th>
+                                <th>Cantidad total de productos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in resultados %}
+                                <tr>
+                                    <td>{{ item.nombreUsuario }}</td>
+                                    <td>$ {{ item.valorStockLimites|stringformat:".2f"|intcomma  }}</td>
+                                    <td>{{ item.acumuladorProductos|stringformat:".2f"|intcomma  }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <script>
+                        (function($) {
+                            $(document).ready(function() {
+                                $('#tablaStockLimites').dataTable();
+                            });
+                        })(jQuery);
+                    </script>
+                </div>
               </div>
     
               
@@ -244,6 +271,14 @@
             {% endfor %}
             
         </div>
+
+        
+
+        
+
+
+
+
     </div>
 
 

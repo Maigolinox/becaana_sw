@@ -1308,6 +1308,7 @@ def financeDashboard(request):
         # print(valor)
         inventarioVendedor=sellerInventory.objects.all().filter(seller_id_id=llave)#recuperamos su inventario
         valordeStock=0
+        valorStockLimites=0
         acumuladorProductos=0
         for elemento in inventarioVendedor:
             datosProducto=articulosModel.objects.filter(id=elemento.product_id_id).get()
@@ -1317,11 +1318,13 @@ def financeDashboard(request):
                 elemento.precio=datosProducto.precioVentaVendedorReparto
             elemento.costo=datosProducto.costo
             valordeStock+=(elemento.costo*elemento.qty)#costo para becaana *cantidad
+            valorStockLimites+=(elemento.precio*elemento.qty)
             acumuladorProductos+=elemento.qty
 
         usuario_resultado = {
             "nombreUsuario": nombreUsuario,
             "valordeStock": valordeStock,
+            "valorStockLimites":valorStockLimites,
             "acumuladorProductos": acumuladorProductos
             }
         resultados.append(usuario_resultado)
