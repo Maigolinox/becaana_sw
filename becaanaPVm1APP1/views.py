@@ -1787,10 +1787,20 @@ def receiptSeller(request):
 def consultaPropioInventario(request,id_vendedor):
     if request.user.is_authenticated:
         ###print(id_vendedor)
+        id=id_vendedor
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
+        permisosEspeciales=usersPermission.objects.filter(user_id=id).get()
+
+
         costoStock=0
         for elemento in articulosVendedor:
+            datosProducto=articulosModel.objects.filter(id=elemento.product_id_id).get()
+            if permisosEspeciales.is_externalSeller:
+                elemento.precioVentaVendedor=datosProducto.precioVentaVendedorExterno
+            else:
+                elemento.precioVentaVendedor=datosProducto.precioVentaVendedorReparto
             costoStock=costoStock+elemento.qty*elemento.precioVentaVendedor
+            
         context={
             'lista':articulosVendedor,
             'costoStock':costoStock,
@@ -1803,10 +1813,20 @@ def consultaPropioInventario(request,id_vendedor):
 def consultaPropioInventarioExterno(request,id_vendedor):
     if request.user.is_authenticated:
         ###print(id_vendedor)
+        id=id_vendedor
+        permisosEspeciales=usersPermission.objects.filter(user_id=id).get()
         articulosVendedor=sellerInventory.objects.all().filter(seller_id=id_vendedor)
+
         costoStock=0
         for elemento in articulosVendedor:
-            costoStock=costoStock+elemento.qty*elemento.precioVentaVendedorExterno
+            datosProducto=articulosModel.objects.filter(id=elemento.product_id_id).get()
+            if permisosEspeciales.is_externalSeller:
+                elemento.precioVentaVendedor=datosProducto.precioVentaVendedorExterno
+            else:
+                elemento.precioVentaVendedor=datosProducto.precioVentaVendedorReparto
+
+            costoStock=costoStock+elemento.qty*elemento.precioVentaVendedor
+            
         context={
             'lista':articulosVendedor,
             'costoStock':costoStock,
