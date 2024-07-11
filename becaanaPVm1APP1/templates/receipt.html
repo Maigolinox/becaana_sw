@@ -86,7 +86,7 @@
     <div class="clear-fix py-3"></div>
     <div class="d-flex w-100 justify-content-end">
         <button class="btn btn-light bg-gradient border rounded-0 btn-sm me-1" type="button" id="receipt_print"><i class="mdi mdi-printer"></i> Imprimir</button>
-        <button class="btn btn-secondary bg-gradient border rounded-0 btn-sm" type="button" data-bs-dismiss="modal"><i class="mdi mdi-close" onclick="window.location.reload()"></i> Cerrar</button>
+        <button class="btn btn-secondary bg-gradient border rounded-0 btn-sm" type="button" data-bs-dismiss="modal" id="close-Button-S"><i class="mdi mdi-close" onclick="window.location.reload()"></i> Cerrar</button>
     </div>
 </div>
 <script>
@@ -111,5 +111,9 @@
                 }, 250)
             }, 300)
         })
+        $('#close-Button-S').click(function(){
+            window.location.reload();
+        })
+
     })
 </script>
