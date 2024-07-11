@@ -1442,7 +1442,7 @@ def financeDashboard(request):
         
         grouped_sales_pasadas[sale.origin].append(sale)
 
-    ventasSemanalesPasadasPorVendedorOrigin=ventasSemanalesVendedores.values('origin').annotate(total_ventas=Sum('grand_total'))
+    ventasSemanalesPasadasPorVendedorOrigin=ventasSemanalesPasadasSellers.values('origin').annotate(total_ventas=Sum('grand_total'))
     # #print(ventasSemanalesVendedores)
     for elemento in ventasSemanalesPasadasPorVendedorOrigin:#salarios
         ventas=elemento['total_ventas']
