@@ -129,6 +129,27 @@
                 </tbody>
             </table>
         </div>
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="salariosSemanaPasada">
+            <h3>Cálculo de salarios de vendedores semana pasada 👨‍💼</h3>
+            <table class="table" id="tableSalariosVendedoresSemanaPasada">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Información del usuario</th>
+                        <th scope="col">Dinero en ventas</th>
+                        <th scope="col">Salario Aproximado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ventasSemanalesPasadasPorVendedorOrigin %}
+                    <tr>
+                        <td>{{ item.origin }}</td>
+                        <td>${{ item.total_ventas|stringformat:".2f"|intcomma }}</td>
+                        <td>${{ item.salario|stringformat:".2f"|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <!-- VENTAS SEMANALES POR VENDEDORES -->
         <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
             <h3>Ventas semanales por vendedores 👨‍💼</h3>
@@ -166,6 +187,44 @@
             </script>
             
         {% endfor %}
+
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
+            <h3>Ventas de la semana pasada por vendedores 👨‍💼</h3>
+            <!-- {{grouped_sales}} -->
+            {% for origin, sales in grouped_sales_pasadas.items %}
+            <h5 style="text-align: left;"> {{ origin }}</h5>
+            <table class="table" id="tableSalariosVendedoresPasada{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número de operación</th>
+                        <th>Total Vendido</th>
+                        <th>Fecha</th>
+                        <th>Ganancia Total</th>
+                        <th>Número de productos vendidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.code }}</td>
+                            <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.date_added }}</td>
+                            <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedoresPasada{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+            
+        {% endfor %}
+
         </div>
         <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="valorStockVendedores">
             <h3>Stock de Vendedores para BECAANA👨‍💼</h3>
@@ -255,7 +314,7 @@
                                 <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
                                 <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
                                 <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
-                      <td><a href="{% url 'updateStockSeller' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
+                      <td><a href="{% url 'updateStockSellerFinance' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
     
                             </tr>
                         {% endfor %}
@@ -293,6 +352,7 @@
         (function($) {
             $(document).ready(function() {
                 $('#tableSalariosVendedores').dataTable();
+                $('#tableSalariosVendedoresSemanaPasada').dataTable();
             });
         })(jQuery);
     </script>

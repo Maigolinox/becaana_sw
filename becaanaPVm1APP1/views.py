@@ -858,6 +858,52 @@ def updateStockSeller(request, id):
         return render(request, 'forbiden.html')
    
 
+def updateStockSellerFinance(request, id):
+    if request.user.is_authenticated:
+        try:
+            # Obtener la petición del usuario
+            userPetition = request.user.id
+            
+            # Obtener el stock actual
+            currentStock = sellerInventory.objects.get(id=id)
+            cantidadActual = currentStock.qty
+            
+            # Obtener el producto correspondiente al stock actual
+            productMatrix = articulosModel.objects.get(id=currentStock.product_id_id)
+            
+            if request.method == "POST":
+                stock = request.POST.get('stock')
+                
+                # Actualizar el stock
+                currentStock.qty = stock
+                diferencia = int(stock) - cantidadActual
+                
+                if diferencia > 0:
+                    productMatrix.cantidad -= diferencia
+                elif diferencia < 0:
+                    productMatrix.cantidad -= diferencia
+                # Guardar los cambios en los modelos
+                currentStock.save()
+                productMatrix.save()
+                
+                return redirect('financeDashboard')
+            else:
+                # Mostrar la página de actualización con el stock actual
+                return render(request, 'updateStockSeller.html', context={'currentStock': currentStock})
+        except sellerInventory.DoesNotExist:
+            # Manejar el caso cuando no se encuentra el stock
+            return render(request, 'updateStockSeller.html', context={'currentStock': None})
+        except articulosModel.DoesNotExist:
+            # Manejar el caso cuando no se encuentra el producto
+            return render(request, 'updateStockSeller.html', context={'currentStock': None})
+        except Exception as e:
+            # Manejar otras excepciones de manera genérica
+            #print(e)
+            return render(request, 'updateStockSeller.html', context={'currentStock': None})
+    else:
+        return render(request, 'forbiden.html')
+   
+
 def stock(request):
     if request.user.is_authenticated:
         return render(request,'stock.html')
@@ -1115,6 +1161,10 @@ def dash_ventas(request):
 @login_required
 def financeDashboard(request):
     today=timezone.now().date()
+    
+    lunesSemanaPasada=today-timedelta(days=today.weekday()+7)
+    domingoSemanaPasada=lunesSemanaPasada+timedelta(days=6)
+    
     diasDesdeLunes=today.weekday()
     lunesSemana = today - timedelta(days=diasDesdeLunes)
     # #print(lunesSemana)
@@ -1139,6 +1189,10 @@ def financeDashboard(request):
         puntoVentaMasRepetido="No hay punto de venta con más ventas todavía"
     else:
         puntoVentaMasRepetido=User.objects.all().filter(id=puntoVentaMasRepetido['origin'])# EN VISTA REFINAR PARA QUE MUESTRE EL NOMBRE DEL PUNTO DE VENTA
+
+    
+    
+    
 
     ventasSemanalesSellers=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
     articulosSemanalesSellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasSemanalesSellers)
@@ -1367,6 +1421,54 @@ def financeDashboard(request):
     total_cost = sum(item.qty * item.product_id.costo for item in lista)
     gananciaTotal = total_public_price - total_cost
 
+    ventasSemanalesPasadasSellers=sellerSales.objects.filter(date_added__range=[lunesSemanaPasada,domingoSemanaPasada])
+
+
+    grouped_sales_pasadas = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasSemanalesPasadasSellers:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=sellerSalesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_pasadas[sale.origin].append(sale)
+
+    ventasSemanalesPasadasPorVendedorOrigin=ventasSemanalesVendedores.values('origin').annotate(total_ventas=Sum('grand_total'))
+    # #print(ventasSemanalesVendedores)
+    for elemento in ventasSemanalesPasadasPorVendedorOrigin:#salarios
+        ventas=elemento['total_ventas']
+        identificadorUsuario=elemento['origin']
+        datos=User.objects.all().filter(id=identificadorUsuario).get()
+        elemento['origin']="Usuario: "+datos.username+". Nombre Completo: "+datos.first_name+" "+datos.last_name+"."
+        if ventas >= 22000 and  ventas < 26000:
+            elemento['salario'] = ventas*0.11
+        elif ventas >= 26000 and ventas < 30000:
+            elemento['salario'] = ventas*0.12
+        elif ventas >= 30000 and ventas < 34000:
+            elemento['salario'] = ventas*0.13
+        elif ventas >= 34000 and ventas < 40000:
+            elemento['salario'] = ventas*0.14
+        elif ventas >= 40000:
+            elemento['salario'] = ventas*0.15
+        elif ventas < 22000:
+            elemento['salario'] = 1750
+        else:
+            elemento['salario'] = 0
+    
+
+    
+    
+
+
 
     context = {
         'sumatorios':sumatorios,
@@ -1402,6 +1504,8 @@ def financeDashboard(request):
         'productoGlobalMasVendidoSemanal':productoGlobalMasVendidoSemanal, #mejor producto semanal
         'ventasSemanalesPorVendedorOrigin':ventasSemanalesPorVendedorOrigin,#parámetro de salario
         'grouped_sales':dict(grouped_sales),#ventas agrupadas para vendedores
+        'ventasSemanalesPasadasPorVendedorOrigin':ventasSemanalesPasadasPorVendedorOrigin,#parámetro de salario
+        'grouped_sales_pasadas':dict(grouped_sales_pasadas),
         'resultados':resultados,
         }
     return render(request, 'finance.html',context)

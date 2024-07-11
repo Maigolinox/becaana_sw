@@ -24,6 +24,7 @@ urlpatterns=[
     path('stock/',views.stock,name="stock"),
     path('updateStock/<int:id>',views.updateStock,name="updateStock"),
     path('updateStockSeller/<int:id>',views.updateStockSeller,name="updateStockSeller"),
+    path('updateStockSellerFinance/<int:id>',views.updateStockSellerFinance,name="updateStockSellerFinance"),
     path('registrarVentaMatrix/',views.registrarVentaMatrixView,name="registrarVentaMatrix"),#pos
     path('checkout-modal', views.checkout_modal, name="checkout-modal"),
     path('checkout-modal-carga-vendedores', views.checkout_modal_carga_vendedores, name="checkout-modal-carga-vendedores"),
