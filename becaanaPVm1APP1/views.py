@@ -1072,7 +1072,9 @@ def receipt(request):
     # return HttpResponse('')
 
 
-def salesList(request):
+def salesList(request):#########AGREGAR NOMBRE DE USUARIO QUE HIZO LA VENTA, NO COINCIDE EL TOTAL DE ARTICULOS CON LOS TICKETS
+    ###VERIFICAR CONTADOR DE TICKETS, NOMBRE DE USUARIO EN TICKET
+    ###EDITPRODUCTS AGREGAR DATATABLES A LA TABLA
     if request.user.is_authenticated:
 
         sales = Sales.objects.all()
