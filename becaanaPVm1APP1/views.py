@@ -2300,6 +2300,14 @@ def deleteStockSellers(request, id):##################################
     else:
         return render(request, 'forbidden.html')
 
+def deleteStockSellersFinance(request, id):##################################
+    if request.user.is_authenticated:
+        deleteStockSeller=sellerInventory.objects.get(id=id)
+        deleteStockSeller.delete()
+        return redirect('financeDashboard')
+    else:
+        return render(request, 'forbidden.html')
+
 
 def registrarVentaPuntosVentaView(request):
     if request.user.is_authenticated:

@@ -314,7 +314,7 @@
                                 <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
                                 <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
                                 <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
-                      <td><a href="{% url 'updateStockSellerFinance' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellers' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
+                      <td><a href="{% url 'updateStockSellerFinance' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellersFinance' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
     
                             </tr>
                         {% endfor %}
