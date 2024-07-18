@@ -50,7 +50,7 @@
                         <th class="text-center py-1">Vendedor</th>
                         <th class="text-center py-1">Total</th>
                         <th class="text-center py-1">Impuestos o descuento</th>
-                        <th class="text-center py-1">Artículos</th>
+                        <!-- <th class="text-center py-1">Artículos</th> -->
                         <th class="text-center py-1">Opciones</th>
                     </tr>
                 </thead>
@@ -63,7 +63,7 @@
                         <td class="px-2 py-1 text-start">{{ sale.nombre_puntoVenta }}</td>
                         <td class="px-2 py-1 text-end">${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
                         <td class="px-2 py-1 text-end">({{ sale.tax }}%) ${{ sale.tax_amount|intcomma:2 }}</td>
-                        <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td>
+                        <!-- <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td> -->
                         <td class="px-2 py-1 text-center">
                             <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data" type="button" data-id="{{ sale.id }}" title="View Receipt">
                                 <i class="material-icons mdc-button__icon">receipt</i>
@@ -115,7 +115,7 @@
                         <th class="text-center py-1">Vendedor</th>
                         <th class="text-center py-1">Total</th>
                         <th class="text-center py-1">Impuestos o descuento</th>
-                        <th class="text-center py-1">Artículos</th>
+                        <!-- <th class="text-center py-1">Artículos</th> -->
                         <th class="text-center py-1">Opciones</th>
                     </tr>
                 </thead>
@@ -128,7 +128,7 @@
                          <td class="px-2 py-1 text-start">{{ sale.nombre_vendedor }}</td><!-- vendedor -->
                         <td class="px-2 py-1 text-end">${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
                         <td class="px-2 py-1 text-end">({{ sale.tax }}%) ${{ sale.tax_amount|stringformat:".2f"|intcomma }}</td>
-                        <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td>
+                        <!-- <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td> -->
                         <td class="px-2 py-1 text-center">
                             <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data-seller" type="button" data-id="{{ sale.id }}" title="View Receipt">
                                 <i class="material-icons mdc-button__icon">receipt</i>
