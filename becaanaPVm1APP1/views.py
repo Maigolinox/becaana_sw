@@ -1198,6 +1198,22 @@ def delete_sale_sellers(request):
         resp = {'status':'failed', 'msg':''}
         id = request.POST.get('id')
         try:
+            ventaOriginalCodigo=sellerSales.objects.filter(id=id).values('id')
+            origenVendedor=sellerSales.objects.filter(id=id).values('origin')
+            ventaOriginalCodigo=ventaOriginalCodigo[0]['id']
+            origenVendedor=origenVendedor[0]['origin']
+
+
+            antesEliminacion=sellerSalesItems.objects.filter(sale_id_id = ventaOriginalCodigo)
+
+            for articulo in antesEliminacion:
+                cantidadArticulosEliminar=articulo.qty
+                productID=articulo.product_id_id
+                sellerInventory.objects.filter(product_id_id = productID,seller_id_id = origenVendedor).update(qty = F('qty') + cantidadArticulosEliminar)
+
+
+            delete = sellerSalesItems.objects.filter(sale_id_id = ventaOriginalCodigo).delete()
+            
             delete = sellerSales.objects.filter(id = id).delete()
             resp['status'] = 'success'
             messages.success(request, 'Registro de venta eliminado.')
