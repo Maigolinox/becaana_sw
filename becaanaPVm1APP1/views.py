@@ -1086,7 +1086,14 @@ def salesList(request):#########AGREGAR NOMBRE DE USUARIO QUE HIZO LA VENTA, NO 
         sale_data = []
         sale_data_vendedor=[]
         for sale in sales:
+            # print(sale) obtengo el codigo de la venta de puntos de venta
+            # print(sale.id)obtengo el id de la venta que es realmente lo que esta asociado con los artículos que se venden
+            articulosPuntosVenta=salesItems.objects.filter(sale_id = sale.id).all().aggregate(Sum('qty'))
+            
+
+
             data = {}
+            data['qty']=articulosPuntosVenta['qty__sum']
             for field in sale._meta.get_fields(include_parents=False):
                 if field.related_model is None:
                     data[field.name] = getattr(sale,field.name)
@@ -1106,7 +1113,10 @@ def salesList(request):#########AGREGAR NOMBRE DE USUARIO QUE HIZO LA VENTA, NO 
         # ###print(sale_data)
         acumuladorSellers=0
         for sale in salesVendedor:
+            articulosVendedor=sellerSalesItems.objects.filter(sale_id = sale.id).all().aggregate(Sum('qty'))
+
             data = {}
+            data['qty']=articulosVendedor['qty__sum']
             data['id_vendedor']=sellerSales.objects.all().filter(code=sale).values('origin')
             data['id_vendedor']=data['id_vendedor'][0]['origin']
             data['nombre_vendedor']=User.objects.all().filter(id=data['id_vendedor']).values('username')
