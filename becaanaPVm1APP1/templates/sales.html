@@ -47,6 +47,7 @@
                         <th class="text-center py-1">#</th>
                         <th class="text-center py-1">Fecha y hora de venta</th>
                         <th class="text-center py-1">Codigo de Transacción</th>
+                        <th class="text-center py-1">Vendedor</th>
                         <th class="text-center py-1">Total</th>
                         <th class="text-center py-1">Impuestos o descuento</th>
                         <th class="text-center py-1">Artículos</th>
@@ -59,8 +60,9 @@
                         <td class="px-2 py-1 text-center">{{ sale.id }}</td>
                         <td class="px-2 py-1 text-start">{{ sale.date_added|date:'Y-m-d H:i' }}</td>
                         <td class="px-2 py-1 text-start">{{ sale.code }}</td>
-                        <td class="px-2 py-1 text-end">{{ sale.grand_total|intcomma }}</td>
-                        <td class="px-2 py-1 text-end">({{ sale.tax }}%) {{ sale.tax_amount|intcomma:2 }}</td>
+                        <td class="px-2 py-1 text-start">{{ sale.nombre_puntoVenta }}</td>
+                        <td class="px-2 py-1 text-end">${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                        <td class="px-2 py-1 text-end">({{ sale.tax }}%) ${{ sale.tax_amount|intcomma:2 }}</td>
                         <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td>
                         <td class="px-2 py-1 text-center">
                             <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data" type="button" data-id="{{ sale.id }}" title="View Receipt">
@@ -96,7 +98,7 @@
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
     <div class="mdc-card">
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered" id="newTableTwo">
                 <colgroup>
                     <col width="5%">
                     <col width="20%">
@@ -110,6 +112,7 @@
                         <th class="text-center py-1">#</th>
                         <th class="text-center py-1">Fecha y hora de venta</th>
                         <th class="text-center py-1">Codigo de Transacción</th>
+                        <th class="text-center py-1">Vendedor</th>
                         <th class="text-center py-1">Total</th>
                         <th class="text-center py-1">Impuestos o descuento</th>
                         <th class="text-center py-1">Artículos</th>
@@ -122,8 +125,9 @@
                         <td class="px-2 py-1 text-center">{{ sale.id }}</td>
                         <td class="px-2 py-1 text-start">{{ sale.date_added|date:'Y-m-d H:i' }}</td>
                         <td class="px-2 py-1 text-start">{{ sale.code }}</td>
-                        <td class="px-2 py-1 text-end">{{ sale.grand_total|intcomma }}</td>
-                        <td class="px-2 py-1 text-end">({{ sale.tax }}%) {{ sale.tax_amount|intcomma:2 }}</td>
+                         <td class="px-2 py-1 text-start">{{ sale.nombre_vendedor }}</td><!-- vendedor -->
+                        <td class="px-2 py-1 text-end">${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                        <td class="px-2 py-1 text-end">({{ sale.tax }}%) ${{ sale.tax_amount|stringformat:".2f"|intcomma }}</td>
                         <td class="px-2 py-1 text-center">{{ sale.item_count|intcomma }}</td>
                         <td class="px-2 py-1 text-center">
                             <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-data-seller" type="button" data-id="{{ sale.id }}" title="View Receipt">
@@ -227,6 +231,13 @@
     (function($) {
         $(document).ready(function() {
             $('#tableData').dataTable();
+        });
+    })(jQuery);
+</script>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#newTableTwo').dataTable();
         });
     })(jQuery);
 </script>

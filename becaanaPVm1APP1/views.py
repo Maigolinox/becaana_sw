@@ -1034,8 +1034,7 @@ def save_pos(request):
 
 def receipt(request):
     if request.user.is_authenticated:
-        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
-        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        
 
 
         id = request.GET.get('id')
@@ -1044,6 +1043,12 @@ def receipt(request):
         for field in Sales._meta.get_fields():
             if field.related_model is None:
                 transaction[field.name] = getattr(sales,field.name)
+        
+        ventaInformacion=Sales.objects.all().filter(code= transaction['code']).values('origin')
+        usuarioData=User.objects.all().filter(id=ventaInformacion[0]['origin']).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        # print(ventaInformacion[0]['origin'])
+        
         if 'tax_amount' in transaction:
             transaction['tax_amount'] = format(float(transaction['tax_amount']))
 
@@ -1087,17 +1092,36 @@ def salesList(request):#########AGREGAR NOMBRE DE USUARIO QUE HIZO LA VENTA, NO 
                     data[field.name] = getattr(sale,field.name)
             data['items'] = salesItems.objects.filter(sale_id = sale).all()
             data['item_count'] = len(data['items'])
+
+            data['id_puntoVenta']=Sales.objects.all().filter(code=sale).values('origin')
+            data['id_puntoVenta']=data['id_puntoVenta'][0]['origin']
+            data['nombre_puntoVenta']=User.objects.all().filter(id=data['id_puntoVenta']).values('username')
+            data['nombre_puntoVenta']=data['nombre_puntoVenta'][0]['username']
+            # print(data['nombre_puntoVenta'])
+
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
             # ###print(data)
             sale_data.append(data)
         # ###print(sale_data)
+        acumuladorSellers=0
         for sale in salesVendedor:
             data = {}
+            data['id_vendedor']=sellerSales.objects.all().filter(code=sale).values('origin')
+            data['id_vendedor']=data['id_vendedor'][0]['origin']
+            data['nombre_vendedor']=User.objects.all().filter(id=data['id_vendedor']).values('username')
+            data['nombre_vendedor']=data['nombre_vendedor'][0]['username']
+            
+            
             for field in sale._meta.get_fields(include_parents=False):
                 if field.related_model is None:
                     data[field.name] = getattr(sale,field.name)
+                    
+            
             data['items'] = sellerSalesItems.objects.filter(sale_id = sale).all()
+            
+
+            
             data['item_count'] = len(data['items'])
             if 'tax_amount' in data:
                 data['tax_amount'] = format(float(data['tax_amount']),'.2f')
@@ -1870,7 +1894,9 @@ def receiptSeller(request):
             acumulador_total_productos=acumulador_total_productos+elemento.qty
 
         total=transaction["grand_total"]+total_discounts
-        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        ventaInformacion=sellerSales.objects.all().filter(code= transaction['code']).values('origin')
+        usuarioData=User.objects.all().filter(id=ventaInformacion[0]['origin']).get()# NOMBRE DEL USUARIO AL TICKET
+        
         nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         
@@ -2472,7 +2498,8 @@ def receiptPV(request):
             total_discounts+=discount
             acumulador_total_productos=acumulador_total_productos+elemento.qty
         total=transaction["grand_total"]+total_discounts
-        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        ventaInformacion=Sales.objects.all().filter(code= transaction['code']).values('origin')
+        usuarioData=User.objects.all().filter(id=ventaInformacion[0]['origin']).get()# NOMBRE DEL USUARIO AL TICKET
         nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
 
