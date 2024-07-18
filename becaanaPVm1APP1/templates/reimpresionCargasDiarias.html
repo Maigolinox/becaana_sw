@@ -50,74 +50,143 @@
         </div>    
         
     </div>
-    <div class="container">
-      
-      {% for usuario_id, registro in registros_por_usuario.items %}
-          <div class="user-section" id="user-section-{{ usuario_id }}">
-            <div class="row">
-              <div class="col-sm text-center">
-                <img src="{% static 'images/logo_Black.png' %}" width="300px" height="100px" style="margin-bottom: 10px;">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm" style="text-align: center;">
-                <h4>Usuario: {{ usuario_id }}</h4>
-              </div>
-              <div class="col-sm" style="text-align: center;">
-                <button class="btn btn-primary" onclick="printTable('user-section-{{ usuario_id }}')">🖨️ Imprimir Tabla</button>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm">
-                <table class="table table-bordered">
+    <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+        <div class="mdc-card">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="newTableTwo">
+                    <colgroup>
+                        <col width="5%">
+                        <col width="20%">
+                        <col width="20%">
+                        <col width="25%">
+                        <col width="15%">
+                        <!-- <col width="15%"> -->
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th>ID de la carga</th>
-                            <th>Fecha</th>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Valor</th>
+                            <th class="text-center py-1">#</th>
+                            <th class="text-center py-1">Fecha de carga</th>
+                            <th class="text-center py-1">Codigo de Transacción</th>
+                            <th class="text-center py-1">Vendedor</th>
+                            <!-- <th class="text-center py-1">Total</th>
+                            <th class="text-center py-1">Impuestos o descuento</th>
+                            <th class="text-center py-1">Artículos</th> -->
+                            <th class="text-center py-1">Consulta</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for reg in registro.registros %}
-                            <tr>
-                                <td>{{ reg.id }}</td>
-                                <td>{{ reg.fecha }}</td>
-                                <td>{{ reg.nombre_producto }}</td>
-                                <td>{{ reg.cantidad }}</td>
-                                <td>${{ reg.valor|stringformat:".2f"|intcomma }}</td>
-                            </tr>
+                        {% for sale in registros_por_usuario %}
+                        <tr>
+                            <td class="px-2 py-1 text-center">{{ sale.id }}</td>
+                            <td class="px-2 py-1 text-start">{{ sale.fecha|date:'Y-m-d' }}</td>
+                            <td class="px-2 py-1 text-start">{{ sale.code }}</td>
+                             <td class="px-2 py-1 text-start">{{ sale.nombre_vendedor}}</td><!-- vendedor -->
+                            <!-- <td class="px-2 py-1 text-end">${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td class="px-2 py-1 text-end">({{ sale.tax }}%) ${{ sale.tax_amount|stringformat:".2f"|intcomma }}</td>
+                            <td class="px-2 py-1 text-center">{{ sale.qty|stringformat:".2f"|intcomma }}</td> -->
+                            <td class="px-2 py-1 text-center">
+                                <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded view-charge-seller" type="button" data-id="{{ sale.id }}" title="View Receipt">
+                                    <i class="material-icons mdc-button__icon">receipt</i>
+                                </button>
+                                <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--danger mdc-ripple-upgraded delete-charge-sellers" type="button" data-id="{{ sale.id }}" data-code="{{ sale.code }}" title="Delete">
+                                    <i class="material-icons mdc-button__icon">deleteoutline</i>
+                                </button>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <p>Total de productos: {{ registro.total_productos }}</p>
-                <p>Total del valor de la carga: ${{ registro.valor_total_stock|stringformat:".2f"|intcomma }}</p>
-              </div>
             </div>
-          </div>
-      {% endfor %}
-
-      
-  </div>
-
-  <script>
-      function printTable(sectionId) {
-          const printSection = document.getElementById(sectionId);
-          const originalContent = document.body.innerHTML;
-
-          // Ocultar el botón de impresión durante la impresión
-          printSection.querySelector('.btn').style.display = 'none';
-
-          document.body.innerHTML = printSection.innerHTML;
-          window.print();
-
-          // Restaurar el contenido original y mostrar nuevamente el botón
-          document.body.innerHTML = originalContent;
-          window.location.reload();
-      }
-  </script>
+            
+            
+        </div>
+        
+    </div>
 </body>
 </html>
 
-{% endblock %}
+{% endblock content %} {% block ScriptBlock %}
+<script>
+    $(function() {
+        $('.view-charge-seller').click(function() {
+            uni_modal("Reimpresión de cargas diarias", "{% url 'receipt-charge-seller-today' %}?id=" + $(this).attr('data-id'))
+        })
+        
+        $('.delete-charge-sellers').click(function() {
+            _conf("Are you sure to delete <b>" + $(this).attr('data-code') + "</b> Transaction record Sellers?", "delete_charge_sellers", [$(this).attr('data-id')])
+        })
+
+    })
+
+    function delete_charge_sellers($id){
+        start_loader();
+        $.ajax({
+            headers: {
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            url: "{% url 'delete-charge-sellers' %}",
+            method: "POST",
+            data: {
+                id: $id
+            },
+            dataType: "json",
+            error: err => {
+                console.log(err)
+                alert_toast("An error occured.", 'error');
+                end_loader();
+            },
+            success: function(resp) {
+                if (typeof resp == 'object' && resp.status == 'success') {
+                    location.reload();
+                } else {
+                    alert_toast("An error occured.", 'error');
+                    end_loader();
+                }
+            }
+        })
+    }
+    
+
+    function delete_sale($id) {
+        start_loader();
+        $.ajax({
+            headers: {
+                "X-CSRFToken": '{{csrf_token}}'
+            },
+            url: "{% url 'delete-sale' %}",
+            method: "POST",
+            data: {
+                id: $id
+            },
+            dataType: "json",
+            error: err => {
+                console.log(err)
+                alert_toast("An error occured.", 'error');
+                end_loader();
+            },
+            success: function(resp) {
+                if (typeof resp == 'object' && resp.status == 'success') {
+                    location.reload();
+                } else {
+                    alert_toast("An error occured.", 'error');
+                    end_loader();
+                }
+            }
+        })
+    }
+</script>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#tableData').dataTable();
+        });
+    })(jQuery);
+</script>
+<script>
+    (function($) {
+        $(document).ready(function() {
+            $('#newTableTwo').dataTable();
+        });
+    })(jQuery);
+</script>
+{% endblock ScriptBlock %}

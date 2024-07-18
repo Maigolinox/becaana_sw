@@ -176,31 +176,55 @@ def receiptChargeSellerExternal(request):
         return render(request,'forbiden.html')
 
 
-def receiptChargeSeller(request):
+def receiptChargeSellerToday(request):
     if request.user.is_authenticated:
         # #print(request.GET)
         id = request.GET.get('id')
+        print(id)
+        codigoTransaccion=RegistroInventarioVendedores.objects.all().filter(id = id).values('code')
+        codigoTransaccion=codigoTransaccion[0]['code']
+        
+        
+        user_id=RegistroInventarioVendedores.objects.all().filter(id = id).values('usuario_id')
+        # print(user_id[0]['usuario_id'])
+        userData=User.objects.all().filter(id=user_id[0]['usuario_id']).get()
+        nombreUsuario="Nombre: "+userData.first_name+" "+userData.last_name+" "+". Usuario: "+userData.username
         transaction = {'date_added':timezone.now()}
 
-        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
-        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        permisosEspeciales=usersPermission.objects.filter(user_id=user_id[0]['usuario_id']).get()
+
+
+
+        # usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        # nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
         
         total_value = 0
         acumulador_total_productos=0
-        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        ItemList = RegistroInventarioVendedores.objects.filter(code = codigoTransaccion).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        print(ItemList)
         for elemento in ItemList:
             #print("impresion: ",elemento)
             # #print(elemento.product_id)
             articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
             # #print(articulo.precioVentaVendedorReparto)
-            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
+            
+
             elemento.nombreArticulo=articulo.nombreArticulo
             elemento.precioPV=articulo.precioVentaVendedorReparto
+            if permisosEspeciales.is_externalSeller:
+                elemento.precioPV=articulo.precioVentaVendedorExterno
+            else:
+                elemento.precioPV=articulo.precioVentaVendedorReparto
+
+            total_value=total_value+(elemento.cantidad*elemento.precioPV)
+            
+
             
             acumulador_total_productos+=elemento.cantidad
             ##print(acumulador_total_productos)
             elemento.precioVExterno=articulo.precioVentaVendedorExterno
             elemento.precioVendedor=articulo.precioVentaVendedorReparto
+
             
         
         context = {
@@ -1184,6 +1208,26 @@ def delete_sale_sellers(request):
     
     else:
         return render(request,'forbiden.html')
+    
+def delete_charge_sellers(request):
+    if request.user.is_authenticated:
+
+        resp = {'status':'failed', 'msg':''}
+        id = request.POST.get('id')
+        print(id)
+        code=RegistroInventarioVendedores.objects.all().filter(id=id).values('code')
+        code=code[0]['code']
+        try:
+            delete = RegistroInventarioVendedores.objects.filter(code = code).delete()
+            resp['status'] = 'success'
+            messages.success(request, 'Registro de venta eliminado.')
+        except:
+            resp['msg'] = "Ha ocurrido un error."
+            ###print("Unexpected error:", sys.exc_info()[0])
+        return HttpResponse(json.dumps(resp), content_type='application/json')
+    
+    else:
+        return render(request,'forbiden.html')
 
 
 def dash_ventas(request):
@@ -1877,6 +1921,48 @@ def save_posSeller(request):##EJEMPLO
         #print("Unexpected errors:", e)###############################
     return HttpResponse(json.dumps(resp),content_type="application/json")
 
+def receiptChargeSeller(request):
+    if request.user.is_authenticated:
+        # #print(request.GET)
+        id = request.GET.get('id')
+        transaction = {'date_added':timezone.now()}
+
+        usuarioData=User.objects.all().filter(id=request.user.id).get()# NOMBRE DEL USUARIO AL TICKET
+        nombreUsuario=usuarioData.username+" . Nombre: "+usuarioData.first_name+" "+usuarioData.last_name# NOMBRE DEL USUARIO AL TICKET
+        
+        total_value = 0
+        acumulador_total_productos=0
+        ItemList = RegistroInventarioVendedores.objects.filter(code = id).all()# LISTA TODOS LOS ELEMENTOS DEL REGISTRO
+        for elemento in ItemList:
+            #print("impresion: ",elemento)
+            # #print(elemento.product_id)
+            articulo=articulosModel.objects.all().filter(id=elemento.product_id).get()# OBTEN LA INFORMACION DEL ARTICULO ORIGINAL
+            # #print(articulo.precioVentaVendedorReparto)
+            total_value=total_value+(elemento.cantidad*articulo.precioVentaVendedorReparto)
+            elemento.nombreArticulo=articulo.nombreArticulo
+            elemento.precioPV=articulo.precioVentaVendedorReparto
+            
+            acumulador_total_productos+=elemento.cantidad
+            ##print(acumulador_total_productos)
+            elemento.precioVExterno=articulo.precioVentaVendedorExterno
+            elemento.precioVendedor=articulo.precioVentaVendedorReparto
+            
+        
+        context = {
+            "total":total_value,
+            # "total_discounts":total_discounts,
+            "transaction" : transaction,
+            'total_productos':acumulador_total_productos,
+
+            "salesItems" : ItemList,
+            'nombreUsuario':nombreUsuario,
+        }
+
+        return render(request, 'receiptCharge.html',context)
+    else:
+        return render(request,'forbiden.html')
+
+    
 
 def receiptSeller(request):
     if request.user.is_authenticated:
@@ -2879,55 +2965,41 @@ def reporteInventario(request):
     else:
         return render(request,'forbiden.html')
     
+from collections import OrderedDict
+
 @login_required
 def reimpresionCargasDiarias(request):
-    today=datetime.now().date()
-    # fechas_disponibles = RegistroInventarioVendedores.objects.values_list('fecha', flat=True).distinct()
+    today = datetime.now().date()
+    cargasHoyPuntosVenta = RegistroInventarioPuntoVenta.objects.all()
+    cargasHoyVendedores = RegistroInventarioVendedores.objects.filter(fecha=today)
 
-    cargasHoyVendedores= RegistroInventarioVendedores.objects.all().filter(fecha=today)
+    # Crear un diccionario para almacenar las entradas únicas por `code`
+    unique_cargas = OrderedDict()
 
-    registros_por_usuario = {}
+    # Iterar sobre los registros y agregar solo los únicos por `code`
+    for carga in cargasHoyVendedores:
+        if carga.code not in unique_cargas:
+            unique_cargas[carga.code] = carga
+
+    # Convertir el diccionario a una lista de valores
+    cargasHoyVendedores = list(unique_cargas.values())
+
+    # Obtener los valores de los campos que necesitas
+    cargasHoyVendedores = [carga.__dict__ for carga in cargasHoyVendedores]
+
+    # Añadir los datos del usuario correspondiente
+    for carga in cargasHoyVendedores:
+        usuarioData = User.objects.filter(id=carga['usuario_id']).first()
+        if usuarioData:
+            carga['nombre_vendedor'] = f"{usuarioData.first_name} {usuarioData.last_name} Usuario: {usuarioData.username}"
+
     
-    for registro in cargasHoyVendedores:
-        usuario_id = registro.usuario_id
-        permisosAdicionales=usersPermission.objects.all().filter(user_id=usuario_id).get()
-        isExternal = permisosAdicionales.is_externalSeller
-        
-        datosArticulo=articulosModel.objects.filter(id=registro.product_id).get()
-        if isExternal:
-            precioArticulo=datosArticulo.precioVentaVendedorExterno
-        else:
-            precioArticulo=datosArticulo.precioVentaVendedorReparto
-
-        registro.valor=precioArticulo*registro.cantidad
-        
-        datosUsuario=User.objects.all().filter(id=usuario_id).get()
-        usuario_key = f" {datosUsuario.username} Nombre: {datosUsuario.first_name} {datosUsuario.last_name}"
-        if usuario_key not in registros_por_usuario:
-            registros_por_usuario[usuario_key] = {
-                'registros': [],
-                'total_productos': 0,
-                'valor_total_stock':0,
-                }
-        registros_por_usuario[usuario_key]['registros'].append(registro)
-        registros_por_usuario[usuario_key]['total_productos'] += registro.cantidad
-        registros_por_usuario[usuario_key]['valor_total_stock'] += registro.valor
-
-
-        # usuario_id=" "+datosUsuario.username+" Nombre: "+datosUsuario.first_name+" "+datosUsuario.last_name
-        # if usuario_id not in registros_por_usuario:
-        #     registros_por_usuario[usuario_id] = []
-        # registros_por_usuario[usuario_id].append(registro)
-
-
-    # sumaCantidad=sum(registro.cantidad for registro in cargasHoyVendedores)
-    # #print(sumaCantidad)
-
-    context={
-        'registros_por_usuario':registros_por_usuario,        
+    
+    context = {
+        'registros_por_usuario': cargasHoyVendedores,
     }
 
-    return render(request,'reimpresionCargasDiarias.html',context)
+    return render(request, 'reimpresionCargasDiarias.html', context)
 
 @login_required
 def reimpresionCargasDiariasInd(request):
