@@ -99,6 +99,8 @@ urlpatterns=[
     path('impresionInventarios/', views.impresionInventarios, name="reimpresionInventarios"),
     path('receiptSellerInventory/', views.receiptSellerInventory, name="receipt-modal-inventory"),
 
+    path('delete-multiple-records/', views.delete_multiple_records, name='delete_multiple_records'),
+
 
     # path('storeData/',views.storeData,name="storeData")
 

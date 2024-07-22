@@ -288,46 +288,93 @@
                     </script>
                 </div>
               </div>
+
+
+            
+
+            
     
               
     
-            {% for origin, sales in listaAgrupada.items %}
-                <h5 style="text-align: left;"> {{ origin }} </h5> 
-                <table class="table" id="table_stockTable_{{forloop.counter}}">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Stock Actual</th>
-                            <th>Costo Unitario</th>
-                            <th>Precio Venta Reparto</th>
-                            <th>Ganancia Unitaria</th>
-                            <th>Ganancia Total</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sale in sales %}
-                            <tr>
-                                <td>{{ sale.product_id }}</td>
-                                <td>{{ sale.qty|floatformat:"-2"|intcomma }}</td>
-                                <td>${{ sale.product_id.costo|stringformat:".2f"|intcomma }}</td>
-                                <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
-                                <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
-                                <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
-                      <td><a href="{% url 'updateStockSellerFinance' sale.pk %}"><img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto"></a><a href="{% url 'deleteStockSellersFinance' sale.pk %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto"></a></td>
-    
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <script>
-                    (function($) {
-                        $(document).ready(function() {
-                            $('#table_stockTable_{{forloop.counter}}').dataTable();
-                        });
-                    })(jQuery);
-                </script>
-            {% endfor %}
+              {% for origin, sales in listaAgrupada.items %}
+              <h5 style="text-align: left;"> {{ origin }} </h5> 
+              <table class="table" id="table_stockTable_{{ forloop.counter }}">
+                  <thead class="thead-dark">
+                      <tr>
+                          <th><input type="checkbox" id="select_all_{{ forloop.counter }}"></th>
+                          <th>Producto</th>
+                          <th>Stock Actual</th>
+                          <th>Costo Unitario</th>
+                          <th>Precio Venta Reparto</th>
+                          <th>Ganancia Unitaria</th>
+                          <th>Ganancia Total</th>
+                          <th>Opciones</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for sale in sales %}
+                          <tr>
+                              <td><input type="checkbox" class="select_single_{{ forloop.parentloop.counter }}" value="{{ sale.pk }}"></td>
+                              <td>{{ sale.product_id }}</td>
+                              <td>{{ sale.qty|floatformat:"-2"|intcomma }}</td>
+                              <td>${{ sale.product_id.costo|stringformat:".2f"|intcomma }}</td>
+                              <td>${{ sale.product_id.precioVentaVendedorReparto|stringformat:".2f"|intcomma }}</td>
+                              <td>${{ sale.gananciaUnitaria|stringformat:".2f"|intcomma }}</td>
+                              <td>${{ sale.ganancia|stringformat:".2f"|intcomma}}</td>
+                              <td>
+                                  <a href="{% url 'updateStockSellerFinance' sale.pk %}">
+                                      <img src="{% static 'images/edit.png' %}" style="width: 30px;" alt="Editar Producto">
+                                  </a>
+                                  <a href="{% url 'deleteStockSellersFinance' sale.pk %}">
+                                      <img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Producto">
+                                  </a>
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              <button id="delete_selected_{{ forloop.counter }}" class="btn btn-danger">Eliminar Seleccionados</button>
+              <script>
+                  (function($) {
+                      $(document).ready(function() {
+                          $('#table_stockTable_{{ forloop.counter }}').dataTable();
+          
+                          // Select/Deselect all checkboxes
+                          $('#select_all_{{ forloop.counter }}').click(function() {
+                              $('.select_single_{{ forloop.counter }}').prop('checked', this.checked);
+                          });
+          
+                          // Delete selected records
+                          $('#delete_selected_{{ forloop.counter }}').click(function() {
+                              var selected = $('.select_single_{{ forloop.counter }}:checked').map(function() {
+                                  return $(this).val();
+                              }).get();
+          
+                              if (selected.length > 0) {
+                                  if (confirm("¿Estás seguro de que deseas eliminar los registros seleccionados?")) {
+                                      $.ajax({
+                                          url: "{% url 'delete_multiple_records' %}", // Endpoint to handle deletion
+                                          method: "POST",
+                                          data: {
+                                              'ids': selected,
+                                              'csrfmiddlewaretoken': '{{ csrf_token }}'
+                                          },
+                                          success: function(response) {
+                                              location.reload(); // Reload the page to reflect changes
+                                          },
+                                          error: function(error) {
+                                              console.log(error);
+                                          }
+                                      });
+                                  }
+                              } else {
+                                  alert("Por favor, seleccione al menos un registro para eliminar.");
+                              }
+                          });
+                      });
+                  })(jQuery);
+              </script>
+          {% endfor %}
             
         </div>
 

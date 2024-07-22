@@ -9,6 +9,8 @@ from datetime import date, datetime
 from django.contrib import messages
 from django.db.models import Count,Sum,Q #Q es para consultas mas complejas que involucren condicionales
 
+from django.views.decorators.csrf import csrf_exempt
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -3201,3 +3203,13 @@ def receiptSellerInventory(request):
         return render(request, 'receiptInventory.html',context)
     else:
         return render(request,'forbiden.html')
+    
+
+@csrf_exempt
+def delete_multiple_records(request):
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids[]')
+        # print(ids)
+        sellerInventory.objects.filter(pk__in=ids).delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'fail'}, status=400)
