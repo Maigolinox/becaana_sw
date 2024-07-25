@@ -3213,3 +3213,219 @@ def delete_multiple_records(request):
         sellerInventory.objects.filter(pk__in=ids).delete()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'fail'}, status=400)
+
+
+
+@login_required
+def salesHistory(request):
+    today=timezone.now().date()
+    
+    lunesSemanaPasada=today-timedelta(days=today.weekday()+7)
+    domingoSemanaPasada=lunesSemanaPasada+timedelta(days=6)
+    
+    diasDesdeLunes=today.weekday()
+    lunesSemana = today - timedelta(days=diasDesdeLunes)
+    # #print(lunesSemana)
+    domingoSemana=lunesSemana+timedelta(days=7)
+    # #print(domingoSemana)
+
+    ventasSemanalesSellers=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosSemanalesSellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasSemanalesSellers)
+    try:
+        ventasAgrupadas = articulosSemanalesSellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadas="Nada"
+    if ventasAgrupadas is None:
+        pass
+    else:
+        productMasVendidoSellerSemanal=articulosModel.objects.all().filter(id=ventasAgrupadas['product_id_id'])
+    ventasSemanalesVendedores=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
+    
+    grouped_sales = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasSemanalesVendedores:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=sellerSalesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales[sale.origin].append(sale)
+
+    ventasHoySellers=sellerSales.objects.filter(date_added=today).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosHoySellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasHoySellers)
+    try:
+        ventasAgrupadasHoy = articulosHoySellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadasHoy="Nada"
+    if ventasAgrupadasHoy is None:
+        pass
+    else:
+        productMasVendidoSellerHoy=articulosModel.objects.all().filter(id=ventasAgrupadasHoy['product_id_id'])
+    ventasHoyVendedores=sellerSales.objects.filter(date_added__date=today)
+    # print(ventasHoyVendedores)
+    
+    grouped_sales_hoy_vendedores = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasHoyVendedores:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=sellerSalesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_hoy_vendedores[sale.origin].append(sale)
+    ventasHoyPV=Sales.objects.filter(date_added=today).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosHoyPV=salesItemsPV.objects.filter(sale_id_id__in=ventasHoyPV)
+    try:
+        ventasAgrupadasHoyPV = articulosHoyPV.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadasHoyPV="Nada"
+    if ventasAgrupadasHoyPV is None:
+        pass
+    else:
+        productMasVendidoSellerHoy=articulosModel.objects.all().filter(id=ventasAgrupadasHoyPV['product_id_id'])
+    ventasHoyPV=Sales.objects.filter(date_added__date=today)
+    # print(ventasHoyPV)
+    
+    grouped_sales_hoy_puntosVenta = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasHoyPV:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=salesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            # print(elemento.qty)
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_hoy_puntosVenta[sale.origin].append(sale)
+    ventasPV=Sales.objects.values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosPV=salesItemsPV.objects.filter(sale_id_id__in=ventasPV)
+    try:
+        ventasAgrupadasPV = articulosPV.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadasPV="Nada"
+    if ventasAgrupadasPV is None:
+        pass
+    else:
+        productMasVendidoSeller=articulosModel.objects.all().filter(id=ventasAgrupadasPV['product_id_id'])
+    ventasPV=Sales.objects.all()
+    # print(ventasPV)
+    
+    grouped_sales_puntosVenta = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasPV:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=salesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            # print(elemento.qty)
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_puntosVenta[sale.origin].append(sale)
+
+    #####################################
+    ventasVendedores=sellerSales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
+    
+    grouped_sales_vendedores = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasVendedores:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=sellerSalesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_vendedores[sale.origin].append(sale)
+
+
+
+    ventasHoySellers=sellerSales.objects.filter(date_added=today).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosHoySellers=sellerSalesItems.objects.filter(sale_id_id__in=ventasHoySellers)
+    try:
+        ventasAgrupadasHoy = articulosHoySellers.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadasHoy="Nada"
+    if ventasAgrupadasHoy is None:
+        pass
+    else:
+        productMasVendidoSellerHoy=articulosModel.objects.all().filter(id=ventasAgrupadasHoy['product_id_id'])
+    
+
+    ventasSemanalesPV=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana]).values_list('id',flat=True)#OBTENGO LAS VENTAS SEMANALES PARA VENDEDORES
+    articulosSemanalesPV=salesItems.objects.filter(sale_id_id__in=ventasSemanalesPV)
+    try:
+        ventasAgrupadaspvsemanales = articulosSemanalesPV.values('product_id_id').annotate(total_qty=Sum('qty')).order_by('-total_qty').first()
+    except:
+        ventasAgrupadaspvsemanales="Nada"
+    if ventasAgrupadaspvsemanales is None:
+        pass
+    else:
+        productMasVendidoPVSemanal=articulosModel.objects.all().filter(id=ventasAgrupadaspvsemanales['product_id_id'])
+    ventasSemanalesPV=Sales.objects.filter(date_added__range=[lunesSemana,domingoSemana])
+    
+    grouped_sales_SEMANALES_PV = defaultdict(list)#AGRUPAMIENTO PARA PODER SEPARARLOS POR TABLAS
+    for sale in ventasSemanalesPV:
+        userData=User.objects.all().filter(id=sale.origin).get()
+        sale.origin="Usuario:"+userData.username+". Nombre: " + userData.first_name+" "+userData.last_name
+        articulosVenta=salesItems.objects.all().filter(sale_id_id=sale.id)
+        gananciaPorVenta=0
+        acumuladorProductosPorVenta=0
+        for elemento in articulosVenta:
+            costoProducto=articulosModel.objects.all().filter(id=elemento.product_id_id).get()
+            gananciaPorProducto=elemento.total-(costoProducto.costo*elemento.qty)
+            acumuladorProductosPorVenta=acumuladorProductosPorVenta+elemento.qty
+            gananciaPorVenta=gananciaPorVenta+gananciaPorProducto
+
+        sale.gananciaPorVenta=gananciaPorVenta
+        sale.acumuladorProductosPorVenta=acumuladorProductosPorVenta
+        
+        grouped_sales_SEMANALES_PV[sale.origin].append(sale)
+    
+
+    # print(grouped_sales_puntosVenta)
+    context={
+        'grouped_sales':dict(grouped_sales),
+        'grouped_sales_hoy_vendedores':dict(grouped_sales_hoy_vendedores),
+        'grouped_sales_hoy_puntosVenta':dict(grouped_sales_hoy_puntosVenta),
+        'grouped_sales_puntosVenta':dict(grouped_sales_puntosVenta),
+        'grouped_sales_vendedores':dict(grouped_sales_vendedores),
+        'grouped_sales_SEMANALES_PV':dict(grouped_sales_SEMANALES_PV),
+    }
+
+    return render(request,'salesHistory.html',context)

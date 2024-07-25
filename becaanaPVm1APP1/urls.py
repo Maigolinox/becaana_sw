@@ -100,6 +100,8 @@ urlpatterns=[
     path('receiptSellerInventory/', views.receiptSellerInventory, name="receipt-modal-inventory"),
 
     path('delete-multiple-records/', views.delete_multiple_records, name='delete_multiple_records'),
+    path('salesHistory/', views.salesHistory, name="salesHistory"),
+
 
 
     # path('storeData/',views.storeData,name="storeData")

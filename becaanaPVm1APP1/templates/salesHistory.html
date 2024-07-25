@@ -1,0 +1,333 @@
+{% extends "base.html" %} {% load humanize %} {% block content %}{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Ventas 🕓💸</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS de DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"  crossorigin="anonymous"></script>
+    
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    
+        <!-- Add DataTables JavaScript -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+        <link rel="stylesheet" type="text/css" 
+      href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.css">
+      <script type="text/javascript" charset="utf8" 
+      src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.js"></script>
+</head>
+<body> <br><br><br><br><br><br><br>
+    <div class="container">
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas 💸</h1>
+        <!-- <div class="row">
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#todayData"> Ventas de hoy por vendedores de reparto </a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#weeklyData" > Ventas de hoy por vendedores externos </a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#podio" > Ventas de hoy por puntos de venta </a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#historicData" > Ventas globales por vendedor de reparto</a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#salarios" > Ventas globales por vendedores externos </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#ventasSemanalesVendedores" > Ventas globales por puntos de venta </a>
+            </div>
+            <div class="col-sm border border-primary" style="text-align: center;">
+                <a href="#valorStockVendedores" > Ventas globales generales </a>
+            </div>
+        </div> -->
+        <!-- <hr> -->
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="todayData">
+            <h3>Ventas de hoy de vendedores </h3>
+            <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
+                <!-- {{grouped_sales_hoy_vendedores}} -->
+                {% for origin, sales in grouped_sales_hoy_vendedores.items %}
+                <h5 style="text-align: left;"> {{ origin }}</h5>
+                <table class="table" id="tableSalariosVendedores_{{forloop.counter}}">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Número de operación</th>
+                            <th>Total Vendido</th>
+                            <th>Fecha</th>
+                            <th>Ganancia Total</th>
+                            <th>Número de productos vendidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                            <tr>
+                                <td>{{ sale.code }}</td>
+                                <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                                <td>{{ sale.date_added }}</td>
+                                <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                                <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <script>
+                    (function($) {
+                        $(document).ready(function() {
+                            $('#tableSalariosVendedores_{{forloop.counter}}').dataTable();
+                        });
+                    })(jQuery);
+                </script>
+                
+            {% endfor %}
+            
+        </div>
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="weeklyData">
+            <h3>Ventas de hoy de puntos de venta</h3>
+            {% for origin, sales in grouped_sales_hoy_puntosVenta.items %}
+                <h5 style="text-align: left;"> {{ origin }}</h5>
+                <table class="table" id="tableSalariosPuntosVenta_{{forloop.counter}}">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Número de operación</th>
+                            <th>Total Vendido</th>
+                            <th>Fecha</th>
+                            <th>Ganancia Total</th>
+                            <th>Número de productos vendidos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                            <tr>
+                                <td>{{ sale.code }}</td>
+                                <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                                <td>{{ sale.date_added }}</td>
+                                <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                                <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <script>
+                    (function($) {
+                        $(document).ready(function() {
+                            $('#tableSalariosPuntosVenta_{{forloop.counter}}').dataTable();
+                        });
+                    })(jQuery);
+                </script>
+                
+            {% endfor %}
+            
+        </div>
+        <!-- <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="weeklyData">
+            <h3>Ventas de hoy generales</h3>
+            
+        </div> -->
+        <hr>
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="todayData">
+            <h3>Ventas globales de vendedores </h3>
+            {% for origin, sales in grouped_sales_vendedores.items %}
+            <h5 style="text-align: left;"> {{ origin }}</h5>
+            <table class="table" id="tableSalariosVendedores___{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número de operación</th>
+                        <th>Total Vendido</th>
+                        <th>Fecha</th>
+                        <th>Ganancia Total</th>
+                        <th>Número de productos vendidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.code }}</td>
+                            <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.date_added }}</td>
+                            <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedores___{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+            
+        {% endfor %}
+
+            
+        </div>
+        
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="weeklyData">
+            <h3>Ventas globales por punto de venta</h3>
+            {% for origin, sales in grouped_sales_puntosVenta.items %}
+            <h5 style="text-align: left;"> {{ origin }}</h5>
+            <table class="table" id="tableSalariosVendedores__{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número de operación</th>
+                        <th>Total Vendido</th>
+                        <th>Fecha</th>
+                        <th>Ganancia Total</th>
+                        <th>Número de productos vendidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.code }}</td>
+                            <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.date_added }}</td>
+                            <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedores__{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+            
+        {% endfor %}
+            
+        </div>
+        <hr>
+        <!-- VENTAS SEMANALES POR VENDEDORES -->
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
+            <h3>Ventas semanales por vendedores 👨‍💼</h3>
+            <!-- {{grouped_sales}} -->
+            {% for origin, sales in grouped_sales.items %}
+            <h5 style="text-align: left;"> {{ origin }}</h5>
+            <table class="table" id="tableSalariosVendedores{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número de operación</th>
+                        <th>Total Vendido</th>
+                        <th>Fecha</th>
+                        <th>Ganancia Total</th>
+                        <th>Número de productos vendidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.code }}</td>
+                            <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.date_added }}</td>
+                            <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedores{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+            
+        {% endfor %}
+
+        <div class="row" style="text-align: center; margin-top: 20px; margin-bottom: 20px;" id="ventasSemanalesVendedores">
+            <h3>Ventas semanales por puntos de venta 👨‍💼</h3>
+            <!-- {{grouped_sales}} -->
+            {% for origin, sales in grouped_sales_SEMANALES_PV.items %}
+            <h5 style="text-align: left;"> {{ origin }}</h5>
+            <table class="table" id="tableSalariosVendedoresPasada{{forloop.counter}}">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número de operación</th>
+                        <th>Total Vendido</th>
+                        <th>Fecha</th>
+                        <th>Ganancia Total</th>
+                        <th>Número de productos vendidos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.code }}</td>
+                            <td>${{ sale.grand_total|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.date_added }}</td>
+                            <td>${{ sale.gananciaPorVenta|stringformat:".2f"|intcomma }}</td>
+                            <td>{{ sale.acumuladorProductosPorVenta|floatformat:"-2"}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                (function($) {
+                    $(document).ready(function() {
+                        $('#tableSalariosVendedoresPasada{{forloop.counter}}').dataTable();
+                    });
+                })(jQuery);
+            </script>
+            
+        {% endfor %}
+
+        </div>
+        
+        
+
+        
+
+
+
+
+    </div>
+
+
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tablaStockVendedoresValores').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tableSalariosVendedores').dataTable();
+                $('#tableSalariosVendedoresSemanaPasada').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#TablaSalarios').dataTable();
+            });
+        })(jQuery);
+    </script>
+
+</body>
+</html>
+
+
+
+{% endblock %}
