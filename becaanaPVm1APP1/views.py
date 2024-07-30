@@ -3222,6 +3222,12 @@ def salesHistory(request):
     
     lunesSemanaPasada=today-timedelta(days=today.weekday()+7)
     domingoSemanaPasada=lunesSemanaPasada+timedelta(days=6)
+
+    productosVendidosVendedoresSemanaPasada=sellerSalesItems.objects.filter(sale_id__date_added__range=[lunesSemanaPasada,domingoSemanaPasada]).values_list('product_id_id',flat=True)#.distinct()
+    productosVendidosVendedoresHoy=sellerSalesItems.objects.filter(sale_id__date_added=today).values_list('product_id_id',flat=True)#.distinct()
+    productosVendedoresGenerales=sellerSalesItems.objects.all().aggregate(Count('product_id_id'))
+    productosPVGenerales=salesItems.objects.all().aggregate(Count('product_id_id'))
+
     
     diasDesdeLunes=today.weekday()
     lunesSemana = today - timedelta(days=diasDesdeLunes)
@@ -3420,6 +3426,10 @@ def salesHistory(request):
 
     # print(grouped_sales_puntosVenta)
     context={
+        'productosVendidosVendedoresSemanaPasada':productosVendidosVendedoresSemanaPasada,
+        'productosVendidosVendedoresHoy':productosVendidosVendedoresHoy,
+        'productosVendedoresGenerales':productosVendedoresGenerales,
+        'productosPVGenerales':productosPVGenerales,
         'grouped_sales':dict(grouped_sales),
         'grouped_sales_hoy_vendedores':dict(grouped_sales_hoy_vendedores),
         'grouped_sales_hoy_puntosVenta':dict(grouped_sales_hoy_puntosVenta),

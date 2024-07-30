@@ -30,7 +30,35 @@
 </head>
 <body> <br><br><br><br><br><br><br>
     <div class="container">
-        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas 💸</h1>
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas por productos💸</h1>
+        <div class="row">
+            <h3>Ventas de hoy por vendedores de reparto y vendedores externos generales</h3>
+            {% for elemento in productosVendidosVendedoresHoy %}
+            {{elmento}}
+            {% endfor %}
+            <hr>
+            <h3>Ventas de hoy por puntos de venta</h3>
+            {% for elemento in productosPVGenerales %}
+            {{elmento}}
+            {% endfor %}
+            <hr>
+            <h3>Ventas de hoy por puntos generales</h3>
+            {% for elemento in productosVendedoresGenerales %}
+            {{elmento}}
+            {% endfor %}
+
+            <hr>
+            <h3>Conglomerado de productos historicos</h3>
+            <hr>
+
+
+        </div>
+
+
+    </div>
+    <hr>
+    <div class="container">
+        <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas generales💸</h1>
         <!-- <div class="row">
             <div class="col-sm border border-primary" style="text-align: center;">
                 <a href="#todayData"> Ventas de hoy por vendedores de reparto </a>
