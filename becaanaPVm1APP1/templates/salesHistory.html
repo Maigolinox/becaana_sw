@@ -33,23 +33,136 @@
         <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas por productos💸</h1>
         <div class="row">
             <h3>Ventas de hoy por vendedores de reparto y vendedores externos generales</h3>
-            {% for elemento in productosVendidosVendedoresHoy %}
-            {{elmento}}
+            
+            <table class="table table-striped" id="tanla">
+                <thead>
+                    <tr>
+                        <!-- <th>ID</th> -->
+                        <!-- <th>Venta ID</th> -->
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <!-- <th>Descuento</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productosVendidosVendedoresHoy %}
+                    <tr>
+                        <!-- <td>{{ producto.pk }}</td> -->
+                        <!-- <td>{{ producto.sale_id_id }}</td> -->
+                        <td>{{ producto.product_id__nombreArticulo }}</td>
+                        <td>$ {{ producto.price|stringformat:".2f"|intcomma }}</td>
+                        <td>{{ producto.count|stringformat:".2f"|intcomma }}</td>
+                        <td>$ {{ producto.total_amount|stringformat:".2f"|intcomma }}</td>
+                        <!-- <td>$ {{ producto.discount|stringformat:".2f"|intcomma }}</td> -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Agrupados por vendedores</h3>
+            {% for origin, productos in productosVendidosVendedoresHoyAgrupados.items %}
+    <h3>Origen: {{ origin }}</h3>
+    <table border="1" class="table table-striped" id="tanble_{{forloop.counter}}">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad Total</th>
+                <th>Monto Total</th>
+                <th>Número de Ventas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.product_id__nombreArticulo }}</td>
+                <td>$ {{ producto.price|stringformat:".2f"|intcomma }}</td>
+                <td>{{ producto.total_qty|stringformat:".2f"|intcomma }}</td>
+                <td>$ {{ producto.total_amount|stringformat:".2f"|intcomma }}</td>
+                <td>{{ producto.count|stringformat:".2f"|intcomma }}</td>
+            </tr>
             {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tanble_{{forloop.counter}}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor %}
             <hr>
             <h3>Ventas de hoy por puntos de venta</h3>
-            {% for elemento in productosPVGenerales %}
-            {{elmento}}
+            <table class="table table-striped" id="tanlas_pv">
+                <thead>
+                    <tr>
+                        <!-- <th>ID</th> -->
+                        <!-- <th>Venta ID</th> -->
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <!-- <th>Descuento</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productosVendidosPuntosVentaHoy %}
+                    <tr>
+                        <!-- <td>{{ producto.pk }}</td> -->
+                        <!-- <td>{{ producto.sale_id_id }}</td> -->
+                        <td>{{ producto.product_id__nombreArticulo }}</td>
+                        <td>$ {{ producto.price|stringformat:".2f"|intcomma }}</td>
+                        <td>{{ producto.count|stringformat:".2f"|intcomma }}</td>
+                        <td>$ {{ producto.total_amount|stringformat:".2f"|intcomma }}</td>
+                        <!-- <td>$ {{ producto.discount|stringformat:".2f"|intcomma }}</td> -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <h3>Agrupados por puntos de venta</h3>
+            {% for origin, productos in productosVendidosPuntosVentaHoyAgrupados.items %}
+    <h3>Origen: {{ origin }}</h3>
+    <table border="1" class="table table-striped" id="tanble_pv_{{forloop.counter}}">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad Total</th>
+                <th>Monto Total</th>
+                <th>Número de Ventas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.product_id__nombreArticulo }}</td>
+                <td>$ {{ producto.price|stringformat:".2f"|intcomma }}</td>
+                <td>{{ producto.total_qty|stringformat:".2f"|intcomma }}</td>
+                <td>$ {{ producto.total_amount|stringformat:".2f"|intcomma }}</td>
+                <td>{{ producto.count|stringformat:".2f"|intcomma }}</td>
+            </tr>
             {% endfor %}
-            <hr>
-            <h3>Ventas de hoy por puntos generales</h3>
-            {% for elemento in productosVendedoresGenerales %}
-            {{elmento}}
-            {% endfor %}
-
-            <hr>
-            <h3>Conglomerado de productos historicos</h3>
-            <hr>
+        </tbody>
+    </table>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tanble_pv_{{forloop.counter}}').dataTable();
+            });
+        })(jQuery);
+    </script>
+    {% endfor %}
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tanlas_pv').dataTable();
+            });
+        })(jQuery);
+    </script>
 
 
         </div>
@@ -349,6 +462,13 @@
         (function($) {
             $(document).ready(function() {
                 $('#TablaSalarios').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tanla').dataTable();
             });
         })(jQuery);
     </script>

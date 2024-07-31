@@ -3224,7 +3224,116 @@ def salesHistory(request):
     domingoSemanaPasada=lunesSemanaPasada+timedelta(days=6)
 
     productosVendidosVendedoresSemanaPasada=sellerSalesItems.objects.filter(sale_id__date_added__range=[lunesSemanaPasada,domingoSemanaPasada]).values_list('product_id_id',flat=True)#.distinct()
-    productosVendidosVendedoresHoy=sellerSalesItems.objects.filter(sale_id__date_added=today).values_list('product_id_id',flat=True)#.distinct()
+
+
+    ventasVendedoresHoy=sellerSales.objects.filter(date_added__date=today).values_list('id',flat=True)
+    
+    productosVendidosVendedoresHoy = sellerSalesItems.objects.filter(
+        sale_id__in=ventasVendedoresHoy
+    ).values(
+        'product_id__nombreArticulo','price'
+    ).annotate(
+        total_qty=Sum('qty'),
+        total_amount=Sum('total'),
+        count=Count('id')
+    )
+
+    #####################AGRUPACION VENDEDORES
+
+    ventasVendedoresHoy = sellerSales.objects.filter(date_added__date=today)
+    origins = ventasVendedoresHoy.values_list('origin', flat=True).distinct()
+    origin_user_map = {
+        origin: User.objects.get(id=origin)  # Suponiendo que origin es el ID del usuario
+        for origin in origins
+    }
+    
+    # Obtener los IDs de las ventas para la consulta en sellerSalesItems
+    ventas_ids = ventasVendedoresHoy.values_list('id', flat=True)
+    
+    # Obtener los datos de productos vendidos junto con el origen de la venta
+    productosVendidosVendedoresHoy = sellerSalesItems.objects.filter(
+        sale_id__in=ventas_ids
+    ).values(
+        'sale_id__origin',
+        'product_id__nombreArticulo',
+        'price'
+    ).annotate(
+        total_qty=Sum('qty'),
+        total_amount=Sum('total'),
+        count=Count('id')
+    ).order_by('sale_id__origin', 'product_id__nombreArticulo')  # Ordenar por origin y luego por nombre del producto
+
+    # Organizar los datos en un diccionario agrupado por 'origin'
+    productos_por_origen = {}
+    for producto in productosVendidosVendedoresHoy:
+        origin = producto['sale_id__origin']
+        origin_id = producto['sale_id__origin']
+        origin_user = origin_user_map.get(origin)
+        origin_name = f"{origin_user}  {origin_user.first_name} {origin_user.last_name}"
+        # print(origin_name)
+        if origin_name not in productos_por_origen:
+            productos_por_origen[origin_name] = []
+        productos_por_origen[origin_name].append(producto)
+
+    productosVendidosVendedoresHoyAgrupados=productos_por_origen
+    # print(productosVendidosVendedoresHoyAgrupados)
+    
+
+    ###############################   agrupacion puntos de venta
+    ventasPuntosVentaHoy=Sales.objects.filter(date_added__date=today).values_list('id',flat=True)
+    
+    productosVendidosPuntosVentaHoy = salesItems.objects.filter(
+        sale_id__in=ventasPuntosVentaHoy
+    ).values(
+        'product_id__nombreArticulo','price'
+    ).annotate(
+        total_qty=Sum('qty'),
+        total_amount=Sum('total'),
+        count=Count('id')
+    )
+
+    ventasPuntosVentaHoy = Sales.objects.filter(date_added__date=today)
+    origins = ventasPuntosVentaHoy.values_list('origin', flat=True).distinct()
+    origin_user_map = {
+        origin: User.objects.get(id=origin)  # Suponiendo que origin es el ID del usuario
+        for origin in origins
+    }
+    
+    # Obtener los IDs de las ventas para la consulta en sellerSalesItems
+    ventas_ids = ventasPuntosVentaHoy.values_list('id', flat=True)
+    
+    # Obtener los datos de productos vendidos junto con el origen de la venta
+    productosVendidosPuntosVentaHoy = salesItems.objects.filter(
+        sale_id__in=ventas_ids
+    ).values(
+        'sale_id__origin',
+        'product_id__nombreArticulo',
+        'price'
+    ).annotate(
+        total_qty=Sum('qty'),
+        total_amount=Sum('total'),
+        count=Count('id')
+    ).order_by('sale_id__origin', 'product_id__nombreArticulo')  # Ordenar por origin y luego por nombre del producto
+
+    # Organizar los datos en un diccionario agrupado por 'origin'
+    productos_por_origen = {}
+    for producto in productosVendidosPuntosVentaHoy:
+        origin = producto['sale_id__origin']
+        origin_id = producto['sale_id__origin']
+        origin_user = origin_user_map.get(origin)
+        origin_name = f"{origin_user}  {origin_user.first_name} {origin_user.last_name}"
+        # print(origin_name)
+        if origin_name not in productos_por_origen:
+            productos_por_origen[origin_name] = []
+        productos_por_origen[origin_name].append(producto)
+
+    productosVendidosPuntosVentaHoyAgrupados=productos_por_origen
+    # print(productosVendidosPuntosVentaHoyAgrupados)
+    
+
+    ###############################   
+
+    
     productosVendedoresGenerales=sellerSalesItems.objects.all().aggregate(Count('product_id_id'))
     productosPVGenerales=salesItems.objects.all().aggregate(Count('product_id_id'))
 
@@ -3426,8 +3535,11 @@ def salesHistory(request):
 
     # print(grouped_sales_puntosVenta)
     context={
+        'productosVendidosPuntosVentaHoyAgrupados':dict(productosVendidosPuntosVentaHoyAgrupados),
+        'productosVendidosVendedoresHoyAgrupados':dict(productosVendidosVendedoresHoyAgrupados),
         'productosVendidosVendedoresSemanaPasada':productosVendidosVendedoresSemanaPasada,
         'productosVendidosVendedoresHoy':productosVendidosVendedoresHoy,
+        'productosVendidosPuntosVentaHoy':productosVendidosPuntosVentaHoy,
         'productosVendedoresGenerales':productosVendedoresGenerales,
         'productosPVGenerales':productosPVGenerales,
         'grouped_sales':dict(grouped_sales),
