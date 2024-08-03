@@ -54,6 +54,54 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="row">
+            <h3>Conglomerado de ventas por producto de vendedores agrupado</h3>
+            
+            <table class="table table-striped" id="congVendedorAgrupado">
+                <thead>
+                    <tr>
+                        <th>Vendedor</th>
+                        <th>Nombre del Producto</th>
+                        <th>Fecha</th>
+                        <th>Cantidad Vendida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in conteo_productos_agrupado_vendedor %}
+                    <tr>
+                        <td>{{ venta.origin }}</td>
+                        <td>{{ venta.nombreProducto }}</td>
+                        <td >{{ venta.fecha_venta }}</td>
+                        <td>{{ venta.total_vendido }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="row">
+            <h3>Conglomerado de ventas por producto de puntos de venta general</h3>
+            <table class="table table-striped" id="congPVTAB">
+                <thead>
+                    <tr>
+                        <th>Nombre del Producto</th>
+                        <th>Fecha</th>
+                        <th>Cantidad Vendida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in conteo_productos_pv %}
+                    <tr>
+                        <td>{{ venta.product_id }}</td>
+                        <td >{{ venta.fecha_venta }}</td>
+                        <td>{{ venta.total_vendido }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <div class="row">
             <h3>Historial de Ventas General Histórico de Vendedores</h3>
 
@@ -606,6 +654,8 @@
         (function($) {
             $(document).ready(function() {
                 $('#tanla').dataTable();
+                $('#congPVTAB').dataTable();
+                $('#congVendedorAgrupado').dataTable();
             });
         })(jQuery);
     </script>

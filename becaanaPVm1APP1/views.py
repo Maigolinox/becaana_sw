@@ -3578,10 +3578,38 @@ def salesHistory(request):
         conteo_productos.fecha_venta=item['fecha_venta']
         conteo_productos.total_vendido=item['total_vendido']
         # print(f"Producto ID: {item['product_id']}, Fecha: {item['fecha_venta']}, Total vendido: {item['total_vendido']}")
+
+    conteo_productos_pv = salesItems.objects.annotate(
+            fecha_venta=TruncDate('sale_id__date_added')).values('product_id', 'fecha_venta').annotate(
+                    total_vendido=Count('id')
+                    ).order_by('product_id', 'fecha_venta')
+    
+    for item in conteo_productos_pv:
+        informacionProducto=articulosModel.objects.all().filter(id=item['product_id']).get()
+        print(item)
+        # print(informacionProducto.nombreArticulo)
+        
+        item['product_id']=informacionProducto.nombreArticulo
+        conteo_productos.fecha_venta=item['fecha_venta']
+        conteo_productos.total_vendido=item['total_vendido']
+
+    conteo_productos_agrupado_vendedor = sellerSalesItems.objects.annotate(
+        fecha_venta=TruncDate('sale_id__date_added'),
+        nombreProducto=F('product_id__nombreArticulo'),  # Asumiendo que el campo se llama 'nombreArticulo' en articulosModel
+        origin=F('sale_id__origin')
+    ).values('product_id', 'nombreProducto', 'fecha_venta', 'origin').annotate(
+        total_vendido=Count('id')
+    ).order_by('product_id', 'fecha_venta', 'origin')
+
+    for elemento in conteo_productos_agrupado_vendedor:
+        # print(elemento['origin'])
+        elemento['origin'] = User.objects.get(id=elemento['origin']).username
     
         
     context={
         'conteo_productos':list(conteo_productos),
+        'conteo_productos_pv':list(conteo_productos_pv),
+        'conteo_productos_agrupado_vendedor':list(conteo_productos_agrupado_vendedor),
         'productosVendidosPuntosVentaHoyAgrupados':dict(productosVendidosPuntosVentaHoyAgrupados),
         'productosVendidosVendedoresHoyAgrupados':dict(productosVendidosVendedoresHoyAgrupados),
         'productosVendidosVendedoresSemanaPasada':productosVendidosVendedoresSemanaPasada,
