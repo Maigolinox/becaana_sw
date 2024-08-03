@@ -32,6 +32,46 @@
     <div class="container">
         <h1 style="text-align: center; margin: 20px; margin-bottom: 50px;">Historial de ventas por productos💸</h1>
         <div class="row">
+            <h3>Historial de Ventas General Histórico</h3>
+
+            <table class="table table-striped" id="tanlasss">
+                <thead>
+                    <tr>
+                        <!-- <th>ID</th> -->
+                        <!-- <th>Venta ID</th> -->
+                        <th>Usuario</th>
+                        <th>Nombre del Usuario</th>
+                        <th>Número de venta</th>
+                        <th>Cantidad de productos vendidos</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Opciones</th>
+                        <!-- <th>Descuento</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in todasVentasVendedores %}
+                    <tr>
+                        <!-- <td>{{ producto.pk }}</td> -->
+                        <!-- <td>{{ producto.sale_id_id }}</td> -->
+                        <td>{{ venta.username }}</td>
+                        <td>{{ venta.fullName }}</td>
+                        <td>{{ venta.code }}</td>
+                        <td>{{ venta.cantidadProductosVendidos|stringformat:".2f"|intcomma }}</td>
+                        <td>{{ venta.date_added }}</td>
+                        <td>$ {{ venta.grand_total|stringformat:".2f"|intcomma }}</td>
+                        <td>
+                            <a href="{% url 'deleteSaleSeller' venta.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Venta"></a>
+                        </td> 
+                        <!-- <td>$ {{ producto.discount|stringformat:".2f"|intcomma }}</td> -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class="row">
             <h3>Ventas de hoy por vendedores de reparto y vendedores externos generales</h3>
             
             <table class="table table-striped" id="tanla">
@@ -160,6 +200,13 @@
         (function($) {
             $(document).ready(function() {
                 $('#tanlas_pv').dataTable();
+            });
+        })(jQuery);
+    </script>
+    <script>
+        (function($) {
+            $(document).ready(function() {
+                $('#tanlasss').dataTable();
             });
         })(jQuery);
     </script>

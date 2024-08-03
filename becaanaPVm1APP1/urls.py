@@ -101,6 +101,8 @@ urlpatterns=[
 
     path('delete-multiple-records/', views.delete_multiple_records, name='delete_multiple_records'),
     path('salesHistory/', views.salesHistory, name="salesHistory"),
+    path('deleteSaleSeller/<int:id>',views.deleteSaleSeller,name="deleteSaleSeller"),
+
 
 
 

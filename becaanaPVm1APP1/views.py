@@ -3225,6 +3225,20 @@ def salesHistory(request):
 
     productosVendidosVendedoresSemanaPasada=sellerSalesItems.objects.filter(sale_id__date_added__range=[lunesSemanaPasada,domingoSemanaPasada]).values_list('product_id_id',flat=True)#.distinct()
 
+    todasVentasVendedores=sellerSales.objects.all()
+
+    for venta in todasVentasVendedores:
+        userInformation=User.objects.all().filter(id=venta.origin).get()
+        userFirstName=userInformation.first_name
+        userLastName=userInformation.last_name
+        username=userInformation.username
+        # venta.origin=f"{userFirstName} {userLastName} "
+        venta.fullName=f"{userFirstName} {userLastName}"
+        venta.username=username
+        informacionArticulos=sellerSalesItems.objects.filter(sale_id_id=venta.id).all().count()
+        # print(informacionArticulos)
+        venta.cantidadProductosVendidos=informacionArticulos
+
 
     ventasVendedoresHoy=sellerSales.objects.filter(date_added__date=today).values_list('id',flat=True)
     
@@ -3540,6 +3554,7 @@ def salesHistory(request):
         'productosVendidosVendedoresSemanaPasada':productosVendidosVendedoresSemanaPasada,
         'productosVendidosVendedoresHoy':productosVendidosVendedoresHoy,
         'productosVendidosPuntosVentaHoy':productosVendidosPuntosVentaHoy,
+        'todasVentasVendedores':todasVentasVendedores,
         'productosVendedoresGenerales':productosVendedoresGenerales,
         'productosPVGenerales':productosPVGenerales,
         'grouped_sales':dict(grouped_sales),
@@ -3551,3 +3566,15 @@ def salesHistory(request):
     }
 
     return render(request,'salesHistory.html',context)
+
+
+def deleteSaleSeller(request,id):
+    if request.user.is_authenticated:
+        try:
+            deleteRegister=sellerSales.objects.get(id=id)
+            deleteRegister.delete()
+            return redirect('salesHistory')
+        except:
+            return redirect('salesHistory')
+    else:
+        return render(request,'forbiden.html')
