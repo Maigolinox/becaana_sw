@@ -30,6 +30,8 @@ from django.db.models import F, ExpressionWrapper, FloatField
 
 from collections import defaultdict
 from itertools import chain
+from django.db.models.functions import TruncDate
+
 
 
 # Create your views here.
@@ -3226,6 +3228,10 @@ def salesHistory(request):
     productosVendidosVendedoresSemanaPasada=sellerSalesItems.objects.filter(sale_id__date_added__range=[lunesSemanaPasada,domingoSemanaPasada]).values_list('product_id_id',flat=True)#.distinct()
 
     todasVentasVendedores=sellerSales.objects.all()
+    todasVentasPuntosVenta=Sales.objects.all()
+
+
+
 
     for venta in todasVentasVendedores:
         userInformation=User.objects.all().filter(id=venta.origin).get()
@@ -3236,6 +3242,18 @@ def salesHistory(request):
         venta.fullName=f"{userFirstName} {userLastName}"
         venta.username=username
         informacionArticulos=sellerSalesItems.objects.filter(sale_id_id=venta.id).all().count()
+        # print(informacionArticulos)
+        venta.cantidadProductosVendidos=informacionArticulos
+    
+    for venta in todasVentasPuntosVenta:
+        userInformation=User.objects.all().filter(id=venta.origin).get()
+        userFirstName=userInformation.first_name
+        userLastName=userInformation.last_name
+        username=userInformation.username
+        # venta.origin=f"{userFirstName} {userLastName} "
+        venta.fullName=f"{userFirstName} {userLastName}"
+        venta.username=username
+        informacionArticulos=salesItems.objects.filter(sale_id_id=venta.id).all().count()
         # print(informacionArticulos)
         venta.cantidadProductosVendidos=informacionArticulos
 
@@ -3547,8 +3565,23 @@ def salesHistory(request):
         grouped_sales_SEMANALES_PV[sale.origin].append(sale)
     
 
-    # print(grouped_sales_puntosVenta)
+    conteo_productos = sellerSalesItems.objects.annotate(
+            fecha_venta=TruncDate('sale_id__date_added')).values('product_id', 'fecha_venta').annotate(
+                    total_vendido=Count('id')
+                    ).order_by('product_id', 'fecha_venta')
+    for item in conteo_productos:
+        informacionProducto=articulosModel.objects.all().filter(id=item['product_id']).get()
+        print(item)
+        # print(informacionProducto.nombreArticulo)
+        
+        item['product_id']=informacionProducto.nombreArticulo
+        conteo_productos.fecha_venta=item['fecha_venta']
+        conteo_productos.total_vendido=item['total_vendido']
+        # print(f"Producto ID: {item['product_id']}, Fecha: {item['fecha_venta']}, Total vendido: {item['total_vendido']}")
+    
+        
     context={
+        'conteo_productos':list(conteo_productos),
         'productosVendidosPuntosVentaHoyAgrupados':dict(productosVendidosPuntosVentaHoyAgrupados),
         'productosVendidosVendedoresHoyAgrupados':dict(productosVendidosVendedoresHoyAgrupados),
         'productosVendidosVendedoresSemanaPasada':productosVendidosVendedoresSemanaPasada,
@@ -3556,6 +3589,7 @@ def salesHistory(request):
         'productosVendidosPuntosVentaHoy':productosVendidosPuntosVentaHoy,
         'todasVentasVendedores':todasVentasVendedores,
         'productosVendedoresGenerales':productosVendedoresGenerales,
+        'todasVentasPuntosVenta':todasVentasPuntosVenta,
         'productosPVGenerales':productosPVGenerales,
         'grouped_sales':dict(grouped_sales),
         'grouped_sales_hoy_vendedores':dict(grouped_sales_hoy_vendedores),
