@@ -34,30 +34,21 @@
 
 
         <div class="row">
-            <h3>Conglomerado de ventas por producto</h3>
+            <h3>Conglomerado de ventas por producto de vendedores general</h3>
             <table class="table table-striped" id="tanlasssss">
                 <thead>
                     <tr>
                         <th>Nombre del Producto</th>
                         <th>Fecha</th>
                         <th>Cantidad Vendida</th>
-                        <!-- <th>Cantidad de productos vendidos</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Opciones</th> -->
-                        <!-- <th>Descuento</th> -->
                     </tr>
                 </thead>
                 <tbody>
                     {% for venta in conteo_productos %}
                     <tr>
-                        <!-- <td>{{ producto.pk }}</td> -->
-                        <!-- <td>{{ producto.sale_id_id }}</td> -->
                         <td>{{ venta.product_id }}</td>
                         <td >{{ venta.fecha_venta }}</td>
                         <td>{{ venta.total_vendido }}</td>
-                        
-                        <!-- <td>$ {{ producto.discount|stringformat:".2f"|intcomma }}</td> -->
                     </tr>
                     {% endfor %}
                 </tbody>
