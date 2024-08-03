@@ -58,7 +58,7 @@
                         <td>{{ venta.fullName }}</td>
                         <td>{{ venta.code }}</td>
                         <td>{{ venta.cantidadProductosVendidos|stringformat:".2f"|intcomma }}</td>
-                        <td>{{ venta.date_added }}</td>
+                        <td data-order="{{ venta.date_added|date:'Y-m-d H:i:s' }}">{{ venta.date_added|date:"d/m/Y H:i" }}</td>
                         <td>$ {{ venta.grand_total|stringformat:".2f"|intcomma }}</td>
                         <td>
                             <a href="{% url 'deleteSaleSeller' venta.id %}"><img src="{% static 'images/delete.png' %}" style="width: 30px;" alt="Eliminar Venta"></a>
@@ -206,7 +206,12 @@
     <script>
         (function($) {
             $(document).ready(function() {
-                $('#tanlasss').dataTable();
+                $('#tanlasss').dataTable({
+                    "columnDefs": [
+                { "type": "date", "targets": 4 }
+            ],
+            "order": [[ 4, "desc" ]]  // Ordena por la columna de fecha (índice 4) de forma descendente por defecto
+                });
             });
         })(jQuery);
     </script>
